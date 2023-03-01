@@ -1,5 +1,7 @@
 from flask import render_template, flash, redirect, url_for, request, session
+
 from app import app
+from app import nav
 from app.maps import map1
 import requests
 import json
@@ -11,6 +13,8 @@ auth = "Basic bm0yMDUyOUBicmlzdG9sLmFjLnVrOjY1MjE5ZjU0ODllM2E4YTU4MWYwMDA5MTAzYm
 headers = {}
 headers["Accept"] = 'application/json'
 headers["Authorization"] = auth
+
+nav.Bar('top', [nav.Item('Home', 'index')])
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -32,7 +36,6 @@ def postcodereq():
             url = endpoint + "?size=100" + "&postcode={}".format(postcode)
             r = requests.get(url, headers=headers)
             data = r.json()
-            #print(data)
             for house in data['rows']:
                 print(house['address'])
         if len(request.form) == 2:
@@ -61,16 +64,19 @@ def postcodereq():
     return render_template('index.html')
         
         
-@app.route('/singlerequest', methods=['POST'])  
+@app.route('/singlerequest', methods=['POST', 'GET'])  
 def singlerequest():
+    if request.method == 'GET':
+        return redirect(url_for('index'))
     address = request.form['singleaddress']
     key_dict = session['keys']
     key = key_dict[address]
     url = endpointcert + key
     r = requests.get(url, headers=headers)
     data = r.json()
-    print(data)
-    return redirect(request.referrer)
+    data = data['rows'][0]
+    location, ratings, property, features = organizedata(data)
+    return render_template('index.html', location=location, ratings=ratings, property=property, features=features)
 
     
 @app.route('/map1', methods=['GET'])
@@ -78,19 +84,30 @@ def map1():
     return render_template('map1.html')
 
 
-@app.route('/form', methods=['GET', 'POST'])
-def form():
-    title = 'Provision'
-    form = TestForm()
-    if form.validate_on_submit():
-        
-        # Capturing form input
-        name = form.name.data
-        surname = form.surname.data
-        gender = form.gender.data
-        sport = form.sport.data
+def organizedata(data):
+    print(type(data))
+    location = {}
+    ratings = {}
+    property = {}
+    features = {}
+    location['address1'] = data['address1']
+    location['postcode'] = data['postcode']
+    location['county'] = data['county']
+    ratings['current'] = data['current-energy-rating']
+    ratings['current-int'] = data['current-energy-efficiency']
+    ratings['potential'] = data['potential-energy-rating']
+    property['type'] = data['property-type']
+    property['form'] = data['built-form']
+    property['tenure'] = data['tenure']
+    features['multi-glaze'] = data['multi-glaze-proportion']
+    features['windows'] = data['windows-description']
+    features['floors'] = data['floor-description']
+    features['hot-water'] = data['hotwater-description']
+    features['walls'] = data['walls-description']
+    features['roof'] = data['roof-description']
+    features['mainheat'] = data['mainheat-description']
+    features['mainfuel'] = data['main-fuel']
+    return location, ratings, property, features
 
-        flash(f"Name: {name} {surname}, Gender: {gender}, Sport: {sport}", 'success')
-        return redirect(url_for('form'))
 
-    return render_template('form.html', title=title, form=form)
+
