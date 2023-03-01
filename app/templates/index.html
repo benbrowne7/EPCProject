@@ -1,0 +1,52 @@
+<html>
+<head>
+    <link rel="stylesheet" href="static/css/style.css">
+</head>
+    <style type="text/css"> 
+        html {height:100%}
+        body {
+        margin:0;
+        height:100%;
+        overflow:hidden
+        }
+    </style>
+
+<body>
+
+<h1 style="color:blue; text-align:center; font-size:4vh; margin-top: 1%;">Heat Pump Ready (HPR) Index</h1>
+
+<hr style="width:100%; height:4px; background-color: black;  position:absolute; top:7.5%;" />
+
+<div class="map">
+    <iframe src="/map1" style="width:35%;height:65%; position: relative; border: 5px solid rgb(0, 0, 0);" seamless></iframe>
+</div>
+
+
+
+<div class="contentbox">
+    
+    
+    <form action="/postcode" style="position: relative; left:3%; top:2.5%" method="post" required id="postcodeform">
+        <label for="postcode">Postcode:</label>
+        <input type="text" id="postcode" name="postcode"><br><br>
+        <input type="checkbox" style="position: absolute; left:-0.5%; top:45%" id="individualadd" name="individualadd" value="True">
+        <label style="position: absolute;  left:3%; top:45%" for="individualadd">Search for individual Home based on Postcode?</label><br>
+    </form>
+        <button type="submit" style="position: absolute; left:35%; top:2.5%" form="postcodeform" value="Submit">Request</button> 
+
+
+
+    <hr style="width:100%; height:4px; background-color: black;  position:absolute; top:10%;" />
+
+    <hr style="width:100%; height:4px; background-color: black;  position:absolute; top:50%;" />
+    <hr style="width:100%; height:4px; background-color: black;  position:absolute; top:60%;" />
+    
+        
+</div>
+
+
+
+</body>
+</html>
+
+

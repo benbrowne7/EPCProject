@@ -1,0 +1,26 @@
+
+
+.contentbox {
+	width: 30%;
+	height: 65%;
+  border: 5px solid rgb(0, 0, 0);
+	position: absolute;
+	left:60%;
+	top: 15%
+}
+
+.responsebox1 {
+	width: 100%;
+	height: 30%;
+  border: 5px solid rgb(0, 0, 0);
+  margin: 0; 
+	position: absolute;
+}
+
+.map {
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	top: 15%;
+}
+
