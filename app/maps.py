@@ -16,7 +16,7 @@ def map1():
   constitid = df1["CONSTIT"].values.tolist()
   n = len(means)
 
-  fig, ax = plt.subplots(figsize=(10,8))
+  fig, ax = plt.subplots(figsize=(6,6))
   labels = []
 
   for i in range(0,n):
@@ -25,11 +25,11 @@ def map1():
     labels.append("{}: {}".format(constit, rating))
 
 
-  ax.set_title("Av. EPC Rating by Constituency", fontsize=40)
+  ax.set_title("Av. EPC Rating by Constituency", fontsize=20)
   scatter = ax.scatter(longs,lats, c=means, cmap="inferno", s=20)
   #ax.colorbar(label="mean rating")
-  ax.set_xlabel("Latitude", fontsize=20)
-  ax.set_ylabel("Logitude", fontsize=20)
+  ax.set_xlabel("Latitude", fontsize=15)
+  ax.set_ylabel("Longitude", fontsize=15)
   
   fig.colorbar(scatter, ax=ax)
 
@@ -40,19 +40,8 @@ def map1():
   mpld3.plugins.connect(fig, tooltip)
 
 
-  html_str = mpld3.fig_to_html(fig, figid='map1')
+  html_str = mpld3.fig_to_html(fig)
 
-  html_doc = f'''
-  <style type="text/css">
-  div#map1 {{text-align: left}}
-  </style>
-
-  {html_str}
-  '''
-
-  Html_file = open("./app/templates/map1.html", "w")
+  Html_file = open("./app/templates/map1.html", mode = "w")
   Html_file.write(html_str)
-  print("updated")
   Html_file.close()
-    
-

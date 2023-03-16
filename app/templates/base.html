@@ -6,6 +6,48 @@
     <link rel="stylesheet" type="text/css" href="static/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="static/css/style.css">
     <title>{% block title %}{% endblock %} EPC Project</title>
+    <script type="text/javascript">
+        function epcdetails() {
+            var form = document.createElement('form');
+            form.setAttribute('method', 'post');
+            form.setAttribute('action', '/epcdetails');
+            form.style.display = 'hidden';
+            document.body.appendChild(form)
+            form.submit()
+        }
+    </script>
+
+<script type="text/javascript">
+    function compare() {
+        var form = document.createElement('form');
+        form.setAttribute('method', 'post');
+        form.setAttribute('action', '/compare');
+        form.style.display = 'hidden';
+        document.body.appendChild(form)
+        form.submit()
+    }
+</script>
+<script type="text/javascript">
+    function epcmap() {
+        var form = document.createElement('form');
+        form.setAttribute('method', 'get');
+        form.setAttribute('action', '/councilepc');
+        form.style.display = 'hidden';
+        document.body.appendChild(form)
+        form.submit()
+    }
+</script>
+
+<script type="text/javascript">
+function hprmap() {
+    var form = document.createElement('form');
+    form.setAttribute('method', 'get');
+    form.setAttribute('action', '/councilhpr');
+    form.style.display = 'hidden';
+    document.body.appendChild(form)
+    form.submit()
+}
+</script>
 </head>
 
 <body scroll="no" style="overflow: hidden">
@@ -31,31 +73,32 @@
 
     <hr style="width:100%; height:4px; background-color: black;  position:absolute; top:7.5%;" />
 
-    <div class="map">
-        <iframe src="/map1" style="width:35%;height:65%; position: relative; border: 5px solid rgb(0, 0, 0);" seamless></iframe>
+    {% block basicmap %} 
+    <div class="wrapper">
+        <iframe src="/map1" ></iframe>
     </div>
+    {% endblock %} 
 
+    
 
-    <div class="contentbox">{% block content %}
+    {% block contentboxleft %} 
+    {% endblock %} 
     
+
+    <div class="contentbox">{% block content %} 
     
-        <form action="/postcode" style="position: relative; left:3%; top:2.5%" method="post" required id="postcodeform">
-            <label for="postcode">Postcode:</label>
-            <input type="text" id="postcode" name="postcode"><br><br>
-            <input type="checkbox" style="position: absolute; left:-0.5%; top:45%" id="individualadd" name="individualadd" value="True">
-            <label style="position: absolute;  left:3%; top:45%" for="individualadd">Search for individual Home based on Postcode?</label><br>
-        </form>
-            <button type="submit" style="position: absolute; left:35%; top:2.5%" form="postcodeform" value="Submit">Request</button> 
+        {% block topcontent %}
+        {% endblock %}
+        
+        
         {% block singlerequest %}{% endblock %}
-    
-    
-    
-        <hr style="width:100%; height:4px; background-color: black;  position:absolute; top:10%;" />
+        
         
         {% block apireturn %} {% endblock %}
     
-        <hr style="width:100%; height:4px; background-color: black;  position:absolute; top:50%;" />
-        <hr style="width:100%; height:4px; background-color: black;  position:absolute; top:60%;" />
+        {% block apicontent1 %} {% endblock %}
+
+        {% block apicontent2 %} {% endblock %}
         
           {% endblock %}  
     </div>

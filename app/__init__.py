@@ -7,3 +7,4 @@ nav = Navigation(app)
 app.config.from_object(Config)
 
 from app import routes
+from app import maps
