@@ -1,8 +1,10 @@
 
-from flask import Blueprint, render_template, flash, redirect, url_for, request, session
+from flask import Flask, render_template, flash, redirect, url_for, request, session
 
-from app import app
-from app import nav
+from flask_navigation import Navigation
+from config import Config
+
+
 from maps import map1
 import requests
 import json
@@ -11,6 +13,12 @@ from datetime import datetime, timedelta
 import numpy as np
 from numpy import interp
 import pandas as pd
+
+app = Flask(__name__)
+nav = Navigation(app)
+app.config.from_object(Config)
+
+
 
 abspath = os.path.abspath(__file__)
 sourcedir = os.path.dirname(abspath)
@@ -73,8 +81,13 @@ def councilhpr():
         
         return render_template('councilhpr.html', epc_string1=epc_string1, hpr_string1=hpr_string1, epc_string2=epc_string2, hpr_string2=hpr_string2, tag1=tag1, tag2=tag2, proportion_string=proportion_string, name=name, top=top, bottom=bottom, names=names, ons=ons)
 
-@app.route('/ladsingle', methods=['POST'])
+@app.route('/ladsingle', methods=['GET','POST'])
 def ladsingle():
+    if 'names' not in session:
+        names = getconstitnames()
+        session['names'] = names
+    else:
+        names = session['names']
     url = request.referrer
     if "councilepc" in url:
         ret = "councilepc.html"
@@ -529,5 +542,12 @@ def getconstitnames():
     constit_names = pd.read_csv(sourcedir + "/data/constit_names.csv", low_memory=False)
     names = constit_names['NAMES'].tolist()
     return names
+
+
+
+if __name__ == '__main__':
+      app.run(debug=True, host="0.0.0.0")
+
+
 
 
