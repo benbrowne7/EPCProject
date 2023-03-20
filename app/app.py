@@ -32,6 +32,9 @@ headers = {}
 headers["Accept"] = 'application/json'
 headers["Authorization"] = auth
 
+LAD_EPC_MEAN = 63.7
+LAD_HPR_MEAN = 0.875
+
 nav.Bar('top', [nav.Item('Individual', 'index'), nav.Item('Council', 'councilepc'), nav.Item('Reset', 'index')])
 
 
@@ -47,6 +50,9 @@ def index():
 
 @app.route('/councilepc', methods=['GET'])
 def councilepc():
+    session.pop('save', None)
+    session.pop('house_list', None)
+    session.pop('compare', None)
     if 'names' not in session:
         names = getconstitnames()
         session['names'] = names
@@ -54,17 +60,20 @@ def councilepc():
         names = session['names']
     top = ['Tower Hamlets', 'Milton Keynes', 'City of London', 'Greenwich', 'Hackney']
     bottom = ['Isles of Scilly', 'Gwynedd', 'Ceredigion', 'Isle of Anglesey', 'Eden', 'Carmarthenshire', 'Powys']
-    
+
     if 'save1' not in session:
         return render_template('councilepc.html', top=top, bottom=bottom, names=names)
 
     else:
-        [epc_string1, hpr_string1, epc_string2, hpr_string2, tag1, tag2, proportion_string, name, ons] = session['save1']
-        
-        return render_template('councilepc.html', epc_string1=epc_string1, hpr_string1=hpr_string1, epc_string2=epc_string2, hpr_string2=hpr_string2, tag1=tag1, tag2=tag2, proportion_string=proportion_string, name=name, top=top, bottom=bottom, names=names, ons=ons)
+        [epc_string1, hpr_string1, epc_string2, hpr_string2, tag1, tag2, proportion_string, name, ons, n_over1] = session['save1']
+
+        return render_template('councilepc.html', epc_string1=epc_string1, hpr_string1=hpr_string1, epc_string2=epc_string2, hpr_string2=hpr_string2, tag1=tag1, tag2=tag2, proportion_string=proportion_string, name=name, names=names, ons=ons, LAD_EPC_MEAN=LAD_EPC_MEAN, LAD_HPR_MEAN=LAD_HPR_MEAN, n_over1=n_over1)
 
 @app.route('/councilhpr', methods=['GET'])
 def councilhpr():
+    session.pop('save', None)
+    session.pop('house_list', None)
+    session.pop('compare', None)
     if 'names' not in session:
         names = getconstitnames()
         session['names'] = names
@@ -72,14 +81,14 @@ def councilhpr():
         names = session['names']
     top = ['Telford and Wrekin', 'Milton Keynes', 'Basingstoke and Deane', 'Eastleigh', 'Vale of White Horse']
     bottom = ['Kensington and Chelsea', 'Hammersmith and Fulham', 'Westminster', 'Camden', 'Haringey', 'Richmond upon Thames']
-    
+
     if 'save1' not in session:
         return render_template('councilhpr.html', top=top, bottom=bottom, names=names)
 
     else:
-        [epc_string1, hpr_string1, epc_string2, hpr_string2, tag1, tag2, proportion_string, name, ons] = session['save1']
-        
-        return render_template('councilhpr.html', epc_string1=epc_string1, hpr_string1=hpr_string1, epc_string2=epc_string2, hpr_string2=hpr_string2, tag1=tag1, tag2=tag2, proportion_string=proportion_string, name=name, top=top, bottom=bottom, names=names, ons=ons)
+        [epc_string1, hpr_string1, epc_string2, hpr_string2, tag1, tag2, proportion_string, name, ons, n_over1] = session['save1']
+
+        return render_template('councilhpr.html', epc_string1=epc_string1, hpr_string1=hpr_string1, epc_string2=epc_string2, hpr_string2=hpr_string2, tag1=tag1, tag2=tag2, proportion_string=proportion_string, name=name, names=names, ons=ons, LAD_EPC_MEAN=LAD_EPC_MEAN, LAD_HPR_MEAN=LAD_HPR_MEAN, n_over1=n_over1)
 
 @app.route('/ladsingle', methods=['GET','POST'])
 def ladsingle():
@@ -94,20 +103,24 @@ def ladsingle():
     else:
         ret = "councilhpr.html"
     names = session['names']
-    
+
     constit_name = request.form['singlelad']
     ons2lad = pd.read_csv(sourcedir + "/data/ONS2LAD.csv", low_memory=False)
     ons = ons2lad[ons2lad['LAD20NM'] == constit_name]['LAD20CD'].values[0]
 
-    epc_string1, hpr_string1, epc_string2, hpr_string2, tag1, tag2, proportion_string, name = singleladrequest(ons)
+    epc_string1, hpr_string1, epc_string2, hpr_string2, tag1, tag2, proportion_string, name, n_over1 = singleladrequest(ons)
 
-    session['save1'] = [epc_string1, hpr_string1, epc_string2, hpr_string2, tag1, tag2, proportion_string, name, ons]
+    session['save1'] = [epc_string1, hpr_string1, epc_string2, hpr_string2, tag1, tag2, proportion_string, name, ons, n_over1]
 
-    return render_template(ret, epc_string1=epc_string1, hpr_string1=hpr_string1, epc_string2=epc_string2, hpr_string2=hpr_string2, tag1=tag1, tag2=tag2, proportion_string=proportion_string, name=name, names=names, ons=ons)
+    return render_template(ret, epc_string1=epc_string1, hpr_string1=hpr_string1, epc_string2=epc_string2, hpr_string2=hpr_string2, tag1=tag1, tag2=tag2, proportion_string=proportion_string, name=name, names=names, ons=ons, LAD_EPC_MEAN=LAD_EPC_MEAN, LAD_HPR_MEAN=LAD_HPR_MEAN, n_over1=n_over1)
 
 @app.route('/ladreq', methods=['POST'])
 def ladrequest():
-    names = session['names']
+    if 'names' not in session:
+        names = getconstitnames()
+        session['names'] = names
+    else:
+        names = session['names']
     url = request.referrer
     if "councilepc" in url:
         ret = "councilepc.html"
@@ -123,18 +136,18 @@ def ladrequest():
         valid = False
         return render_template(ret, valid=valid, names=names)
     else:
-        epc_string1, hpr_string1, epc_string2, hpr_string2, tag1, tag2, proportion_string, name = singleladrequest(ons)
+        epc_string1, hpr_string1, epc_string2, hpr_string2, tag1, tag2, proportion_string, name, n_over1 = singleladrequest(ons)
 
-        session['save1'] = [epc_string1, hpr_string1, epc_string2, hpr_string2, tag1, tag2, proportion_string, name, ons]
+        session['save1'] = [epc_string1, hpr_string1, epc_string2, hpr_string2, tag1, tag2, proportion_string, name, ons, n_over1]
 
-        return render_template(ret, epc_string1=epc_string1, hpr_string1=hpr_string1, epc_string2=epc_string2, hpr_string2=hpr_string2, tag1=tag1, tag2=tag2, proportion_string=proportion_string, name=name, names=names, ons=ons)
+        return render_template(ret, epc_string1=epc_string1, hpr_string1=hpr_string1, epc_string2=epc_string2, hpr_string2=hpr_string2, tag1=tag1, tag2=tag2, proportion_string=proportion_string, name=name, names=names, ons=ons, LAD_EPC_MEAN=LAD_EPC_MEAN, LAD_HPR_MEAN=LAD_HPR_MEAN, n_over1=n_over1)
 
 @app.route('/epcdetails', methods=['POST'])
 def epcdetails():
 
     [location, ratings, property, features, improvements, e_date, e_walls, e_roof, hpr, tag] = session['save']
     house_list = session['house_list']
-    
+
     return render_template('index.html', location=location, ratings=ratings, property=property, features=features, improvements=improvements, e_date=e_date, e_walls=e_walls, e_roof=e_roof, hpr=hpr, tag=tag, house_list=house_list)
 
 @app.route('/compare', methods=['POST'])
@@ -153,7 +166,7 @@ def compare():
     rating_list = []
     hpr_list = []
     hpr = comparisions['hpr']
-   
+
     #calculate postcode hpr values
     for house in data['rows']:
         x, ratings, x1, features = organizedata(house)
@@ -166,7 +179,7 @@ def compare():
 
     index_x, index_x1 = findpositioninpercentile(epc_rating, percentile_epc, hpr, percentile_hpr)
     tag1, tag2 = percentilecolours(index_x, index_x1)
-    
+
     epc_string1 = "Your EPC rating [{}] is within the ".format(epc_rating)
     hpr_string1 = "Your HPR rating [{}] is within the ".format(hpr)
     epc_string2 = "{}th -> {}th percentile ".format(index_x*10, (index_x+1)*10)
@@ -189,7 +202,7 @@ def compare():
     if r.empty:
         valid = False
         return render_template('comparesingle.html', location=location1, ratings=ratings1, property=property1, features=features1, improvements=improvements1, average_epc=average_epc, average_hpr=average_hpr, epc_string1=epc_string1, epc_string2=epc_string2, hpr_string1=hpr_string1, hpr_string2=hpr_string2, postcode_string=postcode_string, tag1=tag1, tag2=tag2, valid=valid)
-    else: 
+    else:
         valid = True
 
     local_epc = r['EPC_MEAN'].values[0]
@@ -223,7 +236,7 @@ def compare():
     hpr_local2 = "{}th -> {}th percentile ".format(index_y1*10, (index_y1+1)*10)
     local_string = "for local authority {}".format(local)
 
-    
+
     return render_template('comparesingle.html', location=location1, ratings=ratings1, property=property1, features=features1, improvements=improvements1, average_epc=average_epc, average_hpr=average_hpr, epc_string1=epc_string1, epc_string2=epc_string2, hpr_string1=hpr_string1, hpr_string2=hpr_string2, postcode_string=postcode_string, tag1=tag1, tag2=tag2, local=local, local_epc=local_epc, local_hpr=local_hpr, epc_local1=epc_local1, hpr_local1=hpr_local1, epc_local2=epc_local2, hpr_local2=hpr_local2, local_string=local_string, tag3=tag3, tag4=tag4, house_list=house_list, valid=valid)
 
 @app.route('/postcode', methods=['POST', 'GET'])
@@ -273,16 +286,16 @@ def postcodereq():
             session['keys'] = key_dict
             session['house_list'] = house_list
             return render_template('addressselector.html', house_list=house_list)
-             
+
     if request.method == 'GET':
          return render_template('index.html')
     return render_template('index.html')
-        
-@app.route('/singlerequest', methods=['POST', 'GET'])  
+
+@app.route('/singlerequest', methods=['POST', 'GET'])
 def singlerequest():
 
-    session['save'] = []
-    session['compare'] = []
+    session.pop('save', None)
+    session.pop('compare', None)
     house_list = session['house_list']
 
     #get certificate info
@@ -295,14 +308,14 @@ def singlerequest():
     r = requests.get(url, headers=headers)
     data = r.json()
     d = data['rows'][0]
-    
+
     comparisons = {}
     comparisons['postcode'] = d['postcode']
     comparisons['rating'] = d['current-energy-efficiency']
     comparisons['type'] = d['property-type']
     location, ratings, property, features = organizedata(d)
 
-    
+
     #get and clean up recommended improvements
     improvements = {}
     url = endpointrec + key
@@ -319,7 +332,7 @@ def singlerequest():
                 improvements[improvement['improvement-summary-text']] = improvement['indicative-cost']
         else:
             improvements[improvement['improvement-id-text']] = improvement['indicative-cost']
-    
+
     #determine boiler upgrade scheme eligibility
     current_date = datetime.today().strftime('%Y-%m-%d')
     cert_date = property['date']
@@ -327,7 +340,7 @@ def singlerequest():
 
     if features['walls-rate'] == ('Very Poor' or 'Poor'):
         e_walls = False
-    else: 
+    else:
         e_walls = True
     if features['roof-rate'] == ('Very Poor' or 'Poor'):
         e_roof = False
@@ -398,7 +411,7 @@ def determineimprovement(text):
         return "Double Glazing"
     if "wall" in text and "insulation" in text:
         return "Wall Insulation"
-    if "draught" in text and "proofing" in text: 
+    if "draught" in text and "proofing" in text:
         return "Draught Proofing"
     else:
         return "Unable to resolve recommendation"
@@ -484,7 +497,7 @@ def findpositioninpercentile(rate1, percentile1, rate2, percentile2):
           if rate1 <= percentile1[i]:
             index_x = i
             break
-        
+
     if rate2 > percentile2[8]:
         index_x1 = 9
     else:
@@ -515,7 +528,7 @@ def singleladrequest(ons):
     filename = "domestic-" + ons + "-" + name + "hprs.csv"
 
     data = pd.read_csv(sourcedir + "/data/hprs/" + filename, low_memory=False)
-        
+
     #epc/hpr data for specific LAD
     epcs = data.iloc[:,0].tolist()
     hprs = data.iloc[:,1].tolist()
@@ -536,11 +549,12 @@ def singleladrequest(ons):
     hpr_string2 = "{} is within the {}th -> {}th percentile for Local Authority Districts (HPR)".format(name , index_x1*10, (index_x1+1)*10)
     proportion_string = "{}% of dwellings have a HPR rating of over 1 (good candidates)".format(proportion)
 
-    return epc_string1, hpr_string1, epc_string2, hpr_string2, tag1, tag2, proportion_string, name
+    return epc_string1, hpr_string1, epc_string2, hpr_string2, tag1, tag2, proportion_string, name, n_over1
 
 def getconstitnames():
     constit_names = pd.read_csv(sourcedir + "/data/constit_names.csv", low_memory=False)
     names = constit_names['NAMES'].tolist()
+    names.sort()
     return names
 
 

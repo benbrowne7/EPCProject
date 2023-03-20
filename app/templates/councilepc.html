@@ -1,8 +1,8 @@
 <html>
     {% extends "base.html" %}
-{% block head %} 
+{% block head %}
     {{super()}}
-    <style type="text/css"> 
+    <style type="text/css">
         html {height:100%}
         body {
         margin:0;
@@ -10,45 +10,44 @@
         overflow:hidden
         }
     </style>
-    
-{% endblock %} 
+
+{% endblock %}
 
 
 
 <body>
 
-    {% block nav %} 
+    {% block nav %}
     {{super()}}
     {% endblock %}
 
-{% block basicmap %} 
-{% endblock %} 
+{% block basicmap %}
+{% endblock %}
 
-{% block contentboxleft %} 
+{% block contentboxleft %}
 <div class="contentboxleft">
     <div class="switchtabbuttons"><button type="button" onclick="epcmap();">EPC Map</button><button type="button" onclick="hprmap();">HPR Map</button></div>
     <iframe class="bigmap" src="/epcbylad"></iframe>
-    
-    <div class="rankings">{{top}}</div>
-    
 
 
-    
+
+
+
 </div>
-{% endblock %} 
-    
+{% endblock %}
+
 
 <div class="contentbox">
-    
-    
-    {% block topcontent %} 
+
+
+    {% block topcontent %}
     <form action="/ladreq" style="position: relative; left:1%; top:1%; width:40%;" method="post" required id="ladreqform">
         <label for="ladreq">Local Authority District (ONS):</label>
         <input style="position:relative; width: 40%; " type="text" id="ladreq" name="ladreq"><br><br>
     </form>
-        <button type="submit" style="position: relative; left:5%; top:-2vh;" form="ladreqform" value="Submit">Request</button> 
+        <button type="submit" style="position: relative; left:5%; top:-2vh;" form="ladreqform" value="Submit">Request</button>
     {% if valid is defined %}
-        {% if valid == False %} 
+        {% if valid == False %}
         <script>alert("Invalid ONS Code");</script>
         {% endif %}
     {% endif %}
@@ -67,76 +66,81 @@
 
     <hr style="width:100%; height:4px; background-color: black;  position:relative; top:-2%; " />
     {% endblock %}
-    
 
-   
-    
-    {% block apireturn %} 
-    
+
+
+
+    {% block apireturn %}
+
         {% if epc_string1 is defined %}
-            
+
             <div class="singleinfo">
-                    
+
+                <div class="heading">Averages over all Local Authority Districts</div>
+                <div class="responsetext">Average EPC: {{LAD_EPC_MEAN}}</div>
+                <div class="responsetext">Average HPR: {{LAD_HPR_MEAN}}</div>
+                <hr style="width:100%; height:4px; background-color: black;  position:relative; top:-0.5%;" />
+
                 <div class="heading">Comparing {{name}} ({{ons}}) to other Local Authority Districts</div> <div class="responsetext" >{{epc_string1}}</div>
                 <div class="responsetext">{{hpr_string1}}</div>
-                
-                <div class="responsetext" >{% if tag1 == 0 %} <span class="notvalid">{{epc_string2}}</span> {% elif tag1 == 1 %} <span class="orange">{{epc_string2}}</span> {% else %} <span class="valid"></span>{{epc_string2}} {% endif %}</div> 
-                
-                <div class="responsetext" >{% if tag2 == 0 %} <span class="notvalid">{{hpr_string2}}</span> {% elif tag2 == 1 %} <span class="orange">{{hpr_string2}}</span> {% else %} <span class="valid"></span>{{hpr_string2}} {% endif %}</div> 
+
+                <div class="responsetext" >{% if tag1 == 0 %} <span class="notvalid">{{epc_string2}}</span> {% elif tag1 == 1 %} <span class="orange">{{epc_string2}}</span> {% elif tag1 == 2 %} <span class="valid">{{epc_string2}}</span> {% endif %}</div>
+
+                <div class="responsetext" >{% if tag2 == 0 %} <span class="notvalid">{{hpr_string2}}</span> {% elif tag2 == 1 %} <span class="orange">{{hpr_string2}}</span> {% elif tag2 == 2 %} <span class="valid">{{hpr_string2}}</span> {% endif %}</div>
 
                 <div class="responsetext">{{proportion_string}}</div>
             </div>
-            
+
             <hr style="width:100%; height:4px; background-color: black;  position:relative; top:-1.5%;" />
-        {% else %} 
+        {% else %}
             {{ super() }}
-        {% endif %} 
+        {% endif %}
     {% endblock %}
 
-    {% block apicontent1 %} 
-            {% if improvements is defined %} 
+    {% block apicontent1 %}
+            {% if improvements is defined %}
             <div class="singleinfo">
                 <div class="heading">Recommended Improvements: </div>
-                {% for key, value in improvements.items() %} 
+                {% for key, value in improvements.items() %}
                 <div class="responsetext">{{key}} -> {{value}}</div>
                 {% endfor %}
             </div>
             <hr style="width:100%; height:4px; background-color: black;  position:relative; top:-1.5%;" />
-            
-            {% else %} 
-                {{ super() }} 
-            {% endif %} 
+
+            {% else %}
+                {{ super() }}
+            {% endif %}
     {% endblock %}
 
 
-    {% block apicontent2 %} 
-            {% if e_date is defined %} 
+    {% block apicontent2 %}
+            {% if e_date is defined %}
             <div class="singleinfo">
                 <div class="heading">Eligibility for Boiler Upgrade Scheme: </div>
-                {% if e_date == False %} 
+                {% if e_date == False %}
                     <div class="notvalid">Certificate is not Valid (10+ years old)</div>
-                {% else %} 
+                {% else %}
                     <div class="valid">Certificate is Valid (in date)</div>
-                {% endif %} 
-                {% if e_walls == False %} 
+                {% endif %}
+                {% if e_walls == False %}
                     <div class="notvalid">Walls insufficiently insulated, rated: {{features['walls-rate']}}</div>
-                {% else %} 
+                {% else %}
                 <div class="valid">Walls sufficiently insulated, rated: {{features['walls-rate']}}</div>
-                {% endif %} 
-                {% if e_roof == False %} 
+                {% endif %}
+                {% if e_roof == False %}
                 <div class="notvalid">Roof insufficiently insulated, rated: {{features['roof-rate']}}</div>
-                {% else %} 
+                {% else %}
                 <div class="valid">Roof sufficiently insulated, rated: {{features['roof-rate']}}</div>
-                {% endif %} 
-                {% if hpr is defined %} 
+                {% endif %}
+                {% if hpr is defined %}
                     <div class="heading">Heat Pump Ready Rating: </div><div class="hpr">{{hpr}} -- {{tag}}</div>
                     </div>
                 {% endif %}
 
 
-            {% endif %} 
+            {% endif %}
     {% endblock %}
-   
+
 </div>
 
 
