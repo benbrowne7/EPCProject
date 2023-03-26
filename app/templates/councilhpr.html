@@ -55,7 +55,7 @@
 {% endblock %}
 
 
-<div class="contentbox">
+<div class="contentbox1">
 
 
     {% block topcontent %}
@@ -95,7 +95,7 @@
         <div class="heading">Averages over all Local Authority Districts</div>
         <div class="responsetext">Average EPC: {{LAD_EPC_MEAN}}</div>
         <div class="responsetext">Average HPR: {{LAD_HPR_MEAN}}</div>
-        <hr style="width:100%; height:4px; background-color: black;  position:relative; top:-0.5%;" />
+        <hr style="width:100%; height:4px; background-color: black;  position:relative; top:0%;" />
 
         <div class="heading">Comparing {{name}} ({{ons}}) to other Local Authority Districts</div> <div class="responsetext" >{{epc_string1}}</div>
         <div class="responsetext">{{hpr_string1}}</div>
@@ -107,54 +107,28 @@
         <div class="responsetext">{{proportion_string}}</div>
     </div>
 
-    <hr style="width:100%; height:4px; background-color: black;  position:relative; top:-1.5%;" />
 {% else %}
     {{ super() }}
 {% endif %}
     {% endblock %}
 
     {% block apicontent1 %}
-            {% if improvements is defined %}
-            <div class="singleinfo">
-                <div class="heading">Recommended Improvements: </div>
-                {% for key, value in improvements.items() %}
-                <div class="responsetext">{{key}} -> {{value}}</div>
-                {% endfor %}
+    {% if epc_string1 is defined %}
+    <div class="mapbox">
+    <div class="tabs"><div class="switchtabbuttons"><button type="button" onclick="epcdetails();">LAD Map</button><button type="button" onclick="epctrends();">EPC Trends</button><button type="button" onclick="epcyoy();">Y/Y EPC</button></div></div>
+    
+            {% if ons is defined %} 
+            <div class="wrapper">
+                <iframe src="/mapepcyoy" id="mapepc"></iframe>
             </div>
-            <hr style="width:100%; height:4px; background-color: black;  position:relative; top:-1.5%;" />
-
-            {% else %}
-                {{ super() }}
             {% endif %}
+    </div>
+   {% endif %}
     {% endblock %}
 
 
     {% block apicontent2 %}
-            {% if e_date is defined %}
-            <div class="singleinfo">
-                <div class="heading">Eligibility for Boiler Upgrade Scheme: </div>
-                {% if e_date == False %}
-                    <div class="notvalid">Certificate is not Valid (10+ years old)</div>
-                {% else %}
-                    <div class="valid">Certificate is Valid (in date)</div>
-                {% endif %}
-                {% if e_walls == False %}
-                    <div class="notvalid">Walls insufficiently insulated, rated: {{features['walls-rate']}}</div>
-                {% else %}
-                <div class="valid">Walls sufficiently insulated, rated: {{features['walls-rate']}}</div>
-                {% endif %}
-                {% if e_roof == False %}
-                <div class="notvalid">Roof insufficiently insulated, rated: {{features['roof-rate']}}</div>
-                {% else %}
-                <div class="valid">Roof sufficiently insulated, rated: {{features['roof-rate']}}</div>
-                {% endif %}
-                {% if hpr is defined %}
-                    <div class="heading">Heat Pump Ready Rating: </div><div class="hpr">{{hpr}} -- {{tag}}</div>
-                    </div>
-                {% endif %}
-
-
-            {% endif %}
+           
     {% endblock %}
 
 </div>

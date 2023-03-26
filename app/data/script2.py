@@ -16,19 +16,27 @@ def addcol(filename, row):
 abspath = os.path.abspath(__file__)
 sourcedir = os.path.dirname(abspath)
 
-constit_data = pd.read_csv("constit_data.csv", low_memory=False)
-ons2lad = pd.read_csv("ONS2LAD.csv", low_memory=False)
+epc_list = []
+hpr_list = []
 
-names = []
-
-ons = constit_data['ONS'].tolist()
-for o in ons:
-  row = ons2lad[ons2lad['LAD20CD'] == o]['LAD20NM']
-  if len(row) == 0:
+for file in os.listdir(sourcedir):
+  if file[0] != 'd':
     continue
-  else:
-    roww = [row.values[0]]
-    addcol("constit_names.csv", roww)
+  print(file)
+  data = pd.read_csv(file, low_memory=False)
+  epcs = data.iloc[:,0].tolist()
+  hprs = data.iloc[:,1].tolist()
+  epc_mean = np.mean(epcs)
+  hpr_mean = np.mean(hprs)
+  epc_list.append(epc_mean)
+  hpr_list.append(hpr_mean)
+
+print(len(epc_list), np.mean(epc_list))
+print(len(hpr_list), np.mean(hpr_list))
+
+
+
+
 
 
 
