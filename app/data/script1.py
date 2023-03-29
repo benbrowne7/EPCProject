@@ -8,7 +8,7 @@ from numpy import interp
 
 
 def addcol(filename, row):
-  with open(filename + "hprs.csv", 'a', newline='') as fd:
+  with open(filename + ".csv", 'a', newline='') as fd:
     writer = csv.writer(fd, dialect='excel')
     writer.writerow(row)
   
@@ -16,62 +16,46 @@ def addcol(filename, row):
 abspath = os.path.abspath(__file__)
 sourcedir = os.path.dirname(abspath)
 
-l1 = []
-l2 = []
-l3 = []
-l4 = []
+os.chdir(sourcedir + "/postcode_data")
+coords = pd.read_csv("postcode-outcodes.csv", low_memory=False)
 
-
-constit_data = pd.read_csv("constit_data.csv", low_memory=False)
-ons2lad = pd.read_csv("ONS2LAD.csv", low_memory=False)
-
-largest_epc = constit_data.nlargest(5, 'EPC_MEAN', keep='all')
-largest_epc = largest_epc['ONS'].tolist()
-smallest_epc = constit_data.nsmallest(5, 'EPC_MEAN', keep='all')
-smallest_epc = smallest_epc['ONS'].tolist()
-
-largest_hpr = constit_data.nlargest(5, 'HPR_MEAN', keep='all')
-largest_hpr = largest_hpr['ONS'].tolist()
-smallest_hpr = constit_data.nsmallest(5, 'HPR_MEAN', keep='all')
-smallest_hpr = smallest_hpr['ONS'].tolist()
-
-for ons in largest_epc:
-  name = ons2lad[ons2lad['LAD20CD'] == ons]['LAD20NM']
-  if len(name) == 0:
-    continue
-  else:
-    l1.append(name.values[0])
-
-for ons in smallest_epc:
-  name = ons2lad[ons2lad['LAD20CD'] == ons]['LAD20NM']
-  if len(name) == 0:
-    continue
-  else:
-    l2.append(name.values[0])
-
-for ons in largest_hpr:
-  name = ons2lad[ons2lad['LAD20CD'] == ons]['LAD20NM']
-  if len(name) == 0:
-    continue
-  else:
-    l3.append(name.values[0])
-
-for ons in smallest_hpr:
-  name = ons2lad[ons2lad['LAD20CD'] == ons]['LAD20NM']
-  if len(name) == 0:
-    continue
-  else:
-    l4.append(name.values[0])
-  
-  
-print(l1)
-print(l2)
-print(l3)
-print(l4)
-
-
-  
+os.chdir(sourcedir + "/Reduced")
+for file in os.listdir():
+  os.chdir(sourcedir + "/Reduced")
+  print(file)
+  post_mean = defaultdict(int)
+  post_count = defaultdict(int)
+  post_hpr = defaultdict(int)
+  df = pd.read_csv(file, low_memory=False)
+  os.chdir(sourcedir + "/hprs")
+  hprs = pd.read_csv(file[:-10] + "hprs.csv")
+  for row in df.itertuples():
+    index = row[0]
+    post = row[2].split(" ")[0]
+    post_mean[post] += row[3]
+    post_count[post] += 1
+    post_hpr[post] += hprs.iat[index-1,1]
+  os.chdir(sourcedir + "/postcode_data")
+  addcol(file[:-10] + "-postcode", ['postcode', 'epc', 'hpr', 'lat', 'long'])
+  for key, val in post_mean.items():
+    epc_mean = round(val / post_count[key],1)
+    hpr_mean = round(post_hpr[key] / post_count[key], 2)
+    x = coords.loc[coords['postcode'] == key]
+    if x.empty:
+      lat = "nan"
+      long = "nan"
+    else:
+      lat = x['latitude'].values[0]
+      long = x['longitude'].values[0]
+    row = [key, epc_mean, hpr_mean, lat, long]
+    print(row)
+    addcol(file[:-10] + "-postcode", row)
 
 
 
-  
+
+
+
+
+
+

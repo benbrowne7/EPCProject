@@ -115,11 +115,11 @@
     {% block apicontent1 %}
     {% if epc_string1 is defined %}
     <div class="mapbox">
-    <div class="tabs"><div class="switchtabbuttons"><button type="button" onclick="epcdetails();">LAD Map</button><button type="button" onclick="epctrends();">EPC Trends</button><button type="button" onclick="epcyoy();">Y/Y EPC</button></div></div>
+    <div class="tabs"><div class="switchtabbuttons"><button type="button" onclick="epcladmap();">LAD (EPC) Map</button><button type="button" onclick="hprladmap();">LAD (HPR) Map</button><button type="button" onclick="epctrends();">EPC Trends</button><button type="button" onclick="epcyoy();">Y/Y EPC</button></div></div>
     
             {% if ons is defined %} 
             <div class="wrapper">
-                <iframe src="/mapepcyoy" id="mapepc"></iframe>
+                <iframe src="/mapepctrend" id="mapepc"></iframe>
             </div>
             {% endif %}
     </div>
@@ -133,7 +133,9 @@
 
 </div>
 
-
+{% block footer %} 
+{{super()}} 
+{% endblock %}
 
 </body>
 </html>

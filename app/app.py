@@ -36,18 +36,22 @@ headers["Authorization"] = auth
 LAD_EPC_MEAN = 63.7
 LAD_HPR_MEAN = 0.875
 
-nav.Bar('top', [nav.Item('Individual', 'index'), nav.Item('Council', 'councilepc'), nav.Item('Reset', 'index')])
+nav.Bar('top', [nav.Item('Individual', 'individual'), nav.Item('Council', 'councilepc'), nav.Item('Reset', 'index')])
 
-
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/')
 def index():
+    session.clear()
+    return councilepc()
+
+@app.route('/individual', methods=['GET', 'POST'])
+def individual():
         session.clear()
         abspath = os.path.abspath(__file__)
         sourcedir = os.path.dirname(abspath)
         if os.path.isfile(sourcedir + "/map1.html"):
             map1()
         rendermap1()
-        return render_template('index.html')
+        return render_template('individual.html')
 
 @app.route('/councilepc', methods=['GET'])
 def councilepc():
@@ -99,6 +103,8 @@ def ladsingle():
     else:
         names = session['names']
     url = request.referrer
+    if url == None:
+        return render_template('councilepc.html', names=names)
     if "councilepc" in url:
         ret = "councilepc.html"
     else:
@@ -109,13 +115,14 @@ def ladsingle():
     ons2lad = pd.read_csv(sourcedir + "/data/ONS2LAD.csv", low_memory=False)
     ons = ons2lad[ons2lad['LAD20NM'] == constit_name]['LAD20CD'].values[0]
 
-    epc_string1, hpr_string1, epc_string2, hpr_string2, tag1, tag2, proportion_string, name, n_over1 = singleladrequest(ons)
+    mapepctrend(ons)
+    av_yoy = float(mapepcyoy(ons))
+    print(av_yoy)
+
+    epc_string1, hpr_string1, epc_string2, hpr_string2, tag1, tag2, proportion_string, name, n_over1 = singleladrequest(ons, av_yoy)
 
     session['save1'] = [epc_string1, hpr_string1, epc_string2, hpr_string2, tag1, tag2, proportion_string, name, ons, n_over1]
     session['ons'] = ons
-
-    mapepctrend(ons)
-    mapepcyoy(ons)
 
     return render_template(ret, epc_string1=epc_string1, hpr_string1=hpr_string1, epc_string2=epc_string2, hpr_string2=hpr_string2, tag1=tag1, tag2=tag2, proportion_string=proportion_string, name=name, names=names, ons=ons, LAD_EPC_MEAN=LAD_EPC_MEAN, LAD_HPR_MEAN=LAD_HPR_MEAN, n_over1=n_over1)
 
@@ -127,6 +134,8 @@ def ladrequest():
     else:
         names = session['names']
     url = request.referrer
+    if url == None:
+        return render_template('councilepc.html', names=names)
     if "councilepc" in url:
         ret = "councilepc.html"
     else:
@@ -141,11 +150,12 @@ def ladrequest():
         valid = False
         return render_template(ret, valid=valid, names=names)
     else:
-        epc_string1, hpr_string1, epc_string2, hpr_string2, tag1, tag2, proportion_string, name, n_over1 = singleladrequest(ons)
+        mapepctrend(ons)
+        av_yoy = mapepcyoy(ons)
+        
+        epc_string1, hpr_string1, epc_string2, hpr_string2, tag1, tag2, proportion_string, name, n_over1 = singleladrequest(ons, av_yoy)
 
         session['save1'] = [epc_string1, hpr_string1, epc_string2, hpr_string2, tag1, tag2, proportion_string, name, ons, n_over1]
-        mapepctrend(ons)
-        mapepcyoy(ons)
 
         return render_template(ret, epc_string1=epc_string1, hpr_string1=hpr_string1, epc_string2=epc_string2, hpr_string2=hpr_string2, tag1=tag1, tag2=tag2, proportion_string=proportion_string, name=name, names=names, ons=ons, LAD_EPC_MEAN=LAD_EPC_MEAN, LAD_HPR_MEAN=LAD_HPR_MEAN, n_over1=n_over1)
 
@@ -157,7 +167,7 @@ def epcdetails():
     [location, ratings, property, features, improvements, e_date, e_walls, e_roof, hpr, tag] = session['save']
     house_list = session['house_list']
 
-    return render_template('index.html', location=location, ratings=ratings, property=property, features=features, improvements=improvements, e_date=e_date, e_walls=e_walls, e_roof=e_roof, hpr=hpr, tag=tag, house_list=house_list)
+    return render_template('individual.html', location=location, ratings=ratings, property=property, features=features, improvements=improvements, e_date=e_date, e_walls=e_walls, e_roof=e_roof, hpr=hpr, tag=tag, house_list=house_list)
 
 @app.route('/compare', methods=['POST'])
 def compare():
@@ -279,8 +289,8 @@ def postcodereq():
             return render_template('addressselector.html', house_list=house_list)
 
     if request.method == 'GET':
-         return render_template('index.html')
-    return render_template('index.html')
+         return render_template('individual.html')
+    return render_template('individual.html')
 
 @app.route('/singlerequest', methods=['POST', 'GET'])
 def singlerequest():
@@ -345,7 +355,7 @@ def singlerequest():
     session['compare'] = comparisons
     session['save'] = [location, ratings, property, features, improvements, e_date, e_walls, e_roof, hpr, tag]
 
-    return render_template('index.html', location=location, ratings=ratings, property=property, features=features, improvements=improvements, e_date=e_date, e_walls=e_walls, e_roof=e_roof, hpr=hpr, tag=tag, house_list=house_list)
+    return render_template('individual.html', location=location, ratings=ratings, property=property, features=features, improvements=improvements, e_date=e_date, e_walls=e_walls, e_roof=e_roof, hpr=hpr, tag=tag, house_list=house_list)
 
 @app.route('/map1', methods=['GET'])
 def rendermap1():
@@ -369,6 +379,15 @@ def rendermap5():
     ons = session['ons']
     return render_template('maps/epc_' + ons + '_yoy.html')
 
+@app.route('/epcladmap')
+def rendermap6():
+    ons = session['ons']
+    return render_template('LADMaps/' + ons + 'epc_map.html')
+
+@app.route('/hprladmap')
+def rendermap7():
+    ons = session['ons']
+    return render_template('LADMaps/' + ons + 'hpr_map.html')
 
 
 

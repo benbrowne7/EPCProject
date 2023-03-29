@@ -72,15 +72,13 @@ def mapepctrend(ons):
   line = ax.plot(years, rating)
   
 
-  ax.set_title("Trends in EPC for {}".format(ons), fontsize=16, color="white")
-  ax.set_xlabel("Year", fontsize=10, color="white")
-  ax.set_ylabel("Av. EPC Rating", fontsize=10, color="white")
-  ax.spines['bottom'].set_color('white')
-  ax.spines['left'].set_color('white')
-  ax.tick_params(axis='both', which='major', labelsize=8, colors='white')
+  ax.set_title("Trends in EPC for {}".format(ons), fontsize=16, color="black")
+  ax.set_xlabel("Year", fontsize=10, color="black")
+  ax.set_ylabel("Av. EPC Rating", fontsize=10, color="black")
+  ax.tick_params(axis='both', which='major', labelsize=8, colors='black')
   ax.set_xticklabels(years)
-  ax.xaxis.label.set_color('white')
-  ax.yaxis.label.set_color('white')
+  ax.xaxis.label.set_color('black')
+  ax.yaxis.label.set_color('black')
   ax.set_facecolor('black')
 
   labels = []
@@ -109,33 +107,33 @@ def mapepcyoy(ons):
   years = [str(x) for x in years]
   rating = df['y/y'].values.tolist()
   rating = [round(x,1) for x in rating]
+  av_yoy = round(np.mean(rating), 1)
 
   min_y = int(math.floor(min(rating)))
   max_y = int(math.ceil(max(rating)))
 
   fig, ax = plt.subplots(figsize=(4,4))
   
-  ax.set_title("% Y/Y Change in EPC {}".format(ons), fontsize=16, color="white")
-  ax.set_xlabel("Year", fontsize=10, color="white")
-  ax.set_ylabel("'%'Y/Y Change", fontsize=10, color="white")
+  ax.set_title("% Y/Y Change in EPC {}".format(ons), fontsize=16, color="black")
+  ax.set_xlabel("Year", fontsize=10, color="black")
+  ax.set_ylabel("%Y/Y Change", fontsize=10, color="black")
   ax.set_yticks(np.arange(min_y, max_y, 1))
-  ax.spines['bottom'].set_color('white')
-  ax.spines['left'].set_color('white')
-  ax.tick_params(axis='both', which='major', labelsize=8, colors='white')
+  ax.tick_params(axis='both', which='major', labelsize=8, colors='black')
   ax.set_xticklabels(years)
-  ax.xaxis.label.set_color('white')
-  ax.yaxis.label.set_color('white')
+  ax.xaxis.label.set_color('black')
+  ax.yaxis.label.set_color('black')
   ax.set_facecolor('black')
-  line = ax.plot(years, rating)
-  ax.axhline(y=0, xmin=-1, color='white', linestyle='--')
+  ax.plot(years, rating)
+  ax.plot(years, [0]*len(years), color='white', linestyle='--')
+ 
   
 
   labels = []
   for ind, row in df.iterrows():
     labels.append(str(row['date']) + ": " + str(row['y/y']))
 
-  tooltip = mpld3.plugins.PointHTMLTooltip(line[0], labels=labels, css='.mpld3-tooltip{color:green; font: 15px Arial, sans-serif}')
-  mpld3.plugins.connect(fig, tooltip)
+  #tooltip = mpld3.plugins.PointHTMLTooltip(line[0], labels=labels, css='.mpld3-tooltip{color:green; font: 15px Arial, sans-serif}')
+  #mpld3.plugins.connect(fig, tooltip)
 
   html_str = mpld3.fig_to_html(fig)
 
@@ -143,5 +141,6 @@ def mapepcyoy(ons):
   Html_file.write(html_str)
   Html_file.close()
 
+  print(type(av_yoy))
 
-mapepctrend('E06000014')
+  return av_yoy

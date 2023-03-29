@@ -29,23 +29,15 @@
 </script>
 <script type="text/javascript">
     function epcmap() {
-        var form = document.createElement('form');
-        form.setAttribute('method', 'get');
-        form.setAttribute('action', '/councilepc');
-        form.style.display = 'hidden';
-        document.body.appendChild(form)
-        form.submit()
+        var newsource = "/epcbylad";
+        document.getElementById("bigmap").src=newsource;
     }
 </script>
 
 <script type="text/javascript">
 function hprmap() {
-    var form = document.createElement('form');
-    form.setAttribute('method', 'get');
-    form.setAttribute('action', '/councilhpr');
-    form.style.display = 'hidden';
-    document.body.appendChild(form)
-    form.submit()
+    var newsource = "/hprbylad";
+    document.getElementById("bigmap").src=newsource;
 }
 </script>
 
@@ -58,6 +50,18 @@ function hprmap() {
 <script type="text/javascript">
     function epcyoy() {
         var newsource = "/mapepcyoy";
+        document.getElementById("mapepc").src=newsource;
+    }
+</script>
+<script type="text/javascript">
+    function epcladmap() {
+        var newsource = "/epcladmap";
+        document.getElementById("mapepc").src=newsource;
+    }
+</script>
+<script type="text/javascript">
+    function hprladmap() {
+        var newsource = "/hprladmap";
         document.getElementById("mapepc").src=newsource;
     }
 </script>
@@ -87,12 +91,6 @@ function hprmap() {
 
     <hr style="width:100%; height:4px; background-color: black;  position:absolute; top:7.5%;" />
 
-    {% block basicmap %} 
-    <div class="wrapper">
-        <iframe src="/map1" ></iframe>
-    </div>
-    {% endblock %} 
-
     
 
     {% block contentboxleft %} 
@@ -118,5 +116,12 @@ function hprmap() {
     </div>
 
 <script src="static/js/bootstrap.bundle.min.js"></script>
+
+{% block footer %}
+<footer class="footer">
+    Heat Pump Ready Project by Ben Browne - University of Bristol
+    <div id="rightfooter">Data Sourced from: <a href="https://epc.opendatacommunities.org/">epc.opendatacommunities.org</a></div>
+</footer>
+{% endblock %} 
 </body>
 </html>

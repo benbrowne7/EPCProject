@@ -157,7 +157,7 @@ def findpercentileforLAD():
     percentile_hpr = np.percentile(all_mean_hprs, [10,20,30,40,50,60,70,80,90])
     return percentile_epc, percentile_hpr
 
-def singleladrequest(ons):
+def singleladrequest(ons, av_yoy):
     getname = pd.read_csv(sourcedir + "/data/ONS2LAD.csv", low_memory=False)
     row = getname[getname['LAD20CD'] == ons]
     name = row['LAD20NM'].values[0]
@@ -183,7 +183,7 @@ def singleladrequest(ons):
     percentile_epc, percentile_hpr = findpercentileforLAD()
     index_x, index_x1 = findpositioninpercentile(epc_mean, percentile_epc, hpr_mean, percentile_hpr)
     tag1, tag2 = percentilecolours(index_x, index_x1)
-    epc_string1 = "Mean EPC for {} is [{}]".format(name, epc_mean)
+    epc_string1 = "Mean EPC for {} is [{}] w/ av. y/y increase of {}".format(name, epc_mean, av_yoy)
     hpr_string1 = "Mean HPR rating for {} is [{}]".format(name, hpr_mean)
     epc_string2 = "{} is within the {}th -> {}th percentile for Local Authority Districts (EPC)".format(name, index_x*10, (index_x+1)*10)
     hpr_string2 = "{} is within the {}th -> {}th percentile for Local Authority Districts (HPR)".format(name , index_x1*10, (index_x1+1)*10)

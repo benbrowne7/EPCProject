@@ -20,6 +20,14 @@
     {% block nav %} 
     {{super()}}
     {% endblock %}
+
+    {% block contentboxleft %}
+    <div class="contentboxleft">
+        <div class="switchtabbuttons"><button type="button" onclick="epcmap();">EPC Map</button><button type="button" onclick="hprmap();">HPR Map</button></div>
+        <iframe class="bigmap" src="/epcbylad" id="bigmap"></iframe>
+       
+    </div>
+    {% endblock %}
     
 
 <div class="contentbox">
@@ -114,7 +122,9 @@
    
 </div>
 
-
+{% block footer %} 
+{{super()}} 
+{% endblock %}
 
 </body>
 </html>
