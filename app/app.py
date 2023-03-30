@@ -113,18 +113,25 @@ def ladsingle():
 
     constit_name = request.form['singlelad']
     ons2lad = pd.read_csv(sourcedir + "/data/ONS2LAD.csv", low_memory=False)
-    ons = ons2lad[ons2lad['LAD20NM'] == constit_name]['LAD20CD'].values[0]
+    try:
+        ons = ons2lad[ons2lad['LAD20NM'] == constit_name]['LAD20CD'].values[0]
+    except:
+        print("here")
+        return render_template('councilepc.html', names=names, valid1=False)
+    else:
+        mapepctrend(ons)
+        av_yoy = float(mapepcyoy(ons))
+        print(av_yoy)
 
-    mapepctrend(ons)
-    av_yoy = float(mapepcyoy(ons))
-    print(av_yoy)
+        epc_string1, hpr_string1, epc_string2, hpr_string2, tag1, tag2, proportion_string, name, n_over1 = singleladrequest(ons, av_yoy)
 
-    epc_string1, hpr_string1, epc_string2, hpr_string2, tag1, tag2, proportion_string, name, n_over1 = singleladrequest(ons, av_yoy)
+        session['save1'] = [epc_string1, hpr_string1, epc_string2, hpr_string2, tag1, tag2, proportion_string, name, ons, n_over1]
+        session['ons'] = ons
 
-    session['save1'] = [epc_string1, hpr_string1, epc_string2, hpr_string2, tag1, tag2, proportion_string, name, ons, n_over1]
-    session['ons'] = ons
+        return render_template(ret, epc_string1=epc_string1, hpr_string1=hpr_string1, epc_string2=epc_string2, hpr_string2=hpr_string2, tag1=tag1, tag2=tag2, proportion_string=proportion_string, name=name, names=names, ons=ons, LAD_EPC_MEAN=LAD_EPC_MEAN, LAD_HPR_MEAN=LAD_HPR_MEAN, n_over1=n_over1)
 
-    return render_template(ret, epc_string1=epc_string1, hpr_string1=hpr_string1, epc_string2=epc_string2, hpr_string2=hpr_string2, tag1=tag1, tag2=tag2, proportion_string=proportion_string, name=name, names=names, ons=ons, LAD_EPC_MEAN=LAD_EPC_MEAN, LAD_HPR_MEAN=LAD_HPR_MEAN, n_over1=n_over1)
+
+    
 
 @app.route('/ladreq', methods=['POST'])
 def ladrequest():

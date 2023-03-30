@@ -70,6 +70,12 @@
         {% endif %}
     {% endif %}
 
+    {% if valid1 is defined %}
+        {% if valid1 == False %} 
+        <script>alert("Could not match LAD to ONS code");</script>
+        {% endif %}
+    {% endif %}
+
     <form style="position: absolute; left:50%; top:1%; width:40%" method="post" action="/ladsingle">
         <label for="singlelad">Select LAD</label>
         <select name="singlelad" id="singlelad">
