@@ -1,6 +1,8 @@
 <html>
     {% extends "base.html" %}
 {% block head %}
+{% block refresh %} 
+{% endblock %}
     {{super()}}
     
 
@@ -17,10 +19,19 @@
 {% block basicmap %}
 {% endblock %}
 
+
+
 {% block contentboxleft %}
+
 <div class="contentboxleft">
-    <div class="switchtabbuttons"><button type="button" onclick="epcmap();">EPC Map</button><button type="button" onclick="hprmap();">HPR Map</button></div>
-    <iframe class="bigmap" src="/epcbylad" id="bigmap"></iframe>
+    
+    {% if epc_string1 is not defined %} 
+    <iframe src="/bigmap" width=100%; id="bigmap"></iframe>
+    {% endif %}
+
+    {% if epc_string1 is defined %} 
+    <iframe  src="/ladmapleft" id="bigmap"></iframe>
+    {% endif %}
    
 
 </div>
@@ -36,57 +47,59 @@
 
 
     {% block topcontent %}
-    <form action="/ladreq" style="position: relative; left:1%; top:1%; width:40%;" method="post" required id="ladreqform">
-        <label for="ladreq">Local Authority District (ONS):</label>
-        <input style="position:relative; width: 40%; " type="text" id="ladreq" name="ladreq"><br><br>
-    </form>
-        <button type="submit" style="position: relative; left:5%; top:-2vh;" form="ladreqform" value="Submit">Request</button>
-    {% if valid is defined %}
-        {% if valid == False %}
-        <script>alert("Invalid ONS Code");</script>
-        {% endif %}
-        {% endif %}
+    <div class="toprightbox">
+        <form action="/ladreq" style="position: absolute; left:2%; top:2%; width:20vw; height:10vh;" method="post" required id="ladreqform">
+            <label for="ladreq">Local Authority District (ONS):</label>
+            <input style="position:relative; width: 40%; size: 10px;" type="text" id="ladreq" name="ladreq"><br><br>
+        </form>
+            <button type="submit" style="position: absolute; top:34%; left:20%" form="ladreqform" value="Submit">Request</button>
+        {% if valid is defined %}
+            {% if valid == False %}
+            <script>alert("Invalid ONS Code");</script>
+            {% endif %}
+            {% endif %}
+    
+    
+        <form style="position: absolute; left:45%; top:0.2%; width:20%" method="post" action="/ladsingle">
+            <label for="singlelad">Select LAD</label>
+            <select name="singlelad" id="singlelad">
+            {% for o in names %}
+                <option value="{{o}}" SELECTED>{{o}}</option>
+            {% endfor %}
+            </select>
+            <br><br>
+            <input style="position: absolute; top:65%" type="submit" value="Request LAD Info">
+        </form>
+    </div>
+    
 
-
-    <form style="position: absolute; left:50%; top:1%; width:40%" method="post" action="/ladsingle">
-        <label for="singlelad">Select LAD</label>
-        <select name="singlelad" id="singlelad">
-        {% for o in names %}
-            <option value="{{o}}" SELECTED>{{o}}</option>
-        {% endfor %}
-        </select>
-        <br><br>
-        <input style="position: relative; top:-2vh;" type="submit" value="Request LAD Info">
-    </form>
-
-
-    <hr style="width:100%; height:4px; background-color: black;  position:relative; top:-2%; " />
     {% endblock %}
 
 
 
 
     {% block apireturn %}
+    
+        
 
-        {% if epc_string1 is defined %}
-
+            {% if epc_string1 is defined %}
+            <div id="responseboxright">
             <div class="singleinfo">
 
-                <div class="heading">Averages over all Local Authority Districts</div>
+                <div class="heading" style="margin-top: 2%;">Averages over all Local Authority Districts</div>
                 <div class="responsetext">Average EPC: {{LAD_EPC_MEAN}}</div>
                 <div class="responsetext">Average HPR: {{LAD_HPR_MEAN}}</div>
                 <hr style="width:100%; height:4px; background-color: black;  position:relative; margin-top: 1%;" />
-
-                <div class="heading">Comparing {{name}} ({{ons}}) to other Local Authority Districts</div> <div class="responsetext" >{{epc_string1}}</div>
+                <div class="heading" style="margin-top: -1%;">Comparing {{name}} ({{ons}}) to other Local Authority Districts</div> <div class="responsetext" >{{epc_string1}}</div>
                 <div class="responsetext">{{hpr_string1}}</div>
 
                 <div class="responsetext" >{% if tag1 == 0 %} <span class="notvalid">{{epc_string2}}</span> {% elif tag1 == 1 %} <span class="orange">{{epc_string2}}</span> {% elif tag1 == 2 %} <span class="valid">{{epc_string2}}</span> {% endif %}</div>
 
-                <div class="responsetext" >{% if tag2 == 0 %} <span class="notvalid">{{hpr_string2}}</span> {% elif tag2 == 1 %} <span class="orange">{{hpr_string2}}</span> {% elif tag2 == 2 %} <span class="valid">{{hpr_string2}}</span> {% endif %}</div>
+                <div class="responsetext" >{% if tag2 == 0 %} <span class="notvalid">{{hpr_string2}}</span> {% elif tag2 == 1 %} <span class="orange">{{hpr_string2}}</span> {% elif tag2 == 2 %} <span class="valid">{{hpr_string2}}</span> {% endif %} </div>
 
-                <div class="responsetext">{{proportion_string}}</div>
-            </div>
-
+                <div class="responsetext" style="color:blue;">{{proportion_string}}</div>
+                <div class="responsetext" style="color:blue;">{{exp_str}}</div>
+            </div></div>
         {% else %}
             {{ super() }}
         {% endif %}
@@ -95,15 +108,15 @@
 
     {% block apicontent1 %}
     {% if epc_string1 is defined %}
-    <div class="mapbox">
-    <div class="tabs"><div class="switchtabbuttons"><button type="button" onclick="epcladmap();">LAD (EPC) Map</button><button type="button" onclick="hprladmap();">LAD (HPR) Map</button><button type="button" onclick="epctrends();">EPC Trends</button><button type="button" onclick="epcyoy();">Y/Y EPC</button></div></div>
+    <div id="responseboxright1">
     
             {% if ons is defined %} 
-            <div class="wrapper">
-                <iframe src="/mapepctrend" id="mapepc"></iframe>
-            </div>
+                <iframe src="/graphpane" width=100% height=100% scrolling="no" id="graphpane" style="margin-top: 1%; margin-left: 1%;"></iframe>
+                
+                
             {% endif %}
     </div>
+
    {% endif %}
     {% endblock %}
 
@@ -113,12 +126,16 @@
 
     {% endblock %}
 
+       
+        
 </div>
 
 {% block footer %} 
 {{super()}} 
 {% endblock %}
 
+{% block redirect %}
+{% endblock %}
 
 </body>
 </html>

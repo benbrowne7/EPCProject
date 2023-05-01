@@ -1,6 +1,8 @@
 <html>
     {% extends "base.html" %}
 {% block head %} 
+{% block refresh %} 
+{% endblock %}
     {{super()}}
     <style type="text/css"> 
         html {height:100%}
@@ -23,9 +25,31 @@
 
 {% block contentboxleft %}
 <div class="contentboxleft">
-    <div class="switchtabbuttons"><button type="button" onclick="epcmap();">EPC Map</button><button type="button" onclick="hprmap();">HPR Map</button></div>
-    <iframe class="bigmap" src="/epcbylad" id="bigmap"></iframe>
-   
+    {% if location is not defined %} 
+    <iframe src="/bigmap" width=100%; id="bigmap"></iframe>
+
+    {% else %} 
+    <div class="singleinfo">
+    <div class="heading" style="font-size: 4vh; text-decoration: underline;">Information and Context:</div>
+    <br>
+    <div class="responsetext1">The First Section on the right displays selected EPC information for the chosen property.</div>
+    <br>
+    <div class="responsetext1">The Second Section details the recommended improvements found on the EPC. If 'Unable to resolve recommedation', then the API response for the recommendations part of the EPC was ambiguous or contained an error</div>
+    <br>
+    <div class="responsetext1">The Final Section first estimates <span style="font-weight: bold">'Eligibility for the Boiler Upgrade Scheme'</span>, indicated by all 3 requirements coloured green. The <span style="font-weight:bold">'Heat Pump Ready Rating'</span> is rating calculated using information from the EPC, a rating over 1 indicates the property may be a good candidate for the installation of a heat pump.</div>
+    <br>
+
+    {% if conf is defined %} 
+        <div class="heading" style="font-size: 4vh; text-decoration: underline;">Confidence in EPC Metric:</div>
+        {% if conf == 0 %} <div class="valid" style="font-size: 2.2vh; font-weight: bold; margin-top: 1%;">High Confidence in EPC (<5 years old)</div>
+        {% elif conf == 1 %} <div class="orange" style="font-size: 2.2vh; font-weight: bold; margin-top: 1%;">Moderate Confidence in EPC (< less >10 years old)</div>
+        {% else %} <div class="notvalid" style="font-size: 2.2vh; font-weight: bold; margin-top: 1%;">Low Confidence in EPC (Expired Certificate)</div>
+        {% endif %} {% endif %} 
+    
+    {% endif %} 
+    </div>
+
+
 </div>
 {% endblock %}
     
@@ -87,7 +111,7 @@
     {% block apicontent1 %} 
             {% if improvements is defined %} 
             <div class="singleinfo">
-                <div class="heading">Recommended Improvements: </div>
+                <div class="heading" style="margin-top: -2vh;">Recommended Improvements: </div>
                 {% for key, value in improvements.items() %} 
                 <div class="responsetext">{{key}} -> {{value}}</div>
                 {% endfor %}
@@ -103,7 +127,7 @@
     {% block apicontent2 %} 
             {% if e_date is defined %} 
             <div class="singleinfo">
-                <div class="heading">Eligibility for Boiler Upgrade Scheme: </div>
+                <div class="heading" style="margin-top: -2vh;">Eligibility for Boiler Upgrade Scheme: </div>
                 {% if e_date == False %} 
                     <div class="notvalid">Certificate is not Valid (10+ years old)</div>
                 {% else %} 
@@ -119,12 +143,11 @@
                 {% else %} 
                 <div class="valid">Roof sufficiently insulated, rated: {{features['roof-rate']}}</div>
                 {% endif %} 
+
                 {% if hpr is defined %} 
                     <div class="heading">Heat Pump Ready Rating: </div><div class="hpr">{{hpr}} -- {{tag}}</div>
                     </div>
                 {% endif %}
-
-
             {% endif %} 
     {% endblock %}
    
@@ -132,6 +155,9 @@
 
 {% block footer %} 
 {{super()}} 
+{% endblock %}
+
+{% block redirect %}
 {% endblock %}
 
 </body>

@@ -1,6 +1,8 @@
 <html>
     {% extends "base.html" %}
     {% block head %} 
+    {% block refresh %} 
+    {% endblock %}
         {{super()}}
         <style type="text/css"> 
             html {height:100%}
@@ -20,9 +22,7 @@
 
     {% block contentboxleft %}
     <div class="contentboxleft">
-        <div class="switchtabbuttons"><button type="button" onclick="epcmap();">EPC Map</button><button type="button" onclick="hprmap();">HPR Map</button></div>
-        <iframe class="bigmap" src="/epcbylad" id="bigmap"></iframe>
-       
+        <iframe src="/bigmap" width=100%; id="bigmap"></iframe>
     </div>
     {% endblock %}
 
@@ -64,6 +64,9 @@
 
 {% block footer %} 
 {{super()}} 
+{% endblock %}
+
+{% block redirect %}
 {% endblock %}
 
 </body>
