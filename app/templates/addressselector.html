@@ -1,10 +1,10 @@
 <html>
     {% extends "base.html" %}
-    {% block head %} 
-    {% block refresh %} 
+    {% block head %}
+    {% block refresh %}
     {% endblock %}
         {{super()}}
-        <style type="text/css"> 
+        <style type="text/css">
             html {height:100%}
             body {
             margin:0;
@@ -12,11 +12,11 @@
             overflow:hidden
             }
         </style>
-    {% endblock %} 
+    {% endblock %}
 
 <body>
 
-    {% block nav %} 
+    {% block nav %}
     {{super()}}
     {% endblock %}
 
@@ -29,17 +29,16 @@
 
 
 <div class="contentbox">
-    
-    
-    {% block topcontent %} 
+
+
+    {% block topcontent %}
     <form action="/postcode" style="position: relative; left:3%; top:2%" method="post" required id="postcodeform">
         <label for="postcode">Postcode:</label>
         <input type="text" id="postcode" name="postcode"><br><br>
-        
+        <input type="submit" style="position: absolute; left:24%; top:2%; " form="postcodeform" value="Submit">
     </form>
-        <button type="submit" style="position: absolute; left:35%; top:2%" form="postcodeform" value="Submit">Request</button> 
     {% if valid is defined %}
-        {% if valid == False %} 
+        {% if valid == False %}
         <script>alert("Invalid Postcode");</script>
         {% endif %}
     {% endif %}
@@ -58,12 +57,12 @@
             <input style="position: absolute; top:65%" type="submit" value="Request House Info">
         </form>
         {% endblock %}
-    
-        
+
+
 </div>
 
-{% block footer %} 
-{{super()}} 
+{% block footer %}
+{{super()}}
 {% endblock %}
 
 {% block redirect %}

@@ -37,11 +37,16 @@ headers["Authorization"] = auth
 LAD_EPC_MEAN = 63.7
 LAD_HPR_MEAN = 0.875
 
-nav.Bar('top', [nav.Item('Individual', 'individual'), nav.Item('Council', 'councilepc'), nav.Item('Reset', 'index')])
+abspath = os.path.abspath(__file__)
+sourcedir = os.path.dirname(abspath)
+
+nav.Bar('top', [nav.Item('Individual', 'individual'), nav.Item('LAD', 'councilepc'), nav.Item('Reset', 'index')])
 
 @app.route('/')
 def index():
     session.clear()
+    if os.path.exists(sourcedir + "/templates/bigmap/constit_map.html"):
+        os.remove(sourcedir + "/templates/bigmap/constit_map.html")
     return render_template("base.html")
     #return councilepc()
 
@@ -77,7 +82,7 @@ def ladsingle():
     url = request.referrer
     if url == None:
         return render_template('councilepc.html', names=names)
-    
+
 
     constit_name = request.form['singlelad']
     ons2lad = pd.read_csv(sourcedir + "/data/ONS2LAD.csv", low_memory=False)
@@ -124,8 +129,8 @@ def ladrequest():
         ladmap(ons,w,h)
         session['ons'] = ons
 
-        exp_str = "{}% of Certificates for {} have Expired".format(exp,name)
-        
+        exp_str = "{}% of Certificates for {} have Expired".format(exp,ons)
+
         epc_string1, hpr_string1, epc_string2, hpr_string2, tag1, tag2, proportion_string, name, n_over1 = singleladrequest(ons, av_yoy)
 
         session['save1'] = [epc_string1, hpr_string1, epc_string2, hpr_string2, tag1, tag2, proportion_string, name, ons, n_over1, exp_str]
@@ -137,7 +142,7 @@ def ladrequest():
 @app.route('/epcdetails', methods=['POST'])
 def epcdetails():
 
-    [location, ratings, property, features, improvements, e_date, e_walls, e_roof, hpr, tag] = session['save']
+    [location, ratings, property, features, improvements, e_date, e_walls, e_roof, hpr, tag, conf] = session['save']
     house_list = session['house_list']
 
     return render_template('individual.html', location=location, ratings=ratings, property=property, features=features, improvements=improvements, e_date=e_date, e_walls=e_walls, e_roof=e_roof, hpr=hpr, tag=tag, house_list=house_list)
@@ -336,13 +341,14 @@ def singlerequest():
 
 @app.route('/graphdimen', methods=['POST'])
 def graphdimen():
-    r = request.referrer
-    out = json.loads(request.get_json())
-    w = out['width']
-    h = out['height']
+    print("in graphdimen", flush=True)
+    out = request.get_json(force=True)
+    print(out)
+    w = out['data1']
+    h = out['data2']
     session['dimen'] = (w,h)
     print(session['dimen'])
-    return redirect("councilepc.html")
+    return 'h'
 
 @app.route('/bigmap', methods=['GET'])
 def rendermap1():
@@ -358,7 +364,7 @@ def rendermap5():
 @app.route('/ladmapleft')
 def rendermap6():
     ons = session['ons']
-    return render_template('LADMaps/' + ons + '_map.html')
+    return render_template('ladmaps/' + ons + '_map.html')
 
 
 

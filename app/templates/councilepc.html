@@ -1,10 +1,10 @@
 <html>
     {% extends "base.html" %}
 {% block head %}
-{% block refresh %} 
+{% block refresh %}
 {% endblock %}
     {{super()}}
-    
+
 
 {% endblock %}
 
@@ -24,21 +24,22 @@
 {% block contentboxleft %}
 
 <div class="contentboxleft">
-    
-    {% if epc_string1 is not defined %} 
-    <iframe src="/bigmap" width=100%; id="bigmap"></iframe>
+
+    {% if epc_string1 is not defined %}
+     <iframe  src="/bigmap" id="bigmap"></iframe>
+
     {% endif %}
 
-    {% if epc_string1 is defined %} 
+    {% if epc_string1 is defined %}
     <iframe  src="/ladmapleft" id="bigmap"></iframe>
     {% endif %}
-   
+
 
 </div>
 {% endblock %}
 
 {% if valid1 is defined %}
-        {% if valid1 == False %} 
+        {% if valid1 == False %}
         <script>alert("Could not match LAD to ONS code");</script>
         {% endif %}
     {% endif %}
@@ -48,19 +49,19 @@
 
     {% block topcontent %}
     <div class="toprightbox">
-        <form action="/ladreq" style="position: absolute; left:2%; top:2%; width:20vw; height:10vh;" method="post" required id="ladreqform">
+        <form action="/ladreq" style="position: absolute; left:2%; top:8%; width:20vw; height:10vh;" method="post" required id="ladreqform">
             <label for="ladreq">Local Authority District (ONS):</label>
             <input style="position:relative; width: 40%; size: 10px;" type="text" id="ladreq" name="ladreq"><br><br>
+            <input type="submit" style="position: absolute; left:42%; top:28%; " form="ladreqform" value="Submit">
         </form>
-            <button type="submit" style="position: absolute; top:34%; left:20%" form="ladreqform" value="Submit">Request</button>
         {% if valid is defined %}
             {% if valid == False %}
             <script>alert("Invalid ONS Code");</script>
             {% endif %}
             {% endif %}
-    
-    
-        <form style="position: absolute; left:45%; top:0.2%; width:20%" method="post" action="/ladsingle">
+
+
+        <form style="position: absolute; left:45%; top:2%; width:20%" method="post" action="/ladsingle">
             <label for="singlelad">Select LAD</label>
             <select name="singlelad" id="singlelad">
             {% for o in names %}
@@ -68,10 +69,10 @@
             {% endfor %}
             </select>
             <br><br>
-            <input style="position: absolute; top:65%" type="submit" value="Request LAD Info">
+            <input style="position: absolute; top:70%" type="submit" value="Request LAD Info">
         </form>
     </div>
-    
+
 
     {% endblock %}
 
@@ -79,14 +80,14 @@
 
 
     {% block apireturn %}
-    
-        
+
+
 
             {% if epc_string1 is defined %}
             <div id="responseboxright">
             <div class="singleinfo">
 
-                <div class="heading" style="margin-top: 2%;">Averages over all Local Authority Districts</div>
+                <div class="heading" style="top: 10%;">Averages over all Local Authority Districts</div>
                 <div class="responsetext">Average EPC: {{LAD_EPC_MEAN}}</div>
                 <div class="responsetext">Average HPR: {{LAD_HPR_MEAN}}</div>
                 <hr style="width:100%; height:4px; background-color: black;  position:relative; margin-top: 1%;" />
@@ -109,11 +110,11 @@
     {% block apicontent1 %}
     {% if epc_string1 is defined %}
     <div id="responseboxright1">
-    
-            {% if ons is defined %} 
+
+            {% if ons is defined %}
                 <iframe src="/graphpane" width=100% height=100% scrolling="no" id="graphpane" style="margin-top: 1%; margin-left: 1%;"></iframe>
-                
-                
+
+
             {% endif %}
     </div>
 
@@ -122,16 +123,16 @@
 
 
     {% block apicontent2 %}
-            
+
 
     {% endblock %}
 
-       
-        
+
+
 </div>
 
-{% block footer %} 
-{{super()}} 
+{% block footer %}
+{{super()}}
 {% endblock %}
 
 {% block redirect %}

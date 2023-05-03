@@ -1,10 +1,10 @@
 <html>
     {% extends "base.html" %}
-{% block head %} 
-{% block refresh %} 
+{% block head %}
+{% block refresh %}
 {% endblock %}
     {{super()}}
-    <style type="text/css"> 
+    <style type="text/css">
         html {height:100%}
         body {
         margin:0;
@@ -12,37 +12,41 @@
         overflow:hidden
         }
     </style>
-    
-{% endblock %} 
+
+{% endblock %}
 
 
 
 <body>
 
-    {% block nav %} 
+    {% block nav %}
     {{super()}}
     {% endblock %}
 
     {% block contentboxleft %}
     <div class="contentboxleft">
+        {% if epc_string1 is defined %}
+        <iframe src="/ladmapleft" width=100%; id="bigmap"></iframe>
+        {% else %}
         <iframe src="/bigmap" width=100%; id="bigmap"></iframe>
-       
+        {% endif %}
+
     </div>
     {% endblock %}
-    
+
 
 <div class="contentbox">
-    
-    
-    {% block topcontent %} 
+
+
+    {% block topcontent %}
     <form action="/postcode" style="position: relative; left:3%; top:2%" method="post" required id="postcodeform">
         <label for="postcode">Postcode:</label>
         <input type="text" id="postcode" name="postcode"><br><br>
-        
+        <input type="submit" style="position: absolute; left:24%; top:2%; " form="postcodeform" value="Submit">
     </form>
-        <button type="submit" style="position: absolute; left:35%; top:2%" form="postcodeform" value="Submit">Request</button> 
+
     {% if valid is defined %}
-        {% if valid == False %} 
+        {% if valid == False %}
         <script>alert("Invalid Postcode");</script>
         {% endif %}
     {% endif %}
@@ -50,7 +54,7 @@
 
     {% endblock %}
 
-    {% block singlerequest %} 
+    {% block singlerequest %}
     <form style="position: absolute; left:45%; top:0.2%; width:20%" method="post" action="/singlerequest">
         <label for="singleaddress">Select Address</label>
         <select name="singleaddress" id="singleaddress">
@@ -62,52 +66,52 @@
         <input style="position: absolute; top:65%" type="submit" value="Request House Info">
     </form>
     {% endblock %}
-    
-    {% block apireturn %} 
-    
+
+    {% block apireturn %}
+
         {% if location is defined %}
         <div class="switchtabbuttons"><button type="button" onclick="epcdetails();">EPC Details</button><button type="button" onclick="compare();">Compare</button></div>
-            
-        
+
+
             <div class="singleinfo">
-                    
+
                 <div class="heading">Property Address: </div> <div class="responsetext" >{{location['address1']}} {{location['postcode']}} ,{{location['county']}}</div>
                 <div class="heading">Certificate Ratings :</div><div class="responsetext" >Current Rating: {{ratings['current']}} || Current Efficiency: {{ratings['current-int']}} || Tolerance: ({{ratings['band'][0]}} -> {{ratings['band'][1]}})</div>
-                <div class="heading">Property Type: </div><div class="responsetext" >Type: {{property['type']}} || Form: {{property['form']}} || Tenure: {{property['tenure']}} || Age: {{property['age']}} || Cert Date: {{property['date']}}</div> 
-                <div class="heading">Property Features: </div><div class="responsetext" >Windows: {{features['windows']}} <span class="rate">[{{features['windows-rate']}}]</span> || Flooring: {{features['floors']}} <span class="rate">[{{features['floors-rate']}}]</span> || Walls: {{features['walls']}} <span class="rate">[{{features['walls-rate']}}]</span> || Roofing: {{features['roof']}} <span class="rate">[{{features['roof-rate']}}]</span> || Main Heat: {{features['mainheat']}} <span class="rate">[{{features['mainheat-rate']}}]</span> || Hot Water: {{features['hot-water']}} || Fuel: {{features['mainfuel']}}</div> 
+                <div class="heading">Property Type: </div><div class="responsetext" >Type: {{property['type']}} || Form: {{property['form']}} || Tenure: {{property['tenure']}} || Age: {{property['age']}} || Cert Date: {{property['date']}}</div>
+                <div class="heading">Property Features: </div><div class="responsetext" >Windows: {{features['windows']}} <span class="rate">[{{features['windows-rate']}}]</span> || Flooring: {{features['floors']}} <span class="rate">[{{features['floors-rate']}}]</span> || Walls: {{features['walls']}} <span class="rate">[{{features['walls-rate']}}]</span> || Roofing: {{features['roof']}} <span class="rate">[{{features['roof-rate']}}]</span> || Main Heat: {{features['mainheat']}} <span class="rate">[{{features['mainheat-rate']}}]</span> || Hot Water: {{features['hot-water']}} || Fuel: {{features['mainfuel']}}</div>
             </div>
-            
+
             <hr style="width:100%; height:4px; background-color: black;  position:relative; top:-1.5%;" />
-        {% else %} 
+        {% else %}
             {{ super() }}
-        {% endif %} 
+        {% endif %}
     {% endblock %}
 
-    {% block apicontent1 %} 
+    {% block apicontent1 %}
             <div class="singleinfo">
                 {% if epc_string1 is defined %}
                 <div class="heading" style="margin-top: -2%;">Compare within Postcode: </div> <div class="responsetext">Average EPC rating for {{location['postcode']}}: <span class="rate">{{average_epc}}</span></div> <div class="responsetext">Average HPR rating for {{location['postcode']}}: <span class="rate">{{average_hpr}}</div>
-               
+
                     <div class="responsetext">{{epc_string1}} {% if tag1 == 0 %} <span class="notvalid">{{epc_string2}}</span> {% elif tag1 == 1 %} <span class="orange">{{epc_string2}}</span> {% else %} <span class="valid">{{epc_string2}}</span> {% endif %} <span class="responsetext">{{postcode_string}}</span></div>
-                
+
                 <div class="responsetext">{{hpr_string1}} {% if tag2 == 0 %} <span class="notvalid">{{hpr_string2}}</span> {% elif tag2 == 1 %} <span class="orange">{{hpr_string2}}</span> {% else %} <span class="valid">{{hpr_string2}}</span> {% endif %} <span class="responsetext">{{postcode_string}}</span></div>
             </div>
-            
+
 
             <hr style="width:100%; height:4px; background-color: black;  position:relative; top:-1.5%;" />
-            
-            {% else %} 
-                {{ super() }} 
-            {% endif %} 
+
+            {% else %}
+                {{ super() }}
+            {% endif %}
     {% endblock %}
 
 
-    {% block apicontent2 %} 
+    {% block apicontent2 %}
             <div class="singleinfo">
-                {% if valid == False %} 
+                {% if valid == False %}
                 <div class="heading">Unable to Match to ONS Code</div>
                 {% endif %}
-                {% if epc_local1 is defined %} 
+                {% if epc_local1 is defined %}
                 <div class="heading" style="margin-top: -2%;">Compare within Local Authority: </div> <div class="responsetext">Average EPC rating for {{local}}: <span class="rate">{{local_epc}}</span></div> <div class="responsetext">Average HPR rating for {{local}}: <span class="rate">{{local_hpr}}</span></div>
 
                 <div class="responsetext">{{epc_local1}} {% if tag3 == 0 %} <span class="notvalid">{{epc_local2}}</span> {% elif tag3 == 1 %} <span class="orange">{{epc_local2}}</span> {% else %} <span class="valid">{{epc_local2}}</span> {% endif %} <span class="responsetext">{{local_string}}</span></div>
@@ -115,16 +119,16 @@
                 <div class="responsetext">{{hpr_local1}} {% if tag4 == 0 %} <span class="notvalid">{{hpr_local2}}</span> {% elif tag4 == 1 %} <span class="orange">{{hpr_local2}}</span> {% else %} <span class="valid">{{hpr_local2}}</span> {% endif %} <span class="responsetext">{{local_string}}</span></div>
             </div>
 
-                {% else %} 
-                    {{ super() }} 
+                {% else %}
+                    {{ super() }}
                 {% endif %}
 
     {% endblock %}
-   
+
 </div>
 
-{% block footer %} 
-{{super()}} 
+{% block footer %}
+{{super()}}
 {% endblock %}
 
 {% block redirect %}

@@ -1,10 +1,10 @@
 <html>
     {% extends "base.html" %}
-{% block head %} 
-{% block refresh %} 
+{% block head %}
+{% block refresh %}
 {% endblock %}
     {{super()}}
-    <style type="text/css"> 
+    <style type="text/css">
         html {height:100%}
         body {
         margin:0;
@@ -12,68 +12,79 @@
         overflow:hidden
         }
     </style>
-    
-{% endblock %} 
+
+{% endblock %}
 
 
 
 <body>
 
-    {% block nav %} 
+    {% block nav %}
     {{super()}}
     {% endblock %}
 
 {% block contentboxleft %}
 <div class="contentboxleft">
-    {% if location is not defined %} 
+    {% if location is not defined %}
     <iframe src="/bigmap" width=100%; id="bigmap"></iframe>
 
-    {% else %} 
+    {% else %}
     <div class="singleinfo">
     <div class="heading" style="font-size: 4vh; text-decoration: underline;">Information and Context:</div>
     <br>
-    <div class="responsetext1">The First Section on the right displays selected EPC information for the chosen property.</div>
+    <div class="responsetext1" style="font-family: Courier New; font-size: 1.8vh; font-weight: 600;">The First Section on the right displays selected EPC information for the chosen property.</div>
     <br>
-    <div class="responsetext1">The Second Section details the recommended improvements found on the EPC. If 'Unable to resolve recommedation', then the API response for the recommendations part of the EPC was ambiguous or contained an error</div>
+    <div class="responsetext1" style="font-family: Courier New; font-size: 1.8vh; font-weight: 600;">The Second Section details the recommended improvements found on the EPC. If 'Unable to resolve recommedation', then the API response for the recommendations part of the EPC was ambiguous or contained an error</div>
     <br>
-    <div class="responsetext1">The Final Section first estimates <span style="font-weight: bold">'Eligibility for the Boiler Upgrade Scheme'</span>, indicated by all 3 requirements coloured green. The <span style="font-weight:bold">'Heat Pump Ready Rating'</span> is rating calculated using information from the EPC, a rating over 1 indicates the property may be a good candidate for the installation of a heat pump.</div>
+    <div class="responsetext1" style="font-family: Courier New; font-size: 1.8vh; font-weight: 600;">The Final Section first estimates <span style="font-weight: bold">'Eligibility for the Boiler Upgrade Scheme'</span>, indicated by all 3 requirements coloured green. The <span style="font-weight:bold">'Heat Pump Ready Rating'</span> is rating calculated using information from the EPC, a rating over 1 indicates the property may be a good candidate for the installation of a heat pump.</div>
     <br>
 
-    {% if conf is defined %} 
+    {% if conf is defined %}
         <div class="heading" style="font-size: 4vh; text-decoration: underline;">Confidence in EPC Metric:</div>
-        {% if conf == 0 %} <div class="valid" style="font-size: 2.2vh; font-weight: bold; margin-top: 1%;">High Confidence in EPC (<5 years old)</div>
-        {% elif conf == 1 %} <div class="orange" style="font-size: 2.2vh; font-weight: bold; margin-top: 1%;">Moderate Confidence in EPC (< less >10 years old)</div>
-        {% else %} <div class="notvalid" style="font-size: 2.2vh; font-weight: bold; margin-top: 1%;">Low Confidence in EPC (Expired Certificate)</div>
-        {% endif %} {% endif %} 
-    
-    {% endif %} 
+        {% if conf == 0 %} <div class="valid" style="font-size: 2vh; font-weight: 900; margin-top: 1%; font-family: Courier New;">High Confidence in EPC (<5 years old)</div>
+        {% elif conf == 1 %} <div class="orange" style="font-size: 2vh; font-weight: 900; margin-top: 1%; font-family: Courier New;">Moderate Confidence in EPC (< less >10 years old)</div>
+        {% else %} <div class="notvalid" style="font-size: 2vh; font-weight: 900; margin-top: 1%; font-family: Courier New;">Low Confidence in EPC (Expired Certificate)</div>
+        {% endif %} {% endif %}
+
+    <br>
+    <div class="heading" style="font-size: 4vh; text-decoration: underline;">Additional Resources:</div>
+    <div class="responsetext1" style="font-family: Courier New; font-size: 1.8vh; margin-top:1%; font-weight: 600;">Energy Advice for the Home: <span><a href="https://www.cse.org.uk/my-home/">CSE My-Home</a></span></div>
+    <div class="responsetext1" style="font-family: Courier New; font-size: 1.8vh; font-weight: 600;">Grants and Funding: <span><a href="https://www.cse.org.uk/grants-and-funding/">CSE Grants and Funding</a></span></div>
+    <div class="responsetext1" style="font-family: Courier New; font-size: 1.8vh; font-weight: 600;">Heat Pump Installation Cost Calculator: <span><a href="https://www.nesta.org.uk/project-updates/a-calculator-to-estimate-the-cost-of-a-heat-pump/">Nesta Cost Calc</a></span></div>
+    <div class="responsetext1" style="font-family: Courier New; font-size: 1.8vh; font-weight: 600;">Heat Pump Running Cost Calculator: <span><a href="https://www.theecoexperts.co.uk/heat-pumps/air-source-heat-pump-cost-calculator">theecoexperts Cost Calc</a></span></div>
+    <div class="responsetext1" style="font-family: Courier New; font-size: 1.8vh; font-weight: 600;">Find a Heat Pump Installer: <span><a href="https://mcscertified.com/find-an-installer/">MCS Certified Installers</a></span></div>
+    <br>
+
+    {% endif %}
+
+
     </div>
 
 
 </div>
 {% endblock %}
-    
+
 
 <div class="contentbox">
 
-    {% block topcontent %} 
+    {% block topcontent %}
     <form action="/postcode" style="position: relative; left:3%; top:2%" method="post" required id="postcodeform">
         <label for="postcode">Postcode:</label>
         <input type="text" id="postcode" name="postcode"><br><br>
-        
+        <input type="submit" style="position: absolute; left:24%; top:2%; " form="postcodeform" value="Submit">
+
     </form>
-        <button type="submit" style="position: absolute; left:35%; top:2%" form="postcodeform" value="Submit">Request</button> 
     {% if valid is defined %}
-        {% if valid == False %} 
+        {% if valid == False %}
         <script>alert("Invalid Postcode");</script>
         {% endif %}
     {% endif %}
     <hr style="width:100%; height:4px; background-color: black;  position:relative; top:1%;" />
     {% endblock %}
-    
-    
 
-    {% block singlerequest %} 
+
+
+    {% block singlerequest %}
     {% if house_list is defined %}
     <form style="position: absolute; left:45%; top:0.2%; width:20%" method="post" action="/singlerequest">
         <label for="singleaddress">Select Address</label>
@@ -87,74 +98,77 @@
     </form>
     {% endif %}
     {% endblock %}
-    
-    {% block apireturn %} 
-    
+
+    {% block apireturn %}
+
         {% if location is defined %}
         <div class="switchtabbuttons"><button type="button" onclick="epcdetails();">EPC Details</button><button type="button" onclick="compare();">Compare</button></div>
-            
-        
+
+
             <div class="singleinfo">
-                    
+
                 <div class="heading">Property Address: </div> <div class="responsetext" >{{location['address1']}} {{location['postcode']}} ,{{location['county']}}</div>
                 <div class="heading">Certificate Ratings :</div><div class="responsetext" >Current Rating: {{ratings['current']}} || Current Efficiency: {{ratings['current-int']}} || Tolerance: ({{ratings['band'][0]}} -> {{ratings['band'][1]}})</div>
-                <div class="heading">Property Type: </div><div class="responsetext" >Type: {{property['type']}} || Form: {{property['form']}} || Tenure: {{property['tenure']}} || Age: {{property['age']}} || Cert Date: {{property['date']}}</div> 
-                <div class="heading">Property Features: </div><div class="responsetext" >Windows: {{features['windows']}} <span class="rate">[{{features['windows-rate']}}]</span> || Flooring: {{features['floors']}} <span class="rate">[{{features['floors-rate']}}]</span> || Walls: {{features['walls']}} <span class="rate">[{{features['walls-rate']}}]</span> || Roofing: {{features['roof']}} <span class="rate">[{{features['roof-rate']}}]</span> || Main Heat: {{features['mainheat']}} <span class="rate">[{{features['mainheat-rate']}}]</span> || Hot Water: {{features['hot-water']}} || Fuel: {{features['mainfuel']}}</div> 
+                <div class="heading">Property Type: </div><div class="responsetext" >Type: {{property['type']}} || Form: {{property['form']}} || Tenure: {{property['tenure']}} || Age: {{property['age']}} || Cert Date: {{property['date']}}</div>
+                <div class="heading">Property Features: </div><div class="responsetext" >Windows: {{features['windows']}} <span class="rate">[{{features['windows-rate']}}]</span> || Flooring: {{features['floors']}} <span class="rate">[{{features['floors-rate']}}]</span> || Walls: {{features['walls']}} <span class="rate">[{{features['walls-rate']}}]</span> || Roofing: {{features['roof']}} <span class="rate">[{{features['roof-rate']}}]</span> || Main Heat: {{features['mainheat']}} <span class="rate">[{{features['mainheat-rate']}}]</span> || Hot Water: {{features['hot-water']}} || Fuel: {{features['mainfuel']}}</div>
             </div>
-            
+
             <hr style="width:100%; height:4px; background-color: black;  position:relative; top:-1.5%;" />
-        {% else %} 
+        {% else %}
             {{ super() }}
-        {% endif %} 
+        {% endif %}
     {% endblock %}
 
-    {% block apicontent1 %} 
-            {% if improvements is defined %} 
+    {% block apicontent1 %}
+            {% if improvements is defined %}
             <div class="singleinfo">
                 <div class="heading" style="margin-top: -2vh;">Recommended Improvements: </div>
-                {% for key, value in improvements.items() %} 
+                {% for key, value in improvements.items() %}
                 <div class="responsetext">{{key}} -> {{value}}</div>
                 {% endfor %}
             </div>
             <hr style="width:100%; height:4px; background-color: black;  position:relative; top:-1.5%;" />
-            
-            {% else %} 
-                {{ super() }} 
-            {% endif %} 
+
+            {% else %}
+                {{ super() }}
+            {% endif %}
     {% endblock %}
 
 
-    {% block apicontent2 %} 
-            {% if e_date is defined %} 
+    {% block apicontent2 %}
+            {% if e_date is defined %}
             <div class="singleinfo">
+                <div class="hprbox">
+                    <div class="heading" style="font-size: 3vw; color: blue; text-align: center; vertical-align: middle; text-decoration: underline;" >HPR: {{hpr}}</div>
+                </div>
                 <div class="heading" style="margin-top: -2vh;">Eligibility for Boiler Upgrade Scheme: </div>
-                {% if e_date == False %} 
+                {% if e_date == False %}
                     <div class="notvalid">Certificate is not Valid (10+ years old)</div>
-                {% else %} 
+                {% else %}
                     <div class="valid">Certificate is Valid (in date)</div>
-                {% endif %} 
-                {% if e_walls == False %} 
+                {% endif %}
+                {% if e_walls == False %}
                     <div class="notvalid">Walls insufficiently insulated, rated: {{features['walls-rate']}}</div>
-                {% else %} 
+                {% else %}
                 <div class="valid">Walls sufficiently insulated, rated: {{features['walls-rate']}}</div>
-                {% endif %} 
-                {% if e_roof == False %} 
+                {% endif %}
+                {% if e_roof == False %}
                 <div class="notvalid">Roof insufficiently insulated, rated: {{features['roof-rate']}}</div>
-                {% else %} 
+                {% else %}
                 <div class="valid">Roof sufficiently insulated, rated: {{features['roof-rate']}}</div>
-                {% endif %} 
+                {% endif %}
 
-                {% if hpr is defined %} 
+                {% if hpr is defined %}
                     <div class="heading">Heat Pump Ready Rating: </div><div class="hpr">{{hpr}} -- {{tag}}</div>
                     </div>
                 {% endif %}
-            {% endif %} 
+            {% endif %}
     {% endblock %}
-   
+
 </div>
 
-{% block footer %} 
-{{super()}} 
+{% block footer %}
+{{super()}}
 {% endblock %}
 
 {% block redirect %}
