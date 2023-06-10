@@ -20,21 +20,24 @@ from bokeh.palettes import mpl
 def round_down(n, decimals=1):
     return int(math.floor(n / 10.0)) * 10
 
-def round_up(n, decimals=1): 
+def round_up(n, decimals=1):
     return int(math.ceil(n / 10.0)) * 10
 
 def round_down_hpr(n, decimals=1):
     multiplier = 10 ** decimals
     return math.floor(n * multiplier) / multiplier
 
-def round_up_hpr(n, decimals=1): 
-    multiplier = 10 ** decimals 
+def round_up_hpr(n, decimals=1):
+    multiplier = 10 ** decimals
     return math.ceil(n * multiplier) / multiplier
 
 
 def bigmap(w,h):
   abspath = os.path.abspath(__file__)
   sourcedir = os.path.dirname(abspath)
+
+  if os.path.exists(sourcedir + "/templates/bigmap/constit_map.html"):
+      return True
 
   file = "Local_Authority_Districts_(December_2020)_UK_BUC.shp"
   map=gpd.read_file(sourcedir + "/data/Shapefile/" + file)
@@ -81,7 +84,7 @@ def bigmap(w,h):
   p1.title.align = "center"
   p1.axis.visible = False
   p1.xgrid.grid_line_color = None
-  p1.ygrid.grid_line_color = None#Add patch renderer to figure. 
+  p1.ygrid.grid_line_color = None#Add patch renderer to figure.
   p1.patches('xs','ys', source = geosource,fill_color = {'field' :'epc_means', 'transform' : color_mapper},
           line_color = 'black', line_width = 0.25, fill_alpha = 1)
   p1.add_layout(color_bar, 'below')
@@ -98,7 +101,7 @@ def bigmap(w,h):
   p2.title.align = "center"
   p2.axis.visible = False
   p2.xgrid.grid_line_color = None
-  p2.ygrid.grid_line_color = None#Add patch renderer to figure. 
+  p2.ygrid.grid_line_color = None#Add patch renderer to figure.
   p2.patches('xs','ys', source = geosource,fill_color = {'field' :'hpr_means', 'transform' : color_mapper},
           line_color = 'black', line_width = 0.25, fill_alpha = 1)
   p2.add_layout(color_bar, 'below')
@@ -108,51 +111,7 @@ def bigmap(w,h):
   output_file("constit_map.html")
   save(Tabs(tabs=[tab1,tab2], width=w))
 
-def mapepcyoy(ons):
-  abspath = os.path.abspath(__file__)
-  sourcedir = os.path.dirname(abspath)
 
-  if os.path.isfile(sourcedir + "/templates/maps/epc_" + ons + "_yoy.html"):
-    return True
-  
-  file = sourcedir + "/data/EPCByYear/" + ons + "-yoy.csv"
-  df = pd.read_csv(file)
-  years = df['date'].values.tolist()
-  years = [str(x) for x in years]
-  rating = df['y/y'].values.tolist()
-  rating = [round(x,1) for x in rating]
-  av_yoy = round(np.mean(rating), 1)
-
-  min_y = int(math.floor(min(rating)))
-  max_y = int(math.ceil(max(rating)))
-
-  fig, ax = plt.subplots(figsize=(4,4))
-  
-  ax.set_title("% Y/Y Change in EPC {}".format(ons), fontsize=16, color="black")
-  ax.set_xlabel("Year", fontsize=10, color="black")
-  ax.set_ylabel("%Y/Y Change", fontsize=10, color="black")
-  ax.set_yticks(np.arange(min_y, max_y, 1))
-  ax.tick_params(axis='both', which='major', labelsize=8, colors='black')
-  ax.set_xticklabels(years)
-  ax.xaxis.label.set_color('black')
-  ax.yaxis.label.set_color('black')
-  ax.set_facecolor('black')
-  ax.plot(years, rating)
-  ax.plot(years, [0]*len(years), color='white', linestyle='--')
- 
-  labels = []
-  for ind, row in df.iterrows():
-    labels.append(str(row['date']) + ": " + str(row['y/y']))
-
-  html_str = mpld3.fig_to_html(fig)
-
-  Html_file = open(sourcedir + "/templates/maps/epc_" + ons + "_yoy.html", mode = "w")
-  Html_file.write(html_str)
-  Html_file.close()
-
-  print(type(av_yoy))
-
-  return av_yoy
 
 def graph(ons,w,h):
 
@@ -202,7 +161,7 @@ def graph(ons,w,h):
   p2.legend.label_text_font_style = "bold"
   p2.legend.border_line_width = 3
   p2.legend.border_line_color = "black"
-  
+
   threshold = 0
   hline = Span(location=threshold, dimension='width', line_color='white', line_width=2)
 
@@ -237,22 +196,22 @@ def graph(ons,w,h):
     p3.xgrid.grid_line_color = None
     p3.y_range.start = 0
     tab3 = TabPanel(child=p3, title="Age Distribution")
-    
+
 
 
   os.chdir(sourcedir + "/templates/graphs")
   name = ons + "_graph" ".html"
   output_file(name)
   save(Tabs(tabs=[tab1,tab2,tab3], width=w))
-  
+
   return name, av_yoy, exp
 
 def ladmap(ons,w,h):
 
   abspath = os.path.abspath(__file__)
   sourcedir = os.path.dirname(abspath)
-  
-  filename = sourcedir + "/data/constitbounds_data/" + ons + ".GEOJSON"
+
+  filename = sourcedir + "/data/constitbounds_data/" + ons + ".geojson"
   ons_str = str(ons)
   map = gpd.read_file(filename)
   filename = sourcedir + "/data/postcode_data/" + ons_str + "-postcode.csv"
@@ -274,7 +233,7 @@ def ladmap(ons,w,h):
 
   df = df.drop(inds, axis=0)
 
-  
+
 
   epcs = df['epc'].values.tolist()
   hprs = df['hpr'].values.tolist()
@@ -299,10 +258,10 @@ def ladmap(ons,w,h):
   t = len(tick)-1
   if t == 2:
     tick = np.arange(low,high+2.5, 2.5)
-        
+
 
   cds = ColumnDataSource(df)
-    
+
   merged_json = json.loads(map.to_json())
   json_data = json.dumps(merged_json)
   geosource = GeoJSONDataSource(geojson = json_data)
@@ -311,7 +270,7 @@ def ladmap(ons,w,h):
   color_mapper = LinearColorMapper(palette=palette, low = low, high=high)
   color_bar = ColorBar(color_mapper=color_mapper, bar_line_color='white', major_tick_line_color='white', ticker=FixedTicker(ticks=tick))
 
-        
+
   p1 = figure(title = 'Av. EPC By Postcode for {}'.format(ons),  toolbar_location = None, width=w, height=h)
   p1.title.text_font_size = '16pt'
   p1.title.align = "center"
@@ -359,7 +318,7 @@ def ladmap(ons,w,h):
   p2.add_layout(color_bar, 'below')
   tab2 = TabPanel(child=p2, title="Av. HPR by Postcode")
 
-  
+
   os.chdir(sourcedir + "/templates/ladmaps")
   name = ons + "_map" ".html"
   output_file(name)
