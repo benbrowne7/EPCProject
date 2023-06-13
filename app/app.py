@@ -28,6 +28,7 @@ sourcedir = os.path.dirname(abspath)
 endpoint = "https://epc.opendatacommunities.org/api/v1/domestic/search"
 endpointcert = "https://epc.opendatacommunities.org/api/v1/domestic/certificate/"
 endpointrec = "https://epc.opendatacommunities.org/api/v1/domestic/recommendations/"
+epc = "https://find-energy-certificate.service.gov.uk/find-a-certificate/search-by-postcode?postcode="
 auth = "Basic bm0yMDUyOUBicmlzdG9sLmFjLnVrOjY1MjE5ZjU0ODllM2E4YTU4MWYwMDA5MTAzYmVmOTMxM2U4Y2NhYzI="
 
 headers = {}
@@ -48,7 +49,6 @@ def index():
     if os.path.exists(sourcedir + "/templates/bigmap/constit_map.html"):
         os.remove(sourcedir + "/templates/bigmap/constit_map.html")
     return render_template("base.html")
-    #return councilepc()
 
 @app.route('/individual', methods=['GET', 'POST'])
 def individual():
@@ -71,7 +71,9 @@ def councilepc():
         return render_template('councilepc.html', names=names)
 
     else:
-        [epc_string1, hpr_string1, epc_string2, hpr_string2, tag1, tag2, proportion_string, name, ons, n_over1] = session['save1']
+        [epc_string1, hpr_string1, epc_string2, hpr_string2, tag1, tag2, proportion_string, name, ons, n_over1, exp_str] = session['save1']
+        names.remove(name)
+        names.append(name)
 
         return render_template('councilepc.html', epc_string1=epc_string1, hpr_string1=hpr_string1, epc_string2=epc_string2, hpr_string2=hpr_string2, tag1=tag1, tag2=tag2, proportion_string=proportion_string, name=name, names=names, ons=ons, LAD_EPC_MEAN=LAD_EPC_MEAN, LAD_HPR_MEAN=LAD_HPR_MEAN, n_over1=n_over1)
 
@@ -95,6 +97,8 @@ def ladsingle():
         (w,h) = session['dimen']
         name, av_yoy, exp = graph(ons,w,h)
         session['name'] = name
+        names.remove(constit_name)
+        names.append(constit_name)
         ladmap(ons,w,h)
 
         exp_str = "{}% of Certificates for {} have Expired".format(exp,ons)
@@ -126,6 +130,12 @@ def ladrequest():
         (w,h) = session['dimen']
         name, av_yoy, exp = graph(ons,w,h)
         session['name'] = name
+
+        ons2lad = pd.read_csv(sourcedir + "/data/ONS2LAD.csv", low_memory=False)
+        constit_name = ons2lad[ons2lad['LAD20CD'] == ons]['LAD20NM'].values[0]
+        names.remove(constit_name)
+        names.append(constit_name)
+        
         ladmap(ons,w,h)
         session['ons'] = ons
 
@@ -142,14 +152,14 @@ def ladrequest():
 @app.route('/epcdetails', methods=['POST'])
 def epcdetails():
 
-    [location, ratings, property, features, improvements, e_date, e_walls, e_roof, hpr, tag, conf] = session['save']
+    [location, ratings, property, features, improvements, e_date, e_walls, e_roof, hpr, tag, conf, improve_str, epc_link] = session['save']
     house_list = session['house_list']
 
-    return render_template('individual.html', location=location, ratings=ratings, property=property, features=features, improvements=improvements, e_date=e_date, e_walls=e_walls, e_roof=e_roof, hpr=hpr, tag=tag, house_list=house_list)
+    return render_template('individual.html', location=location, ratings=ratings, property=property, features=features, improvements=improvements, e_date=e_date, e_walls=e_walls, e_roof=e_roof, hpr=hpr, tag=tag, house_list=house_list, conf=conf, improve_str=improve_str, epc_link=epc_link)
 
 @app.route('/compare', methods=['POST'])
 def compare():
-    [location1, ratings1, property1, features1, improvements1, e_date1, e_walls1, e_roof1, x, x1, conf] = session['save']
+    [location1, ratings1, property1, features1, improvements1, e_date1, e_walls1, e_roof1, x, x1, conf, improve_str] = session['save']
     house_list = session['house_list']
     #get details to compare within postcode
     comparisions = session['compare']
@@ -198,7 +208,7 @@ def compare():
     r = df.loc[df['ONS'] == local_ons]
     if r.empty:
         valid = False
-        return render_template('comparesingle.html', location=location1, ratings=ratings1, property=property1, features=features1, improvements=improvements1, average_epc=average_epc, average_hpr=average_hpr, epc_string1=epc_string1, epc_string2=epc_string2, hpr_string1=hpr_string1, hpr_string2=hpr_string2, postcode_string=postcode_string, tag1=tag1, tag2=tag2, valid=valid)
+        return render_template('comparesingle.html', location=location1, ratings=ratings1, property=property1, features=features1, improvements=improvements1, average_epc=average_epc, average_hpr=average_hpr, epc_string1=epc_string1, epc_string2=epc_string2, hpr_string1=hpr_string1, hpr_string2=hpr_string2, postcode_string=postcode_string, tag1=tag1, tag2=tag2, valid=valid, improve_str=improve_str)
     else:
         valid = True
 
@@ -222,12 +232,13 @@ def compare():
     local_string = "for local authority {}".format(local)
 
 
-    return render_template('comparesingle.html', location=location1, ratings=ratings1, property=property1, features=features1, improvements=improvements1, average_epc=average_epc, average_hpr=average_hpr, epc_string1=epc_string1, epc_string2=epc_string2, hpr_string1=hpr_string1, hpr_string2=hpr_string2, postcode_string=postcode_string, tag1=tag1, tag2=tag2, local=local, local_epc=local_epc, local_hpr=local_hpr, epc_local1=epc_local1, hpr_local1=hpr_local1, epc_local2=epc_local2, hpr_local2=hpr_local2, local_string=local_string, tag3=tag3, tag4=tag4, house_list=house_list, valid=valid)
+    return render_template('comparesingle.html', location=location1, ratings=ratings1, property=property1, features=features1, improvements=improvements1, average_epc=average_epc, average_hpr=average_hpr, epc_string1=epc_string1, epc_string2=epc_string2, hpr_string1=hpr_string1, hpr_string2=hpr_string2, postcode_string=postcode_string, tag1=tag1, tag2=tag2, local=local, local_epc=local_epc, local_hpr=local_hpr, epc_local1=epc_local1, hpr_local1=hpr_local1, epc_local2=epc_local2, hpr_local2=hpr_local2, local_string=local_string, tag3=tag3, tag4=tag4, house_list=house_list, valid=valid, improve_str=improve_str)
 
 @app.route('/postcode', methods=['POST', 'GET'])
 def postcodereq():
     if request.method == 'POST':
         session['keys'] = {}
+        print(request.form['postcode'])
 
         if len(request.form) == 1:
             postcode = request.form["postcode"]
@@ -283,15 +294,21 @@ def singlerequest():
     comparisons['type'] = d['property-type']
     location, ratings, property, features = organizedata(d)
 
+    posty = d['postcode']
+    posty = ''.join(posty.split())
+    epc_link = epc + posty
+
 
     #get and clean up recommended improvements
     improvements = {}
     url = endpointrec + key
     g = requests.get(url, headers=headers)
     if g.status_code == 404:
-        return render_template('index.html', location=location, ratings=ratings, property=property, features=features)
+        return render_template('individual.html', location=location, ratings=ratings, property=property, features=features, epc_link=epc_link)
     data1 = g.json()
     for improvement in data1['rows']:
+        if len(improvements) == 4:
+            break
         if improvement['improvement-id-text'] == '':
             if improvement['improvement-summary-text'] == '':
                 x = determineimprovement(improvement['improvement-descr-text'])
@@ -300,6 +317,10 @@ def singlerequest():
                 improvements[improvement['improvement-summary-text']] = improvement['indicative-cost']
         else:
             improvements[improvement['improvement-id-text']] = improvement['indicative-cost']
+
+    improve_str = "{} / {} displayed".format(len(improvements), len(data1['rows']))
+
+
 
     #determine boiler upgrade scheme eligibility
     current_date = datetime.today().strftime('%Y-%m-%d')
@@ -335,9 +356,9 @@ def singlerequest():
 
     comparisons['hpr'] = hpr
     session['compare'] = comparisons
-    session['save'] = [location, ratings, property, features, improvements, e_date, e_walls, e_roof, hpr, tag, conf]
+    session['save'] = [location, ratings, property, features, improvements, e_date, e_walls, e_roof, hpr, tag, conf, improve_str, epc_link]
 
-    return render_template('individual.html', location=location, ratings=ratings, property=property, features=features, improvements=improvements, e_date=e_date, e_walls=e_walls, e_roof=e_roof, hpr=hpr, tag=tag, house_list=house_list, conf=conf)
+    return render_template('individual.html', location=location, ratings=ratings, property=property, features=features, improvements=improvements, e_date=e_date, e_walls=e_walls, e_roof=e_roof, hpr=hpr, tag=tag, house_list=house_list, conf=conf, improve_str=improve_str, epc_link=epc_link)
 
 @app.route('/graphdimen', methods=['POST'])
 def graphdimen():

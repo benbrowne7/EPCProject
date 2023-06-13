@@ -1,16 +1,20 @@
 <!doctype html>
 <html>
+    {% block head %}
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    {% block refresh %}
+    <meta name="viewport" content="width=device-width, initial-scale=1">   
+    {% block refresh %} 
     <meta http-equiv="Refresh" content="1, url='/councilepc'" \>
     {% endblock %}
+    {% endblock %}
 
-
+    
     <link rel="stylesheet" type="text/css" href="static/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="static/css/style.css">
-    <title>{% block title %}{% endblock %} EPC Project</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://overpass-30e2.kxcdn.com/overpass.css">
+    <title>{% block title %}{% endblock %} Heat Pump Ready App</title>
     <script type="text/javascript">
         function epcdetails() {
             var form = document.createElement('form');
@@ -67,31 +71,31 @@ function hprmap() {
     }
 </script>
 
-
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
 <script>
     function dimen() {
     const height = window.innerHeight
     const width = window.innerWidth
     const dict = {width,height}
     const s = JSON.stringify(dict)
+
     var xml = new XMLHttpRequest();
     xml.open("POST", "/graphdimen",true);
     xml.setRequestHeader("Content-type","application/x-www-form-urlencoded");
     datasend = JSON.stringify({'data1':width, 'data2':height});
-    xml.send(datasend)}
+    xml.send(datasend)
 
+    }
 </script>
-
-
 
 
 <body scroll="no" style="overflow: hidden">
     <header>
-        <div class="container">
-            <h1 style="color:blue; text-align:center; font-size:4vh; margin-top: 2%; font-weight:bold;">Heat Pump Ready (HPR) Index</h1>
+        {% block nav %} 
+        <div class="header">
             <strong><nav>
-            {% block nav %}
-            <ul class="menu">
+            <h1 style="color:blue; font-family: Overpass; font-size:6vh; font-weight:800; margin-top: 3%;">The Heat Pump Ready App</h1>
+            <ul class="menu" style="font-family: Overpass; font-weight:800;">
             {% for item in nav.top %}
             <li class="{{ 'active' if item.is_active else '' }}">
                 <a href="{{ item.url }}">{{ item.label }}</a>
@@ -99,51 +103,43 @@ function hprmap() {
             {% endfor %}
             </ul>
             {% endblock %}
-
             </nav></strong>
         </div>
-    </header>
+    </header> 
 
-
-    <hr style="width:100%; height:4px; background-color: black;  position:absolute; top:7.5%;" />
     <script>dimen()</script>
+    
 
 
-
-    {% block contentboxleft %}
+    {% block contentboxleft %} 
     <div class="contentboxleft"></div>
-    {% endblock %}
+    {% endblock %} 
+    
 
-
-    <div class="contentbox">{% block content %}
-
+    <div class="contentbox1">{% block content %} 
+    
         {% block topcontent %}
         {% endblock %}
-
-
+        
+        
         {% block singlerequest %}{% endblock %}
-
-
+        
+        
         {% block apireturn %} {% endblock %}
 
         {% block apicontent1 %} {% endblock %}
-
-        {% block apicontent2 %} {% endblock %}
-
-          {% endblock %}
+        
+          {% endblock %}  
     </div>
 
-<script src="static/js/bootstrap.bundle.min.js"></script>
+
 
 {% block footer %}
 <footer class="footer">
     Heat Pump Ready Project by Ben Browne - University of Bristol
     <div id="rightfooter">Data Sourced from: <a href="https://epc.opendatacommunities.org/">epc.opendatacommunities.org</a></div>
 </footer>
-{% endblock %}
+{% endblock %} 
 
-{% block redirect %}
-
-{% endblock %}
 </body>
 </html>

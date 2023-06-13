@@ -192,8 +192,14 @@ def singleladrequest(ons, av_yoy):
     return epc_string1, hpr_string1, epc_string2, hpr_string2, tag1, tag2, proportion_string, name, n_over1
 
 def getconstitnames():
-    constit_names = pd.read_csv(sourcedir + "/data/constit_names.csv", low_memory=False)
-    names = constit_names['NAMES'].tolist()
+    constit = pd.read_csv(sourcedir + "/data/ONS2LAD.csv", low_memory=False)
+    names = []
+    for row in constit.itertuples():
+        index = row[0]
+        ons = row[1]
+        name = row[2]
+        if ons[0] == 'E' or ons[0] == 'W':
+            names.append(name)
     names.sort()
     return names
 

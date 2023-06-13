@@ -16,24 +16,33 @@ def addcol(filename, row):
 abspath = os.path.abspath(__file__)
 sourcedir = os.path.dirname(abspath)
 
-os.chdir(sourcedir + "/postcode_data")
-df = pd.read_csv("postcode-outcodes.csv", low_memory=False)
+ons2lad = pd.read_csv("ONS2LAD.csv", low_memory=False)
+os.chdir(sourcedir + "/culmulative_hp")
 
-for file in os.listdir():
-  lats = []
-  longs = []
-  f = pd.read_csv(file, low_memory=False)
-  for row in f.itertuples():
-    index = row[0]
-    post = row[1]
-    x = df.loc[df['postcode'] == post]
-    lat = x['latitude']
-    long = x['longitude']
-    lats.append(lat)
-    longs.append(long)
-  f['latitude'] = lats
-  f['longitude'] = longs
-  print(file)
+airdf = pd.read_csv("air-source.csv", low_memory=False)
+grounddf = pd.read_csv("ground-source.csv", low_memory=False)
+
+codes = []
+
+for row in airdf.itertuples():
+  name = row[0]
+  name.replace(" ", "-")
+  name.replace(",", "-")
+  for row1 in ons2lad.itertuples():
+    ons = row1[0]
+    name1 = row1[1]
+    name1.replace(" ", "-")
+    name1.replace(",", "-")
+    print(name, name1)
+    if name == name1:
+      codes.append(ons)
+      break
+  codes.append("NA")
+
+print(codes)
+  
+
+
 
 
   

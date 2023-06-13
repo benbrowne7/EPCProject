@@ -16,6 +16,7 @@ from bokeh.models import Span
 from bokeh.palettes import brewer
 import geopandas as gpd
 from bokeh.palettes import mpl
+from bng_latlon import WGS84toOSGB36
 
 def round_down(n, decimals=1):
     return int(math.floor(n / 10.0)) * 10
@@ -68,8 +69,8 @@ def bigmap(w,h):
   merged_json = json.loads(merged.to_json())
   json_data = json.dumps(merged_json)
 
-  w = int(0.4 * w)
-  h = int(0.78*h)
+  w = int(0.41 * w)
+  h = int(0.8*h)
 
   curdoc().theme = "dark_minimal"
 
@@ -131,8 +132,8 @@ def graph(ons,w,h):
   dates = [int(x) for x in dates]
   ratings = [int(x) for x in ratings]
 
-  w = int(0.45 * w)
-  h = int(0.44*0.85*h)
+  w = int(0.535 * w)
+  h = int(0.45*0.85*h)
 
 
 
@@ -233,6 +234,17 @@ def ladmap(ons,w,h):
 
   df = df.drop(inds, axis=0)
 
+  lats = df['lat'].values.tolist()
+  longs = df['long'].values.tolist()
+  easts = []
+  norths = []
+  for i in range(0,len(lats)):
+    e, n = WGS84toOSGB36(float(lats[i]), float(longs[i]))
+    easts.append(e)
+    norths.append(n)
+
+  df['long'] = easts
+  df['lat'] = norths
 
 
   epcs = df['epc'].values.tolist()
@@ -242,8 +254,8 @@ def ladmap(ons,w,h):
   hpr_min = np.min(hprs)
   hpr_max = np.max(hprs)
 
-  w = int(0.44 * w)
-  h = int(0.74*h)
+  w = int(0.41 * w)
+  h = int(0.8*h)
 
   low = round_down(epc_min)
   high = round_up(epc_max)

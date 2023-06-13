@@ -46,52 +46,46 @@
 
 <div class="contentbox1">
 
-
     {% block topcontent %}
     <div class="toprightbox">
-        <form action="/ladreq" style="position: absolute; left:2%; top:8%; width:20vw; height:10vh;" method="post" required id="ladreqform">
-            <label for="ladreq">Local Authority District (ONS):</label>
-            <input style="position:relative; width: 40%; size: 10px;" type="text" id="ladreq" name="ladreq"><br><br>
-            <input type="submit" style="position: absolute; left:42%; top:28%; " form="ladreqform" value="Submit">
-        </form>
+        <form class="form-inline form-control-sm" action="/ladreq" style="position: absolute; top:50%; transform: translateY(-50%); margin-left: 1%;"  method="post" required id="ladreqform">
+            <div class="input-group">
+                <input type="text" class="form-control me-1" id="ladreq" name="ladreq" placeholder="ONS CODE">
+                <button type="submit" form="ladreqform" class="btn btn-primary btn-sm">Submit</button>
+            </div>
+          </form>
         {% if valid is defined %}
             {% if valid == False %}
             <script>alert("Invalid ONS Code");</script>
             {% endif %}
             {% endif %}
 
-
-        <form style="position: absolute; left:45%; top:2%; width:20%" method="post" action="/ladsingle">
-            <label for="singlelad">Select LAD</label>
-            <select name="singlelad" id="singlelad">
+        <form class="form-inline form-control-sm" method="post" action="/ladsingle" style="position: absolute; top:50%; transform: translateY(-50%); margin-left: 50%;" id="singlelad">
+            <div class="input-group">
+            <select class="form-select me-1" name="singlelad" id="singlelad">
             {% for o in names %}
                 <option value="{{o}}" SELECTED>{{o}}</option>
             {% endfor %}
             </select>
-            <br><br>
-            <input style="position: absolute; top:70%" type="submit" value="Request LAD Info">
+            <button type="submit" class="btn btn-primary btn-sm">Request LAD Info</button>
+            </div>
         </form>
     </div>
-
-
     {% endblock %}
-
 
 
 
     {% block apireturn %}
 
-
-
             {% if epc_string1 is defined %}
             <div id="responseboxright">
             <div class="singleinfo">
 
-                <div class="heading" style="top: 10%;">Averages over all Local Authority Districts</div>
+                <div class="heading">Averages over all Local Authority Districts</div>
                 <div class="responsetext">Average EPC: {{LAD_EPC_MEAN}}</div>
                 <div class="responsetext">Average HPR: {{LAD_HPR_MEAN}}</div>
-                <hr style="width:100%; height:4px; background-color: black;  position:relative; margin-top: 1%;" />
-                <div class="heading" style="margin-top: -1%;">Comparing {{name}} ({{ons}}) to other Local Authority Districts</div> <div class="responsetext" >{{epc_string1}}</div>
+                <hr style="width:101%; height:4px; margin-left:-1%; background-color: black;  position:relative; margin-top: 1%;" />
+                <div class="heading" >Comparing {{name}} ({{ons}}) to other Local Authority Districts</div> <div class="responsetext" >{{epc_string1}}</div>
                 <div class="responsetext">{{hpr_string1}}</div>
 
                 <div class="responsetext" >{% if tag1 == 0 %} <span class="notvalid">{{epc_string2}}</span> {% elif tag1 == 1 %} <span class="orange">{{epc_string2}}</span> {% elif tag1 == 2 %} <span class="valid">{{epc_string2}}</span> {% endif %}</div>
@@ -114,19 +108,11 @@
             {% if ons is defined %}
                 <iframe src="/graphpane" width=100% height=100% scrolling="no" id="graphpane" style="margin-top: 1%; margin-left: 1%;"></iframe>
 
-
             {% endif %}
     </div>
 
    {% endif %}
     {% endblock %}
-
-
-    {% block apicontent2 %}
-
-
-    {% endblock %}
-
 
 
 </div>

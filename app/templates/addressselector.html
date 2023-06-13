@@ -1,10 +1,10 @@
 <html>
-    {% extends "base.html" %}
-    {% block head %}
-    {% block refresh %}
+    {% extends "individual.html" %}
+    {% block head %} 
+    {% block refresh %} 
     {% endblock %}
         {{super()}}
-        <style type="text/css">
+        <style type="text/css"> 
             html {height:100%}
             body {
             margin:0;
@@ -12,11 +12,11 @@
             overflow:hidden
             }
         </style>
-    {% endblock %}
+    {% endblock %} 
 
 <body>
 
-    {% block nav %}
+    {% block nav %} 
     {{super()}}
     {% endblock %}
 
@@ -26,43 +26,19 @@
     </div>
     {% endblock %}
 
-
-
 <div class="contentbox">
+    
+    {% block topcontent %} 
+    {{super()}}
+    {% endblock %} 
 
-
-    {% block topcontent %}
-    <form action="/postcode" style="position: relative; left:3%; top:2%" method="post" required id="postcodeform">
-        <label for="postcode">Postcode:</label>
-        <input type="text" id="postcode" name="postcode"><br><br>
-        <input type="submit" style="position: absolute; left:24%; top:2%; " form="postcodeform" value="Submit">
-    </form>
-    {% if valid is defined %}
-        {% if valid == False %}
-        <script>alert("Invalid Postcode");</script>
-        {% endif %}
-    {% endif %}
-    <hr style="width:100%; height:4px; background-color: black;  position:relative; top:1%;" />
+    {% block singlerequest %} 
+    {{super()}} 
     {% endblock %}
-
-        {% block singlerequest %}
-        <form style="position: absolute; left:45%; top:0.2%; width:20%" method="post" action="/singlerequest">
-            <label for="singleaddress">Select Address</label>
-            <select name="singleaddress" id="singleaddress">
-            {% for o in house_list %}
-                <option value="{{o}}" SELECTED>{{o}}</option>
-            {% endfor %}
-            </select>
-            <br><br>
-            <input style="position: absolute; top:65%" type="submit" value="Request House Info">
-        </form>
-        {% endblock %}
-
-
 </div>
 
-{% block footer %}
-{{super()}}
+{% block footer %} 
+{{super()}} 
 {% endblock %}
 
 {% block redirect %}
