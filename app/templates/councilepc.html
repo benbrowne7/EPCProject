@@ -24,6 +24,7 @@
 {% block contentboxleft %}
 
 <div class="contentboxleft">
+    <div id="switchmapbuttons"><button type="button" class="btn btn-dark btn-sm me-2" onclick="bigmap();">UK Energy Performance</button><button type="button" class="btn btn-dark btn-sm" onclick="adoptionmap();">UK Heat Pump Adoption</button></div>
 
     {% if epc_string1 is not defined %}
      <iframe  src="/bigmap" id="bigmap"></iframe>
@@ -85,7 +86,7 @@
                 <div class="responsetext">Average EPC: {{LAD_EPC_MEAN}}</div>
                 <div class="responsetext">Average HPR: {{LAD_HPR_MEAN}}</div>
                 <hr style="width:101%; height:4px; margin-left:-1%; background-color: black;  position:relative; margin-top: 1%;" />
-                <div class="heading" >Comparing {{name}} ({{ons}}) to other Local Authority Districts</div> <div class="responsetext" >{{epc_string1}}</div>
+                <div class="heading" style="margin-top:-1%;" >Comparing {{name}} ({{ons}}) to other Local Authority Districts</div> <div class="responsetext" >{{epc_string1}}</div>
                 <div class="responsetext">{{hpr_string1}}</div>
 
                 <div class="responsetext" >{% if tag1 == 0 %} <span class="notvalid">{{epc_string2}}</span> {% elif tag1 == 1 %} <span class="orange">{{epc_string2}}</span> {% elif tag1 == 2 %} <span class="valid">{{epc_string2}}</span> {% endif %}</div>

@@ -48,6 +48,8 @@ def index():
     session.clear()
     if os.path.exists(sourcedir + "/templates/bigmap/constit_map.html"):
         os.remove(sourcedir + "/templates/bigmap/constit_map.html")
+    if os.path.exists(sourcedir + "/templates/adoptionmap/adoption_map.html"):
+        os.remove(sourcedir + "/templates/adoptionmap/adoption_map.html")
     return render_template("base.html")
 
 @app.route('/individual', methods=['GET', 'POST'])
@@ -72,8 +74,12 @@ def councilepc():
 
     else:
         [epc_string1, hpr_string1, epc_string2, hpr_string2, tag1, tag2, proportion_string, name, ons, n_over1, exp_str] = session['save1']
-        names.remove(name)
-        names.append(name)
+        try:
+            names.remove(name)
+        except:
+            print("name not in list")
+        else:
+            names.append(name)
 
         return render_template('councilepc.html', epc_string1=epc_string1, hpr_string1=hpr_string1, epc_string2=epc_string2, hpr_string2=hpr_string2, tag1=tag1, tag2=tag2, proportion_string=proportion_string, name=name, names=names, ons=ons, LAD_EPC_MEAN=LAD_EPC_MEAN, LAD_HPR_MEAN=LAD_HPR_MEAN, n_over1=n_over1)
 
@@ -377,6 +383,12 @@ def rendermap1():
     bigmap(w,h)
     return render_template('bigmap/constit_map.html')
 
+@app.route('/adoptionmap')
+def rendermap2():
+    w,h = session['dimen']
+    adoptionmap(w,h)
+    return render_template('adoptionmap/adoption_map.html')
+
 @app.route('/graphpane')
 def rendermap5():
     file = session['name']
@@ -386,6 +398,7 @@ def rendermap5():
 def rendermap6():
     ons = session['ons']
     return render_template('ladmaps/' + ons + '_map.html')
+
 
 
 

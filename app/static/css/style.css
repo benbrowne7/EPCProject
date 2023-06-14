@@ -87,7 +87,6 @@ li a:hover:not(.active) {
 	flex-grow: 1;
 	width: 100%;
 	position: relative;
-	height: 50%;
 	border-top: 2px solid rgb(0, 0, 0);
 	background-color: #A8D0E6;
 }
@@ -210,6 +209,15 @@ li a:hover:not(.active) {
 	z-index:1;
 	margin-top: 0.25%;
 	margin-right: 0.75%;
+}
+
+#switchmapbuttons {
+	position: absolute;
+	top: 0%;
+	right: 0%;
+	z-index:1;
+	margin-top: 0.5%;
+	margin-right: 0.5%;
 }
 
 

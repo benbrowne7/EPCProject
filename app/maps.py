@@ -15,7 +15,7 @@ from bokeh.models import TabPanel, Tabs, ColumnDataSource, FixedTicker, GeoJSOND
 from bokeh.models import Span
 from bokeh.palettes import brewer
 import geopandas as gpd
-from bokeh.palettes import mpl
+from bokeh.palettes import mpl, Inferno256
 from bng_latlon import WGS84toOSGB36
 
 def round_down(n, decimals=1):
@@ -69,7 +69,7 @@ def bigmap(w,h):
   merged_json = json.loads(merged.to_json())
   json_data = json.dumps(merged_json)
 
-  w = int(0.41 * w)
+  w = int(0.412 * w)
   h = int(0.8*h)
 
   curdoc().theme = "dark_minimal"
@@ -80,7 +80,7 @@ def bigmap(w,h):
   hover = HoverTool(tooltips = [('LAD', '@LAD20NM'), ('ONS', '@LAD20CD'),('Av. EPC', '@epc_means')])
   tools = "pan,wheel_zoom,reset"
   color_bar = ColorBar(color_mapper=color_mapper, bar_line_color='black', major_tick_line_color='black', ticker=BasicTicker(desired_num_ticks=len(palette)+1))
-  p1 = figure(title = 'Av. EPC by Local Authority District', toolbar_location = 'right', toolbar_sticky = False, tools = [tools, hover], active_scroll='wheel_zoom', width=w, height=h)
+  p1 = figure(title = 'Av. EPC Rating by Local Authority District', toolbar_location = 'right', toolbar_sticky = False, tools = [tools, hover], active_scroll='wheel_zoom', width=w, height=h)
   p1.title.text_font_size = '18pt'
   p1.title.align = "center"
   p1.axis.visible = False
@@ -89,7 +89,7 @@ def bigmap(w,h):
   p1.patches('xs','ys', source = geosource,fill_color = {'field' :'epc_means', 'transform' : color_mapper},
           line_color = 'black', line_width = 0.25, fill_alpha = 1)
   p1.add_layout(color_bar, 'below')
-  tab1 = TabPanel(child=p1, title="EPC")
+  tab1 = TabPanel(child=p1, title="EPC Rating")
 
 
   palette = mpl['Inferno'][6]
@@ -106,13 +106,128 @@ def bigmap(w,h):
   p2.patches('xs','ys', source = geosource,fill_color = {'field' :'hpr_means', 'transform' : color_mapper},
           line_color = 'black', line_width = 0.25, fill_alpha = 1)
   p2.add_layout(color_bar, 'below')
-  tab2 = TabPanel(child=p2, title="HPR")
+  tab2 = TabPanel(child=p2, title="Heat Pump Readiness")
 
   os.chdir(sourcedir + "/templates/bigmap")
   output_file("constit_map.html")
   save(Tabs(tabs=[tab1,tab2], width=w))
 
+def adoptionmap(w,h):
+  abspath = os.path.abspath(__file__)
+  sourcedir = os.path.dirname(abspath)
 
+  if os.path.exists(sourcedir + "/templates/bigmap/adoption_map.html"):
+      return True
+
+  file = "LAD_DEC_2022_UK_BUC.shp"
+  map=gpd.read_file(sourcedir + "/data/Shapefile/" + file)
+  map.drop(map.index[321:352], inplace=True)
+
+  heatpump = pd.read_csv(sourcedir + "/data/heatpump-cum.csv", low_memory=False)
+  population = pd.read_csv(sourcedir + "/data/population.csv", engine='python')
+  sum_col = []
+  rate_col = []
+  pop_col = []
+
+  w = int(0.412 * w)
+  h = int(0.8*h)
+
+  curdoc().theme = "dark_minimal"
+
+
+  for index, row in map.iterrows():
+    ons = row['LAD22CD']
+    try:
+      row_data = heatpump.loc[heatpump['ONS'] == ons].values[0]
+    except:
+      sum_val = np.nan
+      av_rate = np.nan
+    else:
+      sum_val = sum(row_data[2:])
+      rates = row_data[13:]
+      av_rate = (((rates[2] - rates[1]) / rates[1]) + ((rates[1] - rates[0]) / rates[0])) * 0.5
+      av_rate = round(av_rate * 100,1)
+
+    sum_col.append(sum_val)
+    rate_col.append(av_rate)
+
+    try:
+      row_data = population.loc[population['ONS'] == ons].values[0]
+    except:
+      pop_val = np.nan
+    else:
+
+      pop_val = int(row_data[2].replace(",", ""))
+    pop_col.append(pop_val)
+
+  hp_density = []
+  for i in range(0, len(sum_col)):
+    val = round(sum_col[i] / pop_col[i] * 1000, 2)
+    hp_density.append(val)
+
+  #-----------------------------------------------------------
+
+
+  map['hp_density'] = hp_density
+  map['hp_rate'] = rate_col
+
+  merged = map.merge(heatpump, left_on='LAD22CD', right_on='ONS')
+  merged_json = json.loads(merged.to_json())
+  json_data = json.dumps(merged_json)
+
+  min_density = min(hp_density)
+  max_density = max(hp_density)
+
+  
+
+  geosource = GeoJSONDataSource(geojson = json_data)
+  palette = Inferno256
+  x_ticks = [0,5,10,15,20,25,30,35,40,45,50,55]
+  color_mapper = LinearColorMapper(palette=palette, low = min_density, high=max_density)
+  hover = HoverTool(tooltips = [('LAD', '@LAD22NM'),('HP per 1000', '@hp_density')])
+  tools = "pan,wheel_zoom,reset"
+  color_bar = ColorBar(color_mapper=color_mapper, bar_line_color='black', major_tick_line_color='black', ticker=FixedTicker(ticks=x_ticks))
+  p1 = figure(title = 'Heat Pumps Per 1000 People (2022)', toolbar_location = 'right', toolbar_sticky = False, tools = [tools, hover], active_scroll='wheel_zoom', width=w, height=h)
+
+  
+  p1.axis.visible = False
+  p1.xgrid.grid_line_color = None
+  p1.ygrid.grid_line_color = None#Add patch renderer to figure. 
+  p1.patches('xs','ys', source = geosource,fill_color = {'field' :'hp_density', 'transform' : color_mapper},
+          line_color = 'black', line_width = 0.25, fill_alpha = 1)
+  p1.add_layout(color_bar, 'below')
+  p1.title.text_font_size = '18pt'
+  p1.title.align = "center"
+  tab1 = TabPanel(child=p1, title="Heat Pump Density")
+
+  #------------------------------------------------------------------------
+
+  min_rate = int(min(rate_col))
+  max_rate = int(max(rate_col))
+
+  palette = Inferno256
+  color_mapper = LinearColorMapper(palette=palette, low = min_rate, high=100)
+  hover = HoverTool(tooltips = [('LAD', '@LAD22NM'), ('RATE HP', '@hp_rate')])
+  tools = "pan,wheel_zoom,reset"
+  x_ticks = [0,10,20,30,40,50,60,70,80,90,100]
+  color_bar = ColorBar(color_mapper=color_mapper, bar_line_color='black', major_tick_line_color='black', ticker=FixedTicker(ticks=x_ticks))
+
+  
+  p2 = figure(title = 'Average Yearly % Increase in Heat Pumps under RHI (since 2020)', toolbar_location = 'right', toolbar_sticky = False, tools = [tools,hover], active_scroll='wheel_zoom', width=w, height=h)
+  p2.axis.visible = False
+  p2.xgrid.grid_line_color = None
+  p2.ygrid.grid_line_color = None#Add patch renderer to figure. 
+  p2.patches('xs','ys', source = geosource,fill_color = {'field' :'hp_rate', 'transform' : color_mapper},
+          line_color = 'black', line_width = 0.25, fill_alpha = 1)
+  p2.add_layout(color_bar, 'below')
+  p2.title.text_font_size = '18pt'
+  p2.title.align = "center"
+  tab2 = TabPanel(child=p2, title="Rate Heat Pump Adoption")
+
+
+  os.chdir(sourcedir + "/templates/adoptionmap")
+  output_file("adoption_map.html")
+  save(Tabs(tabs=[tab1,tab2], width=w))
 
 def graph(ons,w,h):
 
@@ -140,10 +255,10 @@ def graph(ons,w,h):
   curdoc().theme = "dark_minimal"
   tools = "reset,save"
   hover = HoverTool(tooltips = [('EPC', '$y'), ('Year', '$x{0000}')], )
-  p1 = figure(title="Average EPC", x_axis_label='Year', y_axis_label='EPC Rating', sizing_mode="stretch_width", toolbar_location = 'right', toolbar_sticky = False, tools = [tools, hover], width=w, height=h)
+  p1 = figure(title="Average EPC for {}".format(ons), x_axis_label='Year', y_axis_label='EPC Rating', sizing_mode="stretch_width", toolbar_location = 'right', toolbar_sticky = False, tools = [tools, hover], width=w, height=h)
   p1.title.text_font_size = '16pt'
   p1.title.align = "center"
-  p1.line(dates, ratings, line_width=4, legend_label=ons_str)
+  p1.line(dates, ratings, line_width=4, legend_label=ons_str, color='blue')
   p1.legend.location = "bottom_right"
   p1.legend.label_text_font_style = "bold"
   p1.legend.border_line_width = 3
@@ -154,10 +269,10 @@ def graph(ons,w,h):
 
 
   hover = HoverTool(tooltips = [('%Y/Y', '$y'), ('Year', '$x{0000}')], )
-  p2 = figure(title="EPC %Y/Y", x_axis_label='Year', y_axis_label="% Change", sizing_mode="stretch_width", toolbar_location = 'right', toolbar_sticky = False, tools = [tools,hover], width=w, height=h)
+  p2 = figure(title="EPC %Y/Y for {}".format(ons), x_axis_label='Year', y_axis_label="% Change", sizing_mode="stretch_width", toolbar_location = 'right', toolbar_sticky = False, tools = [tools,hover], width=w, height=h)
   p2.title.text_font_size = '16pt'
   p2.title.align = "center"
-  p2.line(dates, yoy, line_width=4, legend_label=ons_str)
+  p2.line(dates, yoy, line_width=4, legend_label=ons_str, color='blue')
   p2.legend.location = "bottom_right"
   p2.legend.label_text_font_style = "bold"
   p2.legend.border_line_width = 3
@@ -190,20 +305,63 @@ def graph(ons,w,h):
     expired = sum(data[:5])
     exp = int(expired/total*100)
     hover = HoverTool(tooltips = [('Number', '@data'), ('Year', '@x')], )
-    p3 = figure(x_range=years, title="Age Distribution of EPCs", toolbar_location=None, tools=[hover], width=w, height=h)
+    p3 = figure(x_range=years, title="Age Distribution of EPCs for {}".format(ons), toolbar_location=None, tools=[hover], width=w, height=h)
     p3.title.text_font_size = '16pt'
     p3.title.align = "center"
-    p3.vbar(x='x', top='data', width=0.4, source=source)
+    p3.vbar(x='x', top='data', width=0.4, source=source, color='blue')
     p3.xgrid.grid_line_color = None
     p3.y_range.start = 0
     tab3 = TabPanel(child=p3, title="Age Distribution")
+  
+  #-----------------------------------------------------------------
+  os.chdir(sourcedir + "/data/culmulative_hp")
+
+  airdf = pd.read_csv("air-source.csv", low_memory=False)
+  grounddf = pd.read_csv("ground-source.csv", low_memory=False)
+
+  codes = airdf['ONS'].values
+  ind = -1
+  years = [2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022]
+  heatpumps = ['Air Source', 'Ground Source']
+  years = [str(x) for x in years]
+  for i in range(0,len(codes)):
+    if ons_str == codes[i]:
+      ind = i
+      break
+
+  if ind != -1:
+    data1 = airdf.iloc[ind][1:].tolist()
+    data2 = grounddf.iloc[ind][1:].tolist()
+    constit_name = data1[0]
+    air_culm = data1[1:]
+    ground_culm = data2[1:]
+    data = {'years':years, 'Air Source': air_culm, 'Ground Source': ground_culm}
+
+
+ 
+    p4 = figure(x_range=years, title="Cumulative Heat Pump Installations under RHI Scheme for {}".format(ons), toolbar_location=None, tools="hover", tooltips="$name @years: @$name", width=w, height=h)
+    p4.title.text_font_size = '16pt'
+    p4.title.align = "center"
+    p4.vbar_stack(heatpumps, x='years', source=data, width=0.4, legend_label=heatpumps, color=['blue', 'red'])
+    p4.xgrid.grid_line_color = None
+    p4.y_range.start = 0
+    p4.y_range.start = 0
+    p4.x_range.range_padding = 0.1
+    p4.xgrid.grid_line_color = None
+    p4.axis.minor_tick_line_color = None
+    p4.outline_line_color = None
+    p4.legend.location = "top_left"
+    p4.legend.orientation = "horizontal" 
+    tab4 = TabPanel(child=p4, title="Heat Pump Installations")
+
+  
 
 
 
   os.chdir(sourcedir + "/templates/graphs")
   name = ons + "_graph" ".html"
   output_file(name)
-  save(Tabs(tabs=[tab1,tab2,tab3], width=w))
+  save(Tabs(tabs=[tab4,tab1,tab2,tab3], width=w))
 
   return name, av_yoy, exp
 
