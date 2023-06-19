@@ -41,7 +41,7 @@ LAD_HPR_MEAN = 0.875
 abspath = os.path.abspath(__file__)
 sourcedir = os.path.dirname(abspath)
 
-nav.Bar('top', [nav.Item('Individual', 'individual'), nav.Item('LAD', 'councilepc'), nav.Item('Reset', 'index')])
+nav.Bar('top', [nav.Item('Individual', 'individual'), nav.Item('LAD', 'lad'), nav.Item('Reset', 'index')])
 
 @app.route('/')
 def index():
@@ -62,15 +62,15 @@ def individual():
         rendermap1()
         return render_template('individual.html')
 
-@app.route('/councilepc', methods=['GET','POST'])
-def councilepc():
+@app.route('/lad', methods=['GET','POST'])
+def lad():
     session.pop('save', None)
     session.pop('house_list', None)
     session.pop('compare', None)
     names = getconstitnames()
 
     if 'save1' not in session:
-        return render_template('councilepc.html', names=names)
+        return render_template('lad.html', names=names)
 
     else:
         [epc_string1, hpr_string1, epc_string2, hpr_string2, tag1, tag2, proportion_string, name, ons, n_over1, exp_str] = session['save1']
@@ -80,8 +80,9 @@ def councilepc():
             print("name not in list")
         else:
             names.append(name)
+            session['names'] = names
 
-        return render_template('councilepc.html', epc_string1=epc_string1, hpr_string1=hpr_string1, epc_string2=epc_string2, hpr_string2=hpr_string2, tag1=tag1, tag2=tag2, proportion_string=proportion_string, name=name, names=names, ons=ons, LAD_EPC_MEAN=LAD_EPC_MEAN, LAD_HPR_MEAN=LAD_HPR_MEAN, n_over1=n_over1)
+        return render_template('lad.html', epc_string1=epc_string1, hpr_string1=hpr_string1, epc_string2=epc_string2, hpr_string2=hpr_string2, tag1=tag1, tag2=tag2, proportion_string=proportion_string, name=name, names=names, ons=ons, LAD_EPC_MEAN=LAD_EPC_MEAN, LAD_HPR_MEAN=LAD_HPR_MEAN, n_over1=n_over1)
 
 
 @app.route('/ladsingle', methods=['GET','POST'])
@@ -89,7 +90,7 @@ def ladsingle():
     names = getconstitnames()
     url = request.referrer
     if url == None:
-        return render_template('councilepc.html', names=names)
+        return render_template('lad.html', names=names)
 
 
     constit_name = request.form['singlelad']
@@ -98,13 +99,14 @@ def ladsingle():
         ons = ons2lad[ons2lad['LAD20NM'] == constit_name]['LAD20CD'].values[0]
     except:
         print("not find ons")
-        return render_template('councilepc.html', names=names, valid1=False)
+        return render_template('lad.html', names=names, valid1=False)
     else:
         (w,h) = session['dimen']
         name, av_yoy, exp = graph(ons,w,h)
         session['name'] = name
         names.remove(constit_name)
         names.append(constit_name)
+        session['names'] = names
         ladmap(ons,w,h)
 
         exp_str = "{}% of Certificates for {} have Expired".format(exp,ons)
@@ -114,7 +116,7 @@ def ladsingle():
         session['save1'] = [epc_string1, hpr_string1, epc_string2, hpr_string2, tag1, tag2, proportion_string, name, ons, n_over1, exp_str]
         session['ons'] = ons
 
-        return render_template("councilepc.html", epc_string1=epc_string1, hpr_string1=hpr_string1, epc_string2=epc_string2, hpr_string2=hpr_string2, tag1=tag1, tag2=tag2, proportion_string=proportion_string, name=name, names=names, ons=ons, LAD_EPC_MEAN=LAD_EPC_MEAN, LAD_HPR_MEAN=LAD_HPR_MEAN, n_over1=n_over1, exp_str=exp_str)
+        return render_template("lad.html", epc_string1=epc_string1, hpr_string1=hpr_string1, epc_string2=epc_string2, hpr_string2=hpr_string2, tag1=tag1, tag2=tag2, proportion_string=proportion_string, name=name, names=names, ons=ons, LAD_EPC_MEAN=LAD_EPC_MEAN, LAD_HPR_MEAN=LAD_HPR_MEAN, n_over1=n_over1, exp_str=exp_str)
 
 
 @app.route('/ladreq', methods=['POST'])
@@ -122,7 +124,7 @@ def ladrequest():
     names = getconstitnames()
     url = request.referrer
     if url == None:
-        return render_template('councilepc.html', names=names)
+        return render_template('lad.html', names=names)
     #check if ons code supplied has data
     abspath = os.path.abspath(__file__)
     sourcedir = os.path.dirname(abspath)
@@ -131,7 +133,7 @@ def ladrequest():
     ons = request.form['ladreq']
     if ons not in code_list:
         valid = False
-        return render_template("councilepc.html", valid=valid, names=names)
+        return render_template("lad.html", valid=valid, names=names)
     else:
         (w,h) = session['dimen']
         name, av_yoy, exp = graph(ons,w,h)
@@ -151,7 +153,7 @@ def ladrequest():
 
         session['save1'] = [epc_string1, hpr_string1, epc_string2, hpr_string2, tag1, tag2, proportion_string, name, ons, n_over1, exp_str]
 
-        return render_template("councilepc.html", epc_string1=epc_string1, hpr_string1=hpr_string1, epc_string2=epc_string2, hpr_string2=hpr_string2, tag1=tag1, tag2=tag2, proportion_string=proportion_string, name=name, names=names, ons=ons, LAD_EPC_MEAN=LAD_EPC_MEAN, LAD_HPR_MEAN=LAD_HPR_MEAN, n_over1=n_over1, exp_str=exp_str)
+        return render_template("lad.html", epc_string1=epc_string1, hpr_string1=hpr_string1, epc_string2=epc_string2, hpr_string2=hpr_string2, tag1=tag1, tag2=tag2, proportion_string=proportion_string, name=name, names=names, ons=ons, LAD_EPC_MEAN=LAD_EPC_MEAN, LAD_HPR_MEAN=LAD_HPR_MEAN, n_over1=n_over1, exp_str=exp_str)
 
 
 
@@ -165,7 +167,7 @@ def epcdetails():
 
 @app.route('/compare', methods=['POST'])
 def compare():
-    [location1, ratings1, property1, features1, improvements1, e_date1, e_walls1, e_roof1, x, x1, conf, improve_str] = session['save']
+    [location1, ratings1, property1, features1, improvements1, e_date1, e_walls1, e_roof1, x, x1, conf, improve_str, epc_link] = session['save']
     house_list = session['house_list']
     #get details to compare within postcode
     comparisions = session['compare']
@@ -293,6 +295,7 @@ def singlerequest():
     r = requests.get(url, headers=headers)
     data = r.json()
     d = data['rows'][0]
+    print(d)
 
     comparisons = {}
     comparisons['postcode'] = d['postcode']
@@ -366,6 +369,63 @@ def singlerequest():
 
     return render_template('individual.html', location=location, ratings=ratings, property=property, features=features, improvements=improvements, e_date=e_date, e_walls=e_walls, e_roof=e_roof, hpr=hpr, tag=tag, house_list=house_list, conf=conf, improve_str=improve_str, epc_link=epc_link)
 
+@app.route('/ladadoption', methods=['POST', 'GET'])
+def ladadoption():
+    try:
+        ons = session['ons']
+        names = session['names']
+    except:
+        valid = False
+        return render_template("lad.html", valid=valid)
+    
+    (w,h) = session['dimen']
+    graphadoption(ons,w,h)
+
+    ons2lad = pd.read_csv(sourcedir + "/data/ONS2LAD.csv")
+    name = ons2lad.loc[ons2lad['LAD20CD'] == ons].values[0]
+    name = name[1]
+
+    av_rate = 28.8
+    rate_percentile = [12.59, 16.24, 18.97, 20.66, 23.1, 26.22, 30.6,  38.46, 51.34]
+    av_density = 8.3
+    density_percentile = [0.38, 0.778, 1.304, 2.346, 3.995, 6.552, 9.79, 15.1, 23.895]
+
+    heatpump = pd.read_csv(sourcedir + "/data/heatpump-cum.csv", low_memory=False)
+    population = pd.read_csv(sourcedir + "/data/population.csv", engine='python')
+
+    try:
+        cuml_data = heatpump.loc[heatpump['ONS'] == ons].values[0]
+        pop_data = population.loc[population['ONS'] == ons].values[0]
+    except:
+        valid = False
+    else:
+        valid = True
+        sum_val = sum(cuml_data[2:])
+        pop_val = int(pop_data[2].replace(",", ""))
+        rates = cuml_data[13:]
+        lad_rate = (((rates[2] - rates[1]) / rates[1]) + ((rates[1] - rates[0]) / rates[0])) * 0.5
+        lad_rate = round(lad_rate * 100,1)
+        lad_density = round(sum_val / pop_val * 1000, 2)
+        
+    index0, index1 = findpositioninpercentile(lad_rate, rate_percentile, lad_density, density_percentile)
+    tag0, tag1 = percentilecolours(index0, index1)
+
+    av_rate_string = "Average Yearly % Increase in Heat Pumps (RHI Scheme): {}%".format(av_rate)
+    av_density_string = "Average Number of Installed Heat Pumps per 1000 People (RHI Scheme): {}".format(av_density)
+    lad_rate_string = "Average Yearly % Increase in Heat Pumps (RHI Scheme) for {}: [{}%]".format(name, lad_rate)
+    lad_density_string = "Number of Installed Heat Pumps per 1000 People (RHI Scheme) for {}: [{}]".format(name, lad_density)
+
+    rate_percentile_string = "{} is within the {}th -> {}th percentile for Local Authority Districts (av. annual % Increase)".format(name, index0*10, (index0+1)*10)
+    density_percentile_string = "{} is within the {}th -> {}th percentile for Local Authority Districts (Heat Pumps per 1000)".format(name, index1*10, (index1+1)*10)
+
+    return render_template("ladadoption.html", valid=valid, av_rate_string=av_rate_string, av_density_string=av_density_string, lad_rate_string=lad_rate_string, lad_density_string=lad_density_string, rate_percentile_string=rate_percentile_string, density_percentile_string=density_percentile_string, name=name, ons=ons, tag0=tag0, tag1=tag1, names=names)
+
+
+
+
+
+
+
 @app.route('/graphdimen', methods=['POST'])
 def graphdimen():
     print("in graphdimen", flush=True)
@@ -393,9 +453,13 @@ def rendermap2():
 def rendermap5():
     file = session['name']
     return render_template('graphs/' + file)
+@app.route('/graphpaneadoption')
+def rendermap6():
+    file = session['name']
+    return render_template('graphsadoption/' + file)
 
 @app.route('/ladmapleft')
-def rendermap6():
+def rendermap7():
     ons = session['ons']
     return render_template('ladmaps/' + ons + '_map.html')
 

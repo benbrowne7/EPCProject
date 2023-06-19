@@ -12,7 +12,7 @@ from bokeh.io import show, output_file
 from bokeh.io import curdoc
 from bokeh.models import HoverTool
 from bokeh.models import TabPanel, Tabs, ColumnDataSource, FixedTicker, GeoJSONDataSource, LinearColorMapper, ColorBar, FixedTicker, BasicTicker, FactorRange
-from bokeh.models import Span
+from bokeh.models import Span, Label
 from bokeh.palettes import brewer
 import geopandas as gpd
 from bokeh.palettes import mpl, Inferno256
@@ -121,7 +121,7 @@ def adoptionmap(w,h):
 
   file = "LAD_DEC_2022_UK_BUC.shp"
   map=gpd.read_file(sourcedir + "/data/Shapefile/" + file)
-  map.drop(map.index[321:352], inplace=True)
+  map.drop(map.index[320:352], inplace=True)
 
   heatpump = pd.read_csv(sourcedir + "/data/heatpump-cum.csv", low_memory=False)
   population = pd.read_csv(sourcedir + "/data/population.csv", engine='python')
@@ -166,6 +166,23 @@ def adoptionmap(w,h):
     hp_density.append(val)
 
   #-----------------------------------------------------------
+  new = []
+  new1 = []
+  for i in rate_col:
+    if np.isnan(i) == True:
+      continue
+    else:
+      new.append(i)
+  for i in hp_density:
+    if np.isnan(i) == True:
+      continue
+    else:
+      new1.append(i)
+  av_rate = statistics.mean(new)
+  av_density = statistics.mean(new1)
+
+  rate_percentile = np.percentile(new, [10,20,30,40,50,60,70,80,90])
+  density_percentile = np.percentile(new1, [10,20,30,40,50,60,70,80,90])
 
 
   map['hp_density'] = hp_density
@@ -184,10 +201,10 @@ def adoptionmap(w,h):
   palette = Inferno256
   x_ticks = [0,5,10,15,20,25,30,35,40,45,50,55]
   color_mapper = LinearColorMapper(palette=palette, low = min_density, high=max_density)
-  hover = HoverTool(tooltips = [('LAD', '@LAD22NM'),('HP per 1000', '@hp_density')])
+  hover = HoverTool(tooltips = [('LAD', '@LAD22NM'),('HP per 1000', '@hp_density{0.0}')])
   tools = "pan,wheel_zoom,reset"
   color_bar = ColorBar(color_mapper=color_mapper, bar_line_color='black', major_tick_line_color='black', ticker=FixedTicker(ticks=x_ticks))
-  p1 = figure(title = 'Heat Pumps Per 1000 People (2022)', toolbar_location = 'right', toolbar_sticky = False, tools = [tools, hover], active_scroll='wheel_zoom', width=w, height=h)
+  p1 = figure(title = 'Installed Heat Pumps Per 1000 People (RHI Scheme - 2022)', toolbar_location = 'right', toolbar_sticky = False, tools = [tools, hover], active_scroll='wheel_zoom', width=w, height=h)
 
   
   p1.axis.visible = False
@@ -207,7 +224,7 @@ def adoptionmap(w,h):
 
   palette = Inferno256
   color_mapper = LinearColorMapper(palette=palette, low = min_rate, high=100)
-  hover = HoverTool(tooltips = [('LAD', '@LAD22NM'), ('RATE HP', '@hp_rate')])
+  hover = HoverTool(tooltips = [('LAD', '@LAD22NM'), ('RATE HP', '@hp_rate{0.0}%')])
   tools = "pan,wheel_zoom,reset"
   x_ticks = [0,10,20,30,40,50,60,70,80,90,100]
   color_bar = ColorBar(color_mapper=color_mapper, bar_line_color='black', major_tick_line_color='black', ticker=FixedTicker(ticks=x_ticks))
@@ -236,9 +253,6 @@ def graph(ons,w,h):
   filename = sourcedir + "/data/EPCByYear/" + ons + "-yoy.csv"
   ons_str = str(ons)
 
-  #if os.path.isfile(sourcedir + "/templates/maps/epc_" + ons + "_trend.html"):
-  # return True
-
   df = pd.read_csv(filename)
   yoy = df['y/y'].values
   av_yoy = round(np.mean(yoy),1)
@@ -250,15 +264,13 @@ def graph(ons,w,h):
   w = int(0.535 * w)
   h = int(0.45*0.85*h)
 
-
-
   curdoc().theme = "dark_minimal"
   tools = "reset,save"
   hover = HoverTool(tooltips = [('EPC', '$y'), ('Year', '$x{0000}')], )
   p1 = figure(title="Average EPC for {}".format(ons), x_axis_label='Year', y_axis_label='EPC Rating', sizing_mode="stretch_width", toolbar_location = 'right', toolbar_sticky = False, tools = [tools, hover], width=w, height=h)
   p1.title.text_font_size = '16pt'
   p1.title.align = "center"
-  p1.line(dates, ratings, line_width=4, legend_label=ons_str, color='blue')
+  p1.line(dates, ratings, line_width=6, legend_label=ons_str, color='blue')
   p1.legend.location = "bottom_right"
   p1.legend.label_text_font_style = "bold"
   p1.legend.border_line_width = 3
@@ -272,7 +284,7 @@ def graph(ons,w,h):
   p2 = figure(title="EPC %Y/Y for {}".format(ons), x_axis_label='Year', y_axis_label="% Change", sizing_mode="stretch_width", toolbar_location = 'right', toolbar_sticky = False, tools = [tools,hover], width=w, height=h)
   p2.title.text_font_size = '16pt'
   p2.title.align = "center"
-  p2.line(dates, yoy, line_width=4, legend_label=ons_str, color='blue')
+  p2.line(dates, yoy, line_width=6, legend_label=ons_str, color='blue')
   p2.legend.location = "bottom_right"
   p2.legend.label_text_font_style = "bold"
   p2.legend.border_line_width = 3
@@ -280,8 +292,8 @@ def graph(ons,w,h):
 
   threshold = 0
   hline = Span(location=threshold, dimension='width', line_color='white', line_width=2)
-
   p2.renderers.extend([hline])
+
   tab2 = TabPanel(child=p2, title="EPC Y/Y")
 
   #-------------------------------------------------------------
@@ -305,7 +317,7 @@ def graph(ons,w,h):
     expired = sum(data[:5])
     exp = int(expired/total*100)
     hover = HoverTool(tooltips = [('Number', '@data'), ('Year', '@x')], )
-    p3 = figure(x_range=years, title="Age Distribution of EPCs for {}".format(ons), toolbar_location=None, tools=[hover], width=w, height=h)
+    p3 = figure(x_range=years, title="Age Distribution of EPCs for {}".format(ons), x_axis_label='Year', y_axis_label="Certificates", toolbar_location=None, tools=[hover], width=w, height=h)
     p3.title.text_font_size = '16pt'
     p3.title.align = "center"
     p3.vbar(x='x', top='data', width=0.4, source=source, color='blue')
@@ -314,6 +326,23 @@ def graph(ons,w,h):
     tab3 = TabPanel(child=p3, title="Age Distribution")
   
   #-----------------------------------------------------------------
+
+  os.chdir(sourcedir + "/templates/graphs")
+  name = ons + "_graph" ".html"
+  output_file(name)
+  save(Tabs(tabs=[tab1,tab2,tab3], width=w))
+
+  return name, av_yoy, exp
+
+def graphadoption(ons,w,h):
+  abspath = os.path.abspath(__file__)
+  sourcedir = os.path.dirname(abspath)
+  ons_str = str(ons)
+
+  w = int(0.535 * w)
+  h = int(0.45*0.85*h)
+  curdoc().theme = "dark_minimal"
+
   os.chdir(sourcedir + "/data/culmulative_hp")
 
   airdf = pd.read_csv("air-source.csv", low_memory=False)
@@ -339,7 +368,7 @@ def graph(ons,w,h):
 
 
  
-    p4 = figure(x_range=years, title="Cumulative Heat Pump Installations under RHI Scheme for {}".format(ons), toolbar_location=None, tools="hover", tooltips="$name @years: @$name", width=w, height=h)
+    p4 = figure(x_range=years, title="Cumulative Heat Pump Installations under RHI Scheme for {}".format(ons),x_axis_label='Year', y_axis_label="Heat Pumps", toolbar_location=None, tools="hover", tooltips="$name @years: @$name", width=w, height=h)
     p4.title.text_font_size = '16pt'
     p4.title.align = "center"
     p4.vbar_stack(heatpumps, x='years', source=data, width=0.4, legend_label=heatpumps, color=['blue', 'red'])
@@ -353,17 +382,41 @@ def graph(ons,w,h):
     p4.legend.location = "top_left"
     p4.legend.orientation = "horizontal" 
     tab4 = TabPanel(child=p4, title="Heat Pump Installations")
-
   
+  #------------------------------------------------------------------------
+  cuml = pd.read_csv(sourcedir + "/data/heatpump-cum.csv")
+  data = cuml.loc[cuml['ONS'] == ons].values[0][2:]
+  rates = []
+  for i in range(0,len(data)-1):
+    if data[i] == 0:
+      rates.append(0)
+      continue
+    val = round((data[i+1] - data[i]) / data[i], 1) * 100
+    rates.append(val)
+
+  hover = HoverTool(tooltips = [('%Y/Y', '$y'), ('Year', '$x{0000}')], )
+  p1 = figure(title="Annual % Change for Heat Pump Installations (RHI Scheme) for {}".format(ons), x_axis_label='Year', y_axis_label='% Change', sizing_mode="stretch_width", toolbar_location = 'right', toolbar_sticky = False, tools = [hover], width=w, height=h)
+  p1.title.text_font_size = '16pt'
+  p1.title.align = "center"
+  p1.line(years[1:], rates, line_width=6, legend_label=ons_str, color='blue')
+  p1.legend.location = "bottom_right"
+  p1.legend.label_text_font_style = "bold"
+  p1.legend.border_line_width = 3
+  p1.legend.border_line_color = "black"
+
+  hline = Span(location=47, dimension='width', line_color='white', line_width=2)
+  p1.renderers.extend([hline])
+  label = Label(x=2010, y=47, y_offset=5, text='Annual % Increase required to hit 600,000 installations in 2028 Target (47%)', text_color='red')
+  p1.add_layout(label)
+  tab1 = TabPanel(child=p1, title="Annual % Increase in Installations")
 
 
 
-  os.chdir(sourcedir + "/templates/graphs")
+  os.chdir(sourcedir + "/templates/graphsadoption")
   name = ons + "_graph" ".html"
   output_file(name)
-  save(Tabs(tabs=[tab4,tab1,tab2,tab3], width=w))
+  save(Tabs(tabs=[tab4,tab1], width=w))
 
-  return name, av_yoy, exp
 
 def ladmap(ons,w,h):
 
@@ -375,19 +428,15 @@ def ladmap(ons,w,h):
   map = gpd.read_file(filename)
   filename = sourcedir + "/data/postcode_data/" + ons_str + "-postcode.csv"
   df = pd.read_csv(filename)
+  ons2outcodes = pd.read_csv(sourcedir + "/data/ons2outcodes.csv")
 
-  lat_mean = np.mean(df['lat'].values)
-  long_mean = np.mean(df['long'].values)
-  lat_std = statistics.stdev(df['lat'].values)
-  long_std = statistics.stdev(df['long'].values)
   inds = []
+  
+  outcodes = ons2outcodes.loc[ons2outcodes['ONS'] == ons_str].values[0][1:]
+
   for index, row in df.iterrows():
-    lat = row['lat']
-    long = row['long']
-    if abs(lat-lat_mean) > 1.8*lat_std:
-      inds.append(index)
-    if abs(long-long_mean) > 1.8*long_std:
-      if index not in inds:
+      postcode = row['postcode']
+      if postcode not in outcodes:
         inds.append(index)
 
   df = df.drop(inds, axis=0)
@@ -436,7 +485,12 @@ def ladmap(ons,w,h):
   json_data = json.dumps(merged_json)
   geosource = GeoJSONDataSource(geojson = json_data)
 
-  palette = brewer['YlOrRd'][len(tick)-1]
+  
+  if len(tick-1) <= 3:
+    palette = brewer['YlOrRd'][3]
+  else:
+    palette = brewer['YlOrRd'][len(tick)-1]
+
   color_mapper = LinearColorMapper(palette=palette, low = low, high=high)
   color_bar = ColorBar(color_mapper=color_mapper, bar_line_color='white', major_tick_line_color='white', ticker=FixedTicker(ticks=tick))
 
@@ -468,7 +522,10 @@ def ladmap(ons,w,h):
 
   tick = np.arange(low,high+x, x)
 
-  palette = brewer['YlOrRd'][len(tick)-1]
+  if len(tick-1) <= 3:
+    palette = brewer['YlOrRd'][3]
+  else:
+    palette = brewer['YlOrRd'][len(tick)-1]
   color_mapper = LinearColorMapper(palette=palette, low=low, high=high)
   color_bar = ColorBar(color_mapper=color_mapper, bar_line_color='white', major_tick_line_color='white', ticker=FixedTicker(ticks=tick))
 

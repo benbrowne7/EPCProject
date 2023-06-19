@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">   
     {% block refresh %} 
-    <meta http-equiv="Refresh" content="1, url='/councilepc'" \>
+    <meta http-equiv="Refresh" content="1, url='/lad'" \>
     {% endblock %}
     {% endblock %}
 
@@ -15,6 +15,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://overpass-30e2.kxcdn.com/overpass.css">
     <title>{% block title %}{% endblock %} Heat Pump Ready App</title>
+
+    {% block scripts %}
     <script type="text/javascript">
         function epcdetails() {
             var form = document.createElement('form');
@@ -37,6 +39,27 @@
     }
 </script>
 <script type="text/javascript">
+    function ladadoption() {
+        var form = document.createElement('form');
+        form.setAttribute('method', 'post');
+        form.setAttribute('action', '/ladadoption');
+        form.style.display = 'hidden';
+        document.body.appendChild(form)
+        form.submit()
+    }
+</script>
+<script type="text/javascript">
+    function ladperf() {
+        var form = document.createElement('form');
+        form.setAttribute('method', 'post');
+        form.setAttribute('action', '/lad');
+        form.style.display = 'hidden';
+        document.body.appendChild(form)
+        form.submit()
+    }
+</script>
+
+<script type="text/javascript">
     function bigmap() {
         var newsource = "/bigmap";
         document.getElementById("bigmap").src=newsource;
@@ -57,22 +80,8 @@ function hprmap() {
 </script>
 
 <script type="text/javascript">
-    function epctrends() {
-        var newsource = "/mapepctrend";
-        document.getElementById("mapepc").src=newsource;
-    }
-</script>
-
-<script type="text/javascript">
-    function epcyoy() {
-        var newsource = "/mapepcyoy";
-        document.getElementById("mapepc").src=newsource;
-    }
-</script>
-
-<script type="text/javascript">
     function ladmapleft() {
-        var newsource = "/epcladmap";
+        var newsource = "/ladmapleft";
         document.getElementById("bigmap").src=newsource;
     }
 </script>
@@ -96,6 +105,32 @@ function hprmap() {
     }
 </script>
 
+<script type="text/javascript">
+    function infoswap() {
+        var x = document.getElementById("contextinfo");
+        var y = document.getElementById("leftmaps1")
+        if (x.style.display === "none") {
+        x.style.display = "block";
+        y.style.display = "none";
+        }else {
+            
+        }
+    };
+</script>
+<script type="text/javascript">
+    function mapswap() {
+        var x = document.getElementById("leftmaps1");
+        var y = document.getElementById("contextinfo")
+        if (x.style.display === "none") {
+        x.style.display = "block";
+        y.style.display = "none";
+        } else {
+            
+        }
+    };
+</script>
+{% endblock %}
+
 
 <body scroll="no" style="overflow: hidden">
     <header>
@@ -115,7 +150,9 @@ function hprmap() {
         </div>
     </header> 
 
+    {% block dimen %}
     <script>dimen()</script>
+    {% endblock %}
     
 
 

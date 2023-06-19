@@ -1,0 +1,101 @@
+<html>
+    {% extends "lad.html" %}
+{% block head %}
+{% block refresh %}
+{% endblock %}
+    {{super()}}
+
+
+{% endblock %}
+
+
+
+<body>
+
+    {% block nav %}
+    {{super()}}
+    {% endblock %}
+
+{% block basicmap %}
+{% endblock %}
+
+{% block dimen %} 
+{% endblock %} 
+
+
+
+{% block contentboxleft %}
+
+<div class="contentboxleft">
+
+    <div class="switchmapbuttons"><button type="button" class="btn btn-dark btn-sm me-2" onclick="ladmapleft();">{{name}} District Map</button><button type="button" class="btn btn-dark btn-sm" onclick="adoptionmap();">UK Heat Pump Adoption</button></div>
+    <iframe  src="/adoptionmap" id="bigmap"></iframe>
+
+</div>
+{% endblock %}
+
+{% if valid is defined %}
+        {% if valid == False %}
+        <script>alert("Could not resolve ONS code or other error");</script>
+        {% endif %}
+    {% endif %}
+
+<div class="contentbox1">
+
+    {% block topcontent %}
+    {{super()}}
+    {% endblock %}
+
+
+    {% block apireturn %}
+
+            {% if av_rate_string is defined %}
+            <div id="responseboxright">
+            <div class="singleinfo">
+                <div class="switchtabbuttons"><button type="button" class="btn btn-primary btn-sm me-2" onclick="ladperf();">{{name}} Energy Performance</button><button type="button" class="btn btn-primary btn-sm" onclick="ladadoption();">{{name}} Heat Pump Adoption</button></div>
+
+                <div class="heading">Averages over all Local Authority Districts</div>
+                <div class="responsetext">{{av_rate_string}}</div>
+                <div class="responsetext">{{av_density_string}}</div>
+                <hr style="width:101%; height:4px; margin-left:-1%; background-color: black;  position:relative; margin-top: 1%;" />
+                <div class="heading" style="margin-top:-1%;" >Comparing {{name}} ({{ons}}) to other Local Authority Districts</div> <div class="responsetext" >{{lad_rate_string}}</div>
+                <div class="responsetext">{{lad_density_string}}</div>
+
+                <div class="responsetext" >{% if tag0 == 0 %} <span class="notvalid">{{rate_percentile_string}}</span> {% elif tag0 == 1 %} <span class="orange">{{rate_percentile_string}}</span> {% elif tag0 == 2 %} <span class="valid">{{rate_percentile_string}}</span> {% endif %}</div>
+
+                <div class="responsetext" >{% if tag1 == 0 %} <span class="notvalid">{{density_percentile_string}}</span> {% elif tag1 == 1 %} <span class="orange">{{density_percentile_string}}</span> {% elif tag1 == 2 %} <span class="valid">{{density_percentile_string}}</span> {% endif %} </div>
+
+                <div class="responsetext" style="color:blue;">{{proportion_string}}</div>
+                <div class="responsetext" style="color:blue;">{{exp_str}}</div>
+            </div></div>
+        {% else %}
+        {% endif %}
+    {% endblock %}
+
+
+    {% block apicontent1 %}
+    {% if av_rate_string is defined %}
+    <div id="responseboxright1">
+
+            {% if ons is defined %}
+                <iframe src="/graphpaneadoption" width=100% height=100% scrolling="no" id="graphpane" style="margin-top: 1%; margin-left: 1%;"></iframe>
+            {% endif %}
+    </div>
+
+   {% endif %}
+    {% endblock %}
+
+
+</div>
+
+{% block footer %}
+{{super()}}
+{% endblock %}
+
+{% block redirect %}
+{% endblock %}
+
+</body>
+</html>
+
+

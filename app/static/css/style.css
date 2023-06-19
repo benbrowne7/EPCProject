@@ -122,6 +122,11 @@ li a:hover:not(.active) {
 	margin: 0;
 	margin-bottom: 1%;
 }
+.bigmap1 {
+	flex-grow: 1;
+	margin: 0;
+	margin-bottom: 1%;
+}
 
 
 .responsebox1 {
@@ -182,7 +187,7 @@ li a:hover:not(.active) {
 	font-size: 2vh;
 	margin-top: -2%;
 }
-.contextinfo {
+#contextinfo {
 	position: relative;
 	margin-left: 1%;
 	margin-right: 1%;
@@ -211,10 +216,18 @@ li a:hover:not(.active) {
 	margin-right: 0.75%;
 }
 
-#switchmapbuttons {
+.switchmapbuttons {
 	position: absolute;
 	top: 0%;
 	right: 0%;
+	z-index:1;
+	margin-top: 0.5%;
+	margin-right: 0.5%;
+}
+#switchcontextbuttons {
+	position: absolute;
+	top: 0%;
+	right: 40%;
 	z-index:1;
 	margin-top: 0.5%;
 	margin-right: 0.5%;

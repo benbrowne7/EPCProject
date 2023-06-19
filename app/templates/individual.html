@@ -15,23 +15,38 @@
 
 {% endblock %}
 
-
-
 <body>
 
     {% block nav %}
     {{super()}}
     {% endblock %}
 
+    {% block dimen %} 
+    {% endblock %} 
+
 {% block contentboxleft %}
 <div class="contentboxleft">
-    <div id="switchmapbuttons"><button type="button" class="btn btn-dark btn-sm me-2" onclick="bigmap();">UK Energy Performance</button><button type="button" class="btn btn-dark btn-sm" onclick="adoptionmap();">UK Heat Pump Adoption</button></div>
+    
+    
     {% if location is not defined %}
-    <iframe src="/bigmap" width=100%; id="bigmap"></iframe>
+    
+    <div id="leftmaps">
+        <div class="switchmapbuttons"><button type="button" class="btn btn-dark btn-sm me-2" onclick="bigmap()">UK Energy Performance</button><button type="button" class="btn btn-dark btn-sm" onclick="adoptionmap()">UK Heat Pump Adoption</button></div>
+            <iframe src="/bigmap" width=100%; id="bigmap"></iframe>
+    </div>
+    
 
     {% else %}
-    <div class="contextinfo">
-    <div class="heading" style="font-size: 4vh; text-decoration: underline;">Information and Context:</div>
+    
+    <div class="switchmapbuttons"><button type="button" class="btn btn-dark btn-sm me-2" onclick="infoswap();">Information and Context</button><button type="button" class="btn btn-dark btn-sm" onclick="mapswap();">Nestas' Heat Pump Cost Calculator</button></div>
+
+    
+    
+    <div id="leftmaps1" style="display:none; margin-left: -1%; margin-top: 3%;">
+        <iframe src="http://asf-hp-cost-demo-l-b-1046547218.eu-west-1.elb.amazonaws.com/" title="Nesta Heat Pump Cost Calculator"></iframe>
+    </div>
+    <div id="contextinfo">
+    <div class="heading" style="font-size: 4vh; text-decoration: underline; margin-top: 2.5%;">Information and Context:</div>
     <br>
     <div class="responsetext1" style="font-family: Courier New; font-size: 1.8vh; font-weight: 600;">The First Section on the right displays selected EPC information for the chosen property.</div>
     <br>
@@ -112,7 +127,7 @@
 
                 <div class="heading">Property Address: </div> <div class="responsetext" >{{location['address1']}} {{location['postcode']}} ,{{location['county']}}</div>
                 <div class="heading">Certificate Ratings :</div><div class="responsetext" >Current Rating: {{ratings['current']}} || Current Efficiency: {{ratings['current-int']}} || Tolerance: ({{ratings['band'][0]}} -> {{ratings['band'][1]}})</div>
-                <div class="heading">Property Type: </div><div class="responsetext" >Type: {{property['type']}} || Form: {{property['form']}} || Tenure: {{property['tenure']}} || Age: {{property['age']}} || Cert Date: {{property['date']}}</div>
+                <div class="heading">Property Type: </div><div class="responsetext" >Type: {{property['type']}} || Form: {{property['form']}} || Tenure: {{property['tenure']}} || Age: {{property['age']}} || Floor Area: {{property['floor-area']}}m<sup>2</sup> || Cert Date: {{property['date']}}</div>
                 <div class="heading">Property Features: </div><div class="responsetext" >Windows: {{features['windows']}} <span class="rate">[{{features['windows-rate']}}]</span> || Flooring: {{features['floors']}} <span class="rate">[{{features['floors-rate']}}]</span> || Walls: {{features['walls']}} <span class="rate">[{{features['walls-rate']}}]</span> || Roofing: {{features['roof']}} <span class="rate">[{{features['roof-rate']}}]</span> || Main Heat: {{features['mainheat']}} <span class="rate">[{{features['mainheat-rate']}}]</span> || Hot Water: {{features['hot-water']}} || Fuel: {{features['mainfuel']}}</div>
             
             <hr style="width:101%; height:4px; background-color: black;  position: absolute; margin-top: 1%; margin-left: -1%;" />
@@ -167,6 +182,8 @@
 
 {% block redirect %}
 {% endblock %}
+
+
 
 </body>
 </html>

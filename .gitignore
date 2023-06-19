@@ -1,9 +1,5 @@
 app/data/Reduced/
 app/data/.vscode/
-app/data/constitbounds_data/
-app/data/EPCByYear/
-app/data/postcode_data/
-app/data/hprs/
 app/templates/bigmap/
 app/templates/graphs/
 app/templates/ladmaps/

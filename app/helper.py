@@ -27,6 +27,7 @@ def organizedata(data):
     property['form'] = data['built-form']
     property['tenure'] = data['tenure']
     property['date'] = data['lodgement-date']
+    property['floor-area'] = data['total-floor-area']
     x = data['construction-age-band']
     if "England" in x:
         x = x[18:]
@@ -190,6 +191,8 @@ def singleladrequest(ons, av_yoy):
     proportion_string = "{}% of dwellings have a HPR rating of over 1 (good candidates)".format(proportion)
 
     return epc_string1, hpr_string1, epc_string2, hpr_string2, tag1, tag2, proportion_string, name, n_over1
+
+
 
 def getconstitnames():
     constit = pd.read_csv(sourcedir + "/data/ONS2LAD.csv", low_memory=False)

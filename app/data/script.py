@@ -16,39 +16,28 @@ def addcol(filename, row):
 abspath = os.path.abspath(__file__)
 sourcedir = os.path.dirname(abspath)
 
-ons2lad = pd.read_csv("ONS2LAD.csv", low_memory=False)
-os.chdir(sourcedir + "/culmulative_hp")
+df = pd.read_csv("outcode2ons.csv", low_memory=False)
 
-airdf = pd.read_csv("air-source.csv", low_memory=False)
-grounddf = pd.read_csv("ground-source.csv", low_memory=False)
 
-codes = []
+onss = {}
 
-for row in airdf.itertuples():
-  match = False
-  name = row[1]
-  name = ''.join(name.split())
-  name.replace(",", "")
-  for row1 in ons2lad.itertuples():
-    ons = row1[1]
-    name1 = row1[2]
-    if name[0] != name1[0]:
-      continue
-    name1 = ''.join(name1.split())
-    name1.replace(",", "")
-    if name == name1:
-      codes.append(ons)
-      match = True
-      break
-  if match == False:
-    print(name)
-    codes.append("NA")
+for row in df.itertuples():
+  outcode = row[1]
+  ons = row[2]
+  if ons[0] == 'S' or ons[0] == 'N':
+    continue
+  if ons not in onss:
+    onss[ons] = [outcode]
+  else:
+    l = onss[ons]
+    l.append(outcode)
+    onss[ons] = l
 
-airdf.insert(0, "ONS", codes, False)
-grounddf.insert(0, "ONS", codes, False)
+for key, val in onss.items():
+  l = val
+  l.insert(0, key)
+  addcol("ons2outcodes", l)
 
-airdf.to_csv('airdf-new.csv', index=False)
-grounddf.to_csv('grounddf-new.csv', index=False)
   
 
 
