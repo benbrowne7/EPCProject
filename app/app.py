@@ -41,7 +41,7 @@ LAD_HPR_MEAN = 0.875
 abspath = os.path.abspath(__file__)
 sourcedir = os.path.dirname(abspath)
 
-nav.Bar('top', [nav.Item('Individual', 'individual'), nav.Item('LAD', 'lad'), nav.Item('Reset', 'index')])
+nav.Bar('top', [nav.Item('Grid', 'grid'), nav.Item('Individual', 'individual'), nav.Item('LAD', 'lad'), nav.Item('Reset', 'index')])
 
 @app.route('/')
 def index():
@@ -84,6 +84,31 @@ def lad():
 
         return render_template('lad.html', epc_string1=epc_string1, hpr_string1=hpr_string1, epc_string2=epc_string2, hpr_string2=hpr_string2, tag1=tag1, tag2=tag2, proportion_string=proportion_string, name=name, names=names, ons=ons, LAD_EPC_MEAN=LAD_EPC_MEAN, LAD_HPR_MEAN=LAD_HPR_MEAN, n_over1=n_over1)
 
+@app.route('/grid', methods=['GET','POST'])
+def grid():
+    (w,h) = session['dimen']
+    capacity, headroom, utilization, constit22 = biggrid(w,h)
+    session['constit22'] = constit22
+    session['grid-stats'] = (capacity, headroom, utilization)
+    return render_template('grid.html', capacity=capacity, headroom=headroom, utilization=utilization, constit22=constit22)
+
+@app.route('/gridsingle', methods=['POST', 'GET'])
+def gridsingle():
+    constit_name = request.form['singlegrid']
+    (w,h) = session['dimen']
+    constit22 = session['constit22']
+    (capacity, headroom, utilization) = session['grid-stats']
+    valid_substations = biggridsingle(w,h, constit_name)
+    if not valid_substations:
+        valid = False
+        return render_template('grid.html', capacity=capacity, headroom=headroom, utilization=utilization, constit22=constit22, valid=valid, constit_name=constit_name)
+    else:
+        valid = True
+        num_substations, capacity_single, headroom_single, utilization_single = extractsubstationinfo(valid_substations)
+
+        return render_template('grid.html', constit22=constit22, valid=valid, constit_name=constit_name, capacity=capacity, headroom=headroom, utilization=utilization, capacity_single=capacity_single, headroom_single=headroom_single, utilization_single=utilization_single, num_substations=num_substations)
+    
+    
 
 @app.route('/ladsingle', methods=['GET','POST'])
 def ladsingle():
@@ -154,7 +179,6 @@ def ladrequest():
         session['save1'] = [epc_string1, hpr_string1, epc_string2, hpr_string2, tag1, tag2, proportion_string, name, ons, n_over1, exp_str]
 
         return render_template("lad.html", epc_string1=epc_string1, hpr_string1=hpr_string1, epc_string2=epc_string2, hpr_string2=hpr_string2, tag1=tag1, tag2=tag2, proportion_string=proportion_string, name=name, names=names, ons=ons, LAD_EPC_MEAN=LAD_EPC_MEAN, LAD_HPR_MEAN=LAD_HPR_MEAN, n_over1=n_over1, exp_str=exp_str)
-
 
 
 @app.route('/epcdetails', methods=['POST'])
@@ -295,7 +319,6 @@ def singlerequest():
     r = requests.get(url, headers=headers)
     data = r.json()
     d = data['rows'][0]
-    print(d)
 
     comparisons = {}
     comparisons['postcode'] = d['postcode']
@@ -426,6 +449,8 @@ def ladadoption():
 
 
 
+
+
 @app.route('/graphdimen', methods=['POST'])
 def graphdimen():
     print("in graphdimen", flush=True)
@@ -462,6 +487,10 @@ def rendermap6():
 def rendermap7():
     ons = session['ons']
     return render_template('ladmaps/' + ons + '_map.html')
+
+@app.route('/biggrid')
+def rendermap8():
+    return render_template('biggrid/biggrid.html')
 
 
 

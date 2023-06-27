@@ -117,6 +117,49 @@ li a:hover:not(.active) {
 	margin-top: 1%;
 }
 
+#contentboxgrid {
+	width: 66%;
+	height: 84%;
+  border: 5px solid rgb(0, 0, 0);
+	position: absolute;
+	left:1%;
+	top: 12%;
+}
+#contentboxgrid iframe {
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	display: block;
+	margin-top: -0.5%;
+	margin-left: -0.5%;
+	overflow: none;
+}
+
+.contentboxright {
+	display: flex;
+	flex-direction:column;
+	position: absolute;
+	width: 31.5%;
+	height: 84%;
+	border: 5px solid rgb(0, 0, 0);
+	left: 67.5%;
+	top: 12%;
+}
+#gridtoprightbox {
+	position: absolute;
+	width: 100%;
+	height: 30%;
+	border-bottom: 2px solid rgb(0, 0, 0);
+}
+#gridresponsebox {
+	flex-grow: 1;
+	width: 100%;
+	position: absolute;
+	top:32%;
+	border-bottom: 2px solid rgb(0, 0, 0);
+	
+}
+
 .bigmap {
 	flex-grow: 1;
 	margin: 0;

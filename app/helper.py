@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 import numpy as np
 from numpy import interp
 import pandas as pd
+import math
 
 
 abspath = os.path.abspath(__file__)
@@ -192,6 +193,21 @@ def singleladrequest(ons, av_yoy):
 
     return epc_string1, hpr_string1, epc_string2, hpr_string2, tag1, tag2, proportion_string, name, n_over1
 
+def extractsubstationinfo(valid_substations):
+    #[sub_name, sub_type, lat, long, firm_capacity, demand_headroom, demand_peak, demand_headroom_rag]
+    num_substations = len(valid_substations)
+    total_capacity = 0
+    total_headroom = 0
+    invalid = 0
+    for key, val in valid_substations.items():
+        if math.isnan(val[5]):
+            invalid += 1
+            continue
+        total_capacity += float(val[4])
+        total_headroom += float(val[5])
+    utilization = round(((total_capacity - total_headroom) / total_capacity * 100),1)
+    return num_substations, total_capacity, total_headroom, utilization
+    
 
 
 def getconstitnames():

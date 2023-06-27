@@ -1,0 +1,103 @@
+<html>
+    {% extends "base.html" %}
+{% block head %}
+{% block refresh %}
+{% endblock %}
+    {{super()}}
+    <style type="text/css">
+        html {height:100%}
+        body {
+        margin:0;
+        height:100%;
+        overflow:hidden
+        }
+    </style>
+
+{% endblock %}
+
+<body>
+
+    {% block nav %}
+    {{super()}}
+    {% endblock %}
+
+    {% block dimen %} 
+    {% endblock %} 
+
+    {% block contentboxleft %} 
+    {% endblock %} 
+
+    {% block content %} 
+    <div id="contentboxgrid">
+        <iframe src="/biggrid" width=100%; id="biggrid"></iframe>
+    </div>
+
+    <div class="contentboxright">
+
+        {% block topcontent %}
+        <div id="gridtoprightbox"> 
+            <div class="singleinfo">
+                <div class="heading" style="text-align: center; color: blue; font-size: 1.8vw; text-decoration: underline; margin-top: 1%;">National Grid Substations</div>
+                <div class="responsetext" style="margin-top:1%">Firm Capacity for all Primary Substations: <span style="font-weight: bold;">{{capacity}} MVA</span></div>
+                <div class="responsetext">Demand Headroom for all Primary Substations: <span style="font-weight: bold;">{{headroom}} MVA</span></div>
+                <div class="responsetext">Total Utilization: <span style="font-weight: bold;">{{utilization}}%</span></div>
+                <hr style="width:101%; height:4px; background-color: black;  position: absolute; margin-top: 1%; margin-left: -1%;" />
+            </div>
+            
+            <form class="form-inline form-control-sm" method="post" action="/gridsingle" style="position: absolute; text-align: center; margin-top: 4%; margin-left: 0%; flex:1;" id="singlegrid">
+                <div class="input-group">
+                    <select class="form-select me-1" name="singlegrid" id="singlegrid">
+                    {% for o in constit22 %}
+                        <option value="{{o}}" SELECTED>{{o}}</option>
+                    {% endfor %}
+                    </select>
+                    <button type="submit" class="btn btn-primary btn-sm">Request LAD Info</button>
+                    </div>
+                </form>
+        </div>
+        {% endblock %}
+
+            {% block gridresponse %} 
+                
+            {% if valid is defined %} 
+            <div id="gridresponsebox">
+            {% if valid == False %} 
+            <div class="singleinfo" style="position: absolute;">National Grid has no substations in {{constit_name}}</div>
+            {% else %} 
+            <div class="singleinfo">
+                <div class="responsetext">Number of Substations in {{constit_name}}: <span style="font-weight:bold;">{{num_substations}}</span></div>
+                <div class="responsetext">Total (Primary) Substation Capacity: <span style="font-weight: bold;">{{capacity_single}} MVA</span> </div>
+                <div class="responsetext">Total (Primary) Substation Headroom: <span style="font-weight: bold;">{{headroom_single}} MVA</span> </div>
+                <div class="responsetext">Utilization for {{constit_name}} is <span style="font-weight: bold;">{{utilization_single}}%</span> </div>
+            </div>
+    
+            {% endif %} 
+            {% endif %} 
+            {% endblock %}
+            </div>
+    
+             
+
+    </div>
+
+
+       
+       
+
+
+    {% endblock %} 
+
+
+{% block footer %}
+{{super()}}
+{% endblock %}
+
+{% block redirect %}
+{% endblock %}
+
+
+
+</body>
+</html>
+
+

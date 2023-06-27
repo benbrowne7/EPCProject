@@ -7,6 +7,7 @@ import math
 import statistics
 import numpy as np
 import json
+from shapely.geometry import Point
 from bokeh.plotting import figure, show, save
 from bokeh.io import show, output_file
 from bokeh.io import curdoc
@@ -17,6 +18,10 @@ from bokeh.palettes import brewer
 import geopandas as gpd
 from bokeh.palettes import mpl, Inferno256
 from bng_latlon import WGS84toOSGB36
+import plotly.express as px
+import plotly.graph_objects as go
+
+constit22 = ['Adur', 'Allerdale', 'Amber Valley', 'Arun', 'Ashfield', 'Ashford', 'Babergh', 'Barking and Dagenham', 'Barnet', 'Barnsley', 'Barrow-in-Furness', 'Basildon', 'Basingstoke and Deane', 'Bassetlaw', 'Bath and North East Somerset', 'Bedford', 'Bexley', 'Birmingham', 'Blaby', 'Blackburn with Darwen', 'Blackpool', 'Blaenau Gwent', 'Bolsover', 'Bolton', 'Boston', 'Bournemouth, Christchurch and Poole', 'Bracknell Forest', 'Bradford', 'Braintree', 'Breckland', 'Brent', 'Brentwood', 'Bridgend', 'Brighton and Hove', 'Bristol, City of', 'Broadland', 'Bromley', 'Bromsgrove', 'Broxbourne', 'Broxtowe', 'Buckinghamshire', 'Burnley', 'Bury', 'Caerphilly', 'Calderdale', 'Cambridge', 'Camden', 'Cannock Chase', 'Canterbury', 'Cardiff', 'Carlisle', 'Carmarthenshire', 'Castle Point', 'Central Bedfordshire', 'Ceredigion', 'Charnwood', 'Chelmsford', 'Cheltenham', 'Cherwell', 'Cheshire East', 'Cheshire West and Chester', 'Chesterfield', 'Chichester', 'Chorley', 'City of London', 'Colchester', 'Conwy', 'Copeland', 'Cornwall', 'Cotswold', 'County Durham', 'Coventry', 'Craven', 'Crawley', 'Croydon', 'Dacorum', 'Darlington', 'Dartford', 'Denbighshire', 'Derby', 'Derbyshire Dales', 'Doncaster', 'Dorset', 'Dover', 'Dudley', 'Ealing', 'East Cambridgeshire', 'East Devon', 'East Hampshire', 'East Hertfordshire', 'East Lindsey', 'East Riding of Yorkshire', 'East Staffordshire', 'East Suffolk', 'Eastbourne', 'Eastleigh', 'Eden', 'Elmbridge', 'Enfield', 'Epping Forest', 'Epsom and Ewell', 'Erewash', 'Exeter', 'Fareham', 'Fenland', 'Flintshire', 'Folkestone and Hythe', 'Forest of Dean', 'Fylde', 'Gateshead', 'Gedling', 'Gloucester', 'Gosport', 'Gravesham', 'Great Yarmouth', 'Greenwich', 'Guildford', 'Gwynedd', 'Hackney', 'Halton', 'Hambleton', 'Hammersmith and Fulham', 'Harborough', 'Haringey', 'Harlow', 'Harrogate', 'Harrow', 'Hart', 'Hartlepool', 'Hastings', 'Havant', 'Havering', 'Herefordshire, County of', 'Hertsmere', 'High Peak', 'Hillingdon', 'Hinckley and Bosworth', 'Horsham', 'Hounslow', 'Huntingdonshire', 'Hyndburn', 'Ipswich', 'Isle of Anglesey', 'Isle of Wight', 'Isles of Scilly', 'Islington', 'Kensington and Chelsea', "King's Lynn and West Norfolk", 'Kingston upon Hull, City of', 'Kingston upon Thames', 'Kirklees', 'Knowsley', 'Lambeth', 'Lancaster', 'Leeds', 'Leicester', 'Lewes', 'Lewisham', 'Lichfield', 'Lincoln', 'Liverpool', 'Luton', 'Maidstone', 'Maldon', 'Malvern Hills', 'Manchester', 'Mansfield', 'Medway', 'Melton', 'Mendip', 'Merthyr Tydfil', 'Merton', 'Mid Devon', 'Mid Suffolk', 'Mid Sussex', 'Middlesbrough', 'Milton Keynes', 'Mole Valley', 'Monmouthshire', 'Neath Port Talbot', 'New Forest', 'Newark and Sherwood', 'Newcastle upon Tyne', 'Newcastle-under-Lyme', 'Newham', 'Newport', 'North Devon', 'North East Derbyshire', 'North East Lincolnshire', 'North Hertfordshire', 'North Kesteven', 'North Lincolnshire', 'North Norfolk', 'North Northamptonshire', 'North Somerset', 'North Tyneside', 'North Warwickshire', 'North West Leicestershire', 'Northumberland', 'Norwich', 'Nottingham', 'Nuneaton and Bedworth', 'Oadby and Wigston', 'Oldham', 'Oxford', 'Pembrokeshire', 'Pendle', 'Peterborough', 'Plymouth', 'Portsmouth', 'Powys', 'Preston', 'Reading', 'Redbridge', 'Redcar and Cleveland', 'Redditch', 'Reigate and Banstead', 'Rhondda Cynon Taf', 'Ribble Valley', 'Richmond upon Thames', 'Richmondshire', 'Rochdale', 'Rochford', 'Rossendale', 'Rother', 'Rotherham', 'Rugby', 'Runnymede', 'Rushcliffe', 'Rushmoor', 'Rutland', 'Ryedale', 'Salford', 'Sandwell', 'Scarborough', 'Sedgemoor', 'Sefton', 'Selby', 'Sevenoaks', 'Sheffield', 'Shropshire', 'Slough', 'Solihull', 'Somerset West and Taunton', 'South Cambridgeshire', 'South Derbyshire', 'South Gloucestershire', 'South Hams', 'South Holland', 'South Kesteven', 'South Lakeland', 'South Norfolk', 'South Oxfordshire', 'South Ribble', 'South Somerset', 'South Staffordshire', 'South Tyneside', 'Southampton', 'Southend-on-Sea', 'Southwark', 'Spelthorne', 'St Albans', 'St. Helens', 'Stafford', 'Staffordshire Moorlands', 'Stevenage', 'Stockport', 'Stockton-on-Tees', 'Stoke-on-Trent', 'Stratford-on-Avon', 'Stroud', 'Sunderland', 'Surrey Heath', 'Sutton', 'Swale', 'Swansea', 'Swindon', 'Tameside', 'Tamworth', 'Tandridge', 'Teignbridge', 'Telford and Wrekin', 'Tendring', 'Test Valley', 'Tewkesbury', 'Thanet', 'Three Rivers', 'Thurrock', 'Tonbridge and Malling', 'Torbay', 'Torfaen', 'Torridge', 'Tower Hamlets', 'Trafford', 'Tunbridge Wells', 'Uttlesford', 'Vale of Glamorgan', 'Vale of White Horse', 'Wakefield', 'Walsall', 'Waltham Forest', 'Wandsworth', 'Warrington', 'Warwick', 'Watford', 'Waverley', 'Wealden', 'Welwyn Hatfield', 'West Berkshire', 'West Devon', 'West Lancashire', 'West Lindsey', 'West Northamptonshire', 'West Oxfordshire', 'West Suffolk', 'Westminster', 'Wigan', 'Wiltshire', 'Winchester', 'Windsor and Maidenhead', 'Wirral', 'Woking', 'Wokingham', 'Wolverhampton', 'Worcester', 'Worthing', 'Wrexham', 'Wychavon', 'Wyre', 'Wyre Forest', 'York']
 
 def round_down(n, decimals=1):
     return int(math.floor(n / 10.0)) * 10
@@ -213,7 +218,7 @@ def adoptionmap(w,h):
   p1.patches('xs','ys', source = geosource,fill_color = {'field' :'hp_density', 'transform' : color_mapper},
           line_color = 'black', line_width = 0.25, fill_alpha = 1)
   p1.add_layout(color_bar, 'below')
-  p1.title.text_font_size = '18pt'
+  p1.title.text_font_size = '16pt'
   p1.title.align = "center"
   tab1 = TabPanel(child=p1, title="Heat Pump Density")
 
@@ -551,3 +556,193 @@ def ladmap(ons,w,h):
   output_file(name)
   save(Tabs(tabs=[tab1,tab2], width=w))
   return True
+
+def biggrid(w,h):
+
+  abspath = os.path.abspath(__file__)
+  sourcedir = os.path.dirname(abspath)
+
+  northwestpow = pd.read_csv(sourcedir + "/powerdata/raw/" + "distribution-substation-headroom-northwest.csv", low_memory=True)
+  powernetworks = pd.read_csv(sourcedir + "/powerdata/raw/" + "ukpn_primary_postcode_area.csv", low_memory=True)
+  nationalgrid = pd.read_csv(sourcedir + "/powerdata/raw/" + "WPD-Network-Capacity-Map.csv", low_memory=False)
+
+  northwestpow_dict = {}
+  powernetworks_dict = {}
+  nationalgrid_dict = {}
+
+  constit_names = []
+  shapefile = "LAD_DEC_2022_UK_BUC.shp"
+  uk_bounds = gpd.GeoDataFrame.from_file(sourcedir + "/data/Shapefile/" + shapefile)
+
+  for index, row in nationalgrid.iterrows():
+    sub_name = row['Substation Name']
+    sub_number = row['Substation Number']
+    sub_type = row['Asset Type']
+    lat = row['Latitude']
+    long = row['Longitude']
+    firm_capacity = row['Firm Capacity of Substation (MVA)']
+    demand_headroom = row['Demand Headroom (MVA)']
+    demand_peak = row['Measured Peak Demand (MVA)']
+    demand_headroom_rag = row['Demand Headroom RAG']
+    nationalgrid_dict[sub_name] = [sub_number, sub_type, lat, long, firm_capacity, demand_headroom, demand_peak, demand_headroom_rag]
+
+  capacity_sum = 0
+  demand_sum = 0
+  headroom_sum = 0
+  for key, vals in nationalgrid_dict.items():
+    if vals[1] != 'Primary':
+      continue
+    else:
+      if math.isnan(vals[4]) or math.isnan(vals[5]) or math.isnan(vals[6]):
+        continue
+      
+      capacity_sum += float(vals[4])
+      demand_sum += float(vals[6])
+      headroom_sum += float(vals[5])
+      
+
+  w = w*0.66
+  h = h*0.84
+
+  mapbox_toke = "pk.eyJ1IjoiYmVuYnJvd25lNyIsImEiOiJjbGo1eWhsbnIwNDJsM21xcG1lcTJxY2thIn0.6alroAlfLvYEQlD8A8339g"
+  px.set_mapbox_access_token(mapbox_toke)
+
+  lats = nationalgrid['Latitude']
+  lons = nationalgrid['Longitude']
+
+  zoom, center = zoom_center(lons=lons, lats=lats)
+
+  fig = px.scatter_mapbox(nationalgrid, lat="Latitude", lon="Longitude", hover_name="Substation Name", hover_data={"Asset Type":True, "Demand Headroom (MVA)":True, "Demand Headroom RAG":True, 'Latitude':False, 'Longitude':False}, color='Demand Headroom RAG', color_discrete_map={'Green':'green', 'Amber':'#FFBF00', 'Red':'red'},height=h, width=w, zoom=zoom, center=center)
+  fig.update_layout(mapbox_style="dark")
+  fig.update_layout(legend=(dict(yanchor="top", y=0.99, xanchor="left", x=0.01)))
+  fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
+  fig.update_layout(mapbox_bounds={"west":-10, "east": 10, "south":48, "north":60})
+  fig.write_html(sourcedir + "/templates/biggrid/biggrid.html")
+
+  return int(capacity_sum), int(headroom_sum), int((capacity_sum-headroom_sum)/capacity_sum*100), constit22
+
+def zoom_center(lons, lats, projection='mercator'):
+    width_to_height = 2.0
+  
+    
+    maxlon, minlon = max(lons), min(lons)
+    maxlat, minlat = max(lats), min(lats)
+    center = {
+        'lon': round((maxlon + minlon) / 2, 6),
+        'lat': round((maxlat + minlat) / 2, 6)
+    }
+    
+    # longitudinal range by zoom level (20 to 1)
+    # in degrees, if centered at equator
+    lon_zoom_range = np.array([
+        0.0007, 0.0014, 0.003, 0.006, 0.012, 0.024, 0.048, 0.096,
+        0.192, 0.3712, 0.768, 1.536, 3.072, 6.144, 11.8784, 23.7568,
+        47.5136, 98.304, 190.0544, 360.0
+    ])
+    
+    if projection == 'mercator':
+        margin = 1.2
+        height = (maxlat - minlat) * margin * width_to_height
+        width = (maxlon - minlon) * margin
+        lon_zoom = np.interp(width , lon_zoom_range, range(20, 0, -1))
+        lat_zoom = np.interp(height, lon_zoom_range, range(20, 0, -1))
+        zoom = round(min(lon_zoom, lat_zoom), 2)
+    else:
+        raise NotImplementedError(
+            f'{projection} projection is not implemented'
+        )
+    
+    return zoom, center
+
+def biggridsingle(w, h, constit_name):
+  abspath = os.path.abspath(__file__)
+  sourcedir = os.path.dirname(abspath)
+
+  northwestpow = pd.read_csv(sourcedir + "/powerdata/raw/" + "distribution-substation-headroom-northwest.csv", low_memory=True)
+  powernetworks = pd.read_csv(sourcedir + "/powerdata/raw/" + "ukpn_primary_postcode_area.csv", low_memory=True)
+  nationalgrid = pd.read_csv(sourcedir + "/powerdata/raw/" + "WPD-Network-Capacity-Map.csv", low_memory=False)
+
+  northwestpow_dict = {}
+  powernetworks_dict = {}
+  nationalgrid_dict = {}
+
+  shapefile = "LAD_DEC_2022_UK_BUC.shp"
+  uk_bounds = gpd.GeoDataFrame.from_file(sourcedir + "/data/Shapefile/" + shapefile)
+
+  for index, row in nationalgrid.iterrows():
+    sub_name = row['Substation Name']
+    sub_number = row['Substation Number']
+    sub_type = row['Asset Type']
+    lat = row['Latitude']
+    long = row['Longitude']
+    firm_capacity = row['Firm Capacity of Substation (MVA)']
+    demand_headroom = row['Demand Headroom (MVA)']
+    demand_peak = row['Measured Peak Demand (MVA)']
+    demand_headroom_rag = row['Demand Headroom RAG']
+    nationalgrid_dict[sub_number] = [sub_name, sub_type, lat, long, firm_capacity, demand_headroom, demand_peak, demand_headroom_rag]
+
+  for row in uk_bounds.itertuples():
+    if row[2] == constit_name:
+      lad_bounds = row
+      break
+  
+  poly = lad_bounds[8]
+  shape_coords = list(poly.exterior.coords)
+  constit_e = []
+  constit_n = []
+  for coord in shape_coords:
+    e, n = WGS84toOSGB36(coord[0], coord[1])
+    constit_e.append(e)
+    constit_n.append(n)
+  
+
+  
+  valid_substations = {}
+  for key, vals in nationalgrid_dict.items():
+    if vals[1] != 'Primary':
+      continue
+    lat = vals[2]
+    long = vals[3]
+    e, n = WGS84toOSGB36(float(lat), float(long))
+    P = Point(e,n)
+    if P.within(poly) == True:
+      valid_substations[key] = vals
+    
+  if not valid_substations:
+    return False
+
+  nationalgrid_new = pd.DataFrame.from_dict(valid_substations, orient='index', columns=['sub_name', 'sub_type', 'lat', 'long', 'firm_capacity', 'demand_headroom', 'demand_peak', 'demand_headroom_rag'])
+
+  w = w*0.66
+  h = h*0.84
+
+  mapbox_toke = "pk.eyJ1IjoiYmVuYnJvd25lNyIsImEiOiJjbGo1eWhsbnIwNDJsM21xcG1lcTJxY2thIn0.6alroAlfLvYEQlD8A8339g"
+  px.set_mapbox_access_token(mapbox_toke)
+
+  names = nationalgrid_new['sub_name']
+  lats = nationalgrid_new['lat']
+  lons = nationalgrid_new['long']
+
+  zoom, center = zoom_center(lons=lons, lats=lats)
+
+
+  fig = px.scatter_mapbox(nationalgrid_new, lat="lat", lon="long", hover_name="sub_name", hover_data={"sub_type":True, "demand_headroom":True, "demand_headroom_rag":True, 'lat':False, 'long':False}, color='demand_headroom_rag', color_discrete_map={'Green':'green', 'Amber':'#FFBF00', 'Red':'red'}, height=h, width=w, zoom=zoom, center=center)
+  fig.update_traces(marker={'size': 20})
+  fig.update_layout(mapbox_style="dark")
+  fig.update_layout(legend=(dict(yanchor="top", y=0.99, xanchor="left", x=0.01)))
+  fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
+  fig.update_layout(mapbox_bounds={"west":-10, "east": 10, "south":48, "north":60})
+
+  #fig.add_trace(go.Scatter(x=constit_e, y=constit_n))
+
+  fig.write_html(sourcedir + "/templates/biggrid/biggrid.html")
+
+  return valid_substations
+
+  
+
+
+
+  
+
+
