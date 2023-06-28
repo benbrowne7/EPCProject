@@ -247,8 +247,13 @@ def adoptionmap(w,h):
   tab2 = TabPanel(child=p2, title="Rate Heat Pump Adoption")
 
 
-  os.chdir(sourcedir + "/templates/adoptionmap")
-  output_file("adoption_map.html")
+  try:
+    os.chdir(sourcedir + "/templates/bigmap")
+  except:
+    return True
+  else:
+    output_file("adoption_map.html")
+
   save(Tabs(tabs=[tab1,tab2], width=w))
 
 def graph(ons,w,h):
@@ -611,6 +616,7 @@ def biggrid(w,h):
   lons = nationalgrid['Longitude']
 
   zoom, center = zoom_center(lons=lons, lats=lats)
+  zoom = int(zoom*0.8)
 
   fig = px.scatter_mapbox(nationalgrid, lat="Latitude", lon="Longitude", hover_name="Substation Name", hover_data={"Asset Type":True, "Demand Headroom (MVA)":True, "Demand Headroom RAG":True, 'Latitude':False, 'Longitude':False}, color='Demand Headroom RAG', color_discrete_map={'Green':'green', 'Amber':'#FFBF00', 'Red':'red'},height=h, width=w, zoom=zoom, center=center)
   fig.update_layout(mapbox_style="dark")

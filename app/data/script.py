@@ -16,27 +16,13 @@ def addcol(filename, row):
 abspath = os.path.abspath(__file__)
 sourcedir = os.path.dirname(abspath)
 
-df = pd.read_csv("outcode2ons.csv", low_memory=False)
+os.chdir(sourcedir + "/Reduced/Reduced_smallest")
+for file in os.listdir('.'):
+  df = pd.read_csv(file)
+  file1 = file[:-10]
+  hprs = pd.read_csv(sourcedir + "/hprs/" + file1 + "hprs.csv")
+  print(hprs.iloc[:,1])
 
-
-onss = {}
-
-for row in df.itertuples():
-  outcode = row[1]
-  ons = row[2]
-  if ons[0] == 'S' or ons[0] == 'N':
-    continue
-  if ons not in onss:
-    onss[ons] = [outcode]
-  else:
-    l = onss[ons]
-    l.append(outcode)
-    onss[ons] = l
-
-for key, val in onss.items():
-  l = val
-  l.insert(0, key)
-  addcol("ons2outcodes", l)
 
   
 
