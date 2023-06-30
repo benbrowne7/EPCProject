@@ -29,15 +29,23 @@
 
     {% block content %} 
     <div id="contentboxgrid">
+        {% if valid is not defined %} 
         <iframe src="/biggrid" width=100%; id="biggrid"></iframe>
+        {% else %} 
+        {% if valid == True %} 
+        <iframe src="/biggridsingle" width=100%; id="biggrid"></iframe>
+        {% else %}
+        <iframe src="/biggrid" width=100%; id="biggrid"></iframe>
+        {% endif %} 
+        {% endif %}
     </div>
 
     <div class="contentboxright">
 
         {% block topcontent %}
         <div id="gridtoprightbox"> 
-            <div class="singleinfo">
-                <div class="heading" style="text-align: center; color: blue; font-size: 1.8vw; text-decoration: underline; margin-top: 1%;">National Grid Substations</div>
+            <div class="singleinfo" style="margin-top: 1%;">
+                <div class="heading" style="text-align: center; color: blue; font-size: 1.8vw; text-decoration: underline; margin-top: 1%;">National Grid Primary Substations</div>
                 <div class="responsetext" style="margin-top:1%">Firm Capacity for all Primary Substations: <span style="font-weight: bold;">{{capacity}} MVA</span></div>
                 <div class="responsetext">Demand Headroom for all Primary Substations: <span style="font-weight: bold;">{{headroom}} MVA</span></div>
                 <div class="responsetext">Total Utilization: <span style="font-weight: bold;">{{utilization}}%</span></div>
@@ -62,13 +70,21 @@
             {% if valid is defined %} 
             <div id="gridresponsebox">
             {% if valid == False %} 
-            <div class="singleinfo" style="position: absolute;">National Grid has no substations in {{constit_name}}</div>
+            <div class="singleinfo">
+                <div class="responsetext" style="font-weight: bolder;">No substation data available or no substations within the district bounds for {{constit_name}}</div>
+                </div>
             {% else %} 
             <div class="singleinfo">
                 <div class="responsetext">Number of Substations in {{constit_name}}: <span style="font-weight:bold;">{{num_substations}}</span></div>
                 <div class="responsetext">Total (Primary) Substation Capacity: <span style="font-weight: bold;">{{capacity_single}} MVA</span> </div>
                 <div class="responsetext">Total (Primary) Substation Headroom: <span style="font-weight: bold;">{{headroom_single}} MVA</span> </div>
                 <div class="responsetext">Utilization for {{constit_name}} is <span style="font-weight: bold;">{{utilization_single}}%</span> </div>
+            </div>
+            <hr style="width:100%; height:2px; background-color: black;  position: absolute; margin-top:2.5%; " />
+            <div class="singleinfo" style="margin-top: 4%;">
+                <div class="responsetext">Assuming the Average Maximum Demand for a Heat Pump is <span style="font-weight: bold;">~1.7KW.</span><span><a href="https://www.sciencedirect.com/science/article/pii/S0306261917308954">[ref]</a></span></div>
+                <div class="responsetext">At 90% Utilization, {{constit_name}} could theoretically support up to <span style="font-weight: bold;">{{max_support}}</span> of additional heat pumps.</div>
+                <div class="responsetext">This is approximately <span style="font-weight: bold;">{{perc_homes}}%</span> of homes within {{constit_name}}.</div>
             </div>
     
             {% endif %} 

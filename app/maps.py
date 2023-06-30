@@ -18,6 +18,7 @@ from bokeh.palettes import brewer
 import geopandas as gpd
 from bokeh.palettes import mpl, Inferno256
 from bng_latlon import WGS84toOSGB36
+from bng_latlon import OSGB36toWGS84
 import plotly.express as px
 import plotly.graph_objects as go
 
@@ -428,7 +429,7 @@ def graphadoption(ons,w,h):
   save(Tabs(tabs=[tab4,tab1], width=w))
 
 
-def ladmap(ons,w,h):
+def ladmap1(ons,w,h):
 
   abspath = os.path.abspath(__file__)
   sourcedir = os.path.dirname(abspath)
@@ -562,49 +563,123 @@ def ladmap(ons,w,h):
   save(Tabs(tabs=[tab1,tab2], width=w))
   return True
 
+
+def ladmap(ons,w,h):
+  abspath = os.path.abspath(__file__)
+  sourcedir = os.path.dirname(abspath)
+
+  filename = sourcedir + "/data/constitbounds_data/" + ons + ".geojson"
+  gdf = gpd.read_file(filename)
+  gdf = gdf.to_crs("EPSG:4326")
+  
+  
+  try:
+    g = json.loads(gdf.to_json())
+    coords = g['features'][0]['geometry']['coordinates'][0]
+  except:
+    gdf = gpd.read_file(sourcedir + "/data/constitbounds_data/Local_Authority_Districts_December_2020_UK_BUC_2022.GEOJSON")
+    gdf = gdf.loc[gdf['LAD20CD'] == str(ons)]
+    gdf = gdf.to_crs("EPSG:4326")
+    g = json.loads(gdf.to_json())
+    coords = g['features'][0]['geometry']['coordinates'][0]
+    
+
+  try:
+    os.chdir(sourcedir + "/data/Postcode-Data/" + str(ons))
+  except:
+    print("dir not found")
+    return True
+  
+  outcode_df = pd.read_csv("outcode_data.csv")
+  sector_df = pd.read_csv("sector_data.csv")
+  #postcode_df = pd.read_csv("postcode_data.csv")
+
+  #get rid of outcodes not in area
+  ons2outcodes = pd.read_csv(sourcedir + "/data/ons2outcodes.csv")
+  inds = []
+  outcodes = ons2outcodes.loc[ons2outcodes['ONS'] == str(ons)].values[0][1:]
+  for index, row in outcode_df.iterrows():
+      postcode = row['outcode']
+      if postcode not in outcodes:
+        inds.append(index)
+  outcode_df = outcode_df.drop(inds, axis=0)
+
+  w = int(0.41 * w)
+  h = int(0.8*h)
+
+  mapbox_toke = "pk.eyJ1IjoiYmVuYnJvd25lNyIsImEiOiJjbGo1eWhsbnIwNDJsM21xcG1lcTJxY2thIn0.6alroAlfLvYEQlD8A8339g"
+  
+
+  lats = outcode_df['lat']
+  lons = outcode_df['long']
+
+  av_lat = statistics.mean(lats)
+  av_lon = statistics.mean(lons)
+
+  zoom, center = zoom_center(lons=lons, lats=lats)
+  zoom = int(zoom*0.88)
+
+  fig = px.scatter_mapbox(outcode_df, lat="lat", lon="long", hover_name="outcode", hover_data={'epc':True, 'hpr':True, 'lat':False, 'long':False}, color='epc', height=h, width=w, zoom=zoom, center=center)
+  fig.update_traces(marker={'size': 14})
+
+  fig1 = px.scatter_mapbox(sector_df, lat="long", lon="lat", hover_name="sector", hover_data={'epc':True, 'hpr':True, 'lat':False, 'long':False}, color='hpr', height=h, width=w, zoom=zoom, center=center)
+  fig1.update_traces(marker={'size': 14})
+
+  fig.add_trace(fig1.data[0])
+
+  #alt style: stamen-terrain
+  fig.update_layout(
+    mapbox = {
+        'style': "dark",
+        'center': center,
+        'zoom': zoom, 'layers': [{
+            'source': {
+                'type': "FeatureCollection",
+                'features': [{
+                    'type': "Feature",
+                    'geometry': {
+                        'type': "MultiPolygon",
+                        'coordinates': [[
+                            coords
+                        ]]
+                    }
+                }]
+            },
+            'type': "fill", 'below': "traces", 'color': "aliceblue", "opacity":0.6}]},
+    margin = {'l':0, 'r':0, 'b':0, 't':0})
+  fig.update_layout(mapbox_bounds={"west":av_lon-1, "east": av_lon+1, "south":av_lat-1, "north":av_lat+1})
+  fig.update_layout(mapbox_accesstoken=mapbox_toke)
+  
+
+  name = ons + "_map" ".html"
+  fig.write_html(sourcedir + "/templates/ladmaps/" + name)
+
+
+
+
+
 def biggrid(w,h):
 
   abspath = os.path.abspath(__file__)
   sourcedir = os.path.dirname(abspath)
 
-  northwestpow = pd.read_csv(sourcedir + "/powerdata/raw/" + "distribution-substation-headroom-northwest.csv", low_memory=True)
-  powernetworks = pd.read_csv(sourcedir + "/powerdata/raw/" + "ukpn_primary_postcode_area.csv", low_memory=True)
+  northernpower = pd.read_csv(sourcedir + "/powerdata/raw/" + "northern-pow-demand.csv")
   nationalgrid = pd.read_csv(sourcedir + "/powerdata/raw/" + "WPD-Network-Capacity-Map.csv", low_memory=False)
-
-  northwestpow_dict = {}
-  powernetworks_dict = {}
-  nationalgrid_dict = {}
 
   constit_names = []
   shapefile = "LAD_DEC_2022_UK_BUC.shp"
   uk_bounds = gpd.GeoDataFrame.from_file(sourcedir + "/data/Shapefile/" + shapefile)
 
-  for index, row in nationalgrid.iterrows():
-    sub_name = row['Substation Name']
-    sub_number = row['Substation Number']
-    sub_type = row['Asset Type']
-    lat = row['Latitude']
-    long = row['Longitude']
-    firm_capacity = row['Firm Capacity of Substation (MVA)']
-    demand_headroom = row['Demand Headroom (MVA)']
-    demand_peak = row['Measured Peak Demand (MVA)']
-    demand_headroom_rag = row['Demand Headroom RAG']
-    nationalgrid_dict[sub_name] = [sub_number, sub_type, lat, long, firm_capacity, demand_headroom, demand_peak, demand_headroom_rag]
 
-  capacity_sum = 0
-  demand_sum = 0
-  headroom_sum = 0
-  for key, vals in nationalgrid_dict.items():
-    if vals[1] != 'Primary':
-      continue
-    else:
-      if math.isnan(vals[4]) or math.isnan(vals[5]) or math.isnan(vals[6]):
-        continue
-      
-      capacity_sum += float(vals[4])
-      demand_sum += float(vals[6])
-      headroom_sum += float(vals[5])
-      
+  combo_df, combined_dict = combinesubstationdata(nationalgrid, northernpower)
+
+
+  drop_inds = []
+  for index, row in combo_df.iterrows():
+    if row['Type'] != 'Primary':
+      drop_inds.append(index)
+  combo_df = combo_df.drop(drop_inds, axis=0)
+
 
   w = w*0.66
   h = h*0.84
@@ -612,18 +687,24 @@ def biggrid(w,h):
   mapbox_toke = "pk.eyJ1IjoiYmVuYnJvd25lNyIsImEiOiJjbGo1eWhsbnIwNDJsM21xcG1lcTJxY2thIn0.6alroAlfLvYEQlD8A8339g"
   px.set_mapbox_access_token(mapbox_toke)
 
-  lats = nationalgrid['Latitude']
-  lons = nationalgrid['Longitude']
+  lats = combo_df['Latitude']
+  lons = combo_df['Longitude']
 
   zoom, center = zoom_center(lons=lons, lats=lats)
-  zoom = int(zoom*0.8)
+  #zoom = int(zoom*0.8)
 
-  fig = px.scatter_mapbox(nationalgrid, lat="Latitude", lon="Longitude", hover_name="Substation Name", hover_data={"Asset Type":True, "Demand Headroom (MVA)":True, "Demand Headroom RAG":True, 'Latitude':False, 'Longitude':False}, color='Demand Headroom RAG', color_discrete_map={'Green':'green', 'Amber':'#FFBF00', 'Red':'red'},height=h, width=w, zoom=zoom, center=center)
+  fig = px.scatter_mapbox(combo_df, lat="Latitude", lon="Longitude", hover_name="Substation Name", hover_data={"Type":True, "Demand Headroom (MVA)":True, "Demand Headroom RAG":False, 'Latitude':False, 'Longitude':False}, color='DNO', color_discrete_map={'nationalgrid':'green', 'northernpower':'#FFBF00'}, height=h, width=w, zoom=zoom, center=center)
   fig.update_layout(mapbox_style="dark")
+  fig.update_traces(marker={'size': 6})
+
+
+
   fig.update_layout(legend=(dict(yanchor="top", y=0.99, xanchor="left", x=0.01)))
   fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
   fig.update_layout(mapbox_bounds={"west":-10, "east": 10, "south":48, "north":60})
   fig.write_html(sourcedir + "/templates/biggrid/biggrid.html")
+
+  capacity_sum, headroom_sum = calculatetotalheadroom(combined_dict)
 
   return int(capacity_sum), int(headroom_sum), int((capacity_sum-headroom_sum)/capacity_sum*100), constit22
 
@@ -664,17 +745,127 @@ def biggridsingle(w, h, constit_name):
   abspath = os.path.abspath(__file__)
   sourcedir = os.path.dirname(abspath)
 
-  northwestpow = pd.read_csv(sourcedir + "/powerdata/raw/" + "distribution-substation-headroom-northwest.csv", low_memory=True)
-  powernetworks = pd.read_csv(sourcedir + "/powerdata/raw/" + "ukpn_primary_postcode_area.csv", low_memory=True)
+  northernpower = pd.read_csv(sourcedir + "/powerdata/raw/" + "northern-pow-demand.csv")
   nationalgrid = pd.read_csv(sourcedir + "/powerdata/raw/" + "WPD-Network-Capacity-Map.csv", low_memory=False)
 
-  northwestpow_dict = {}
-  powernetworks_dict = {}
-  nationalgrid_dict = {}
+
+  #get lad bounds
+  ons2lad = pd.read_csv(sourcedir + "/data/ONS2LAD.csv")
+  row = ons2lad.loc[ons2lad['LAD20NM'] == constit_name]
+  ons = row['LAD20CD'].values[0]
+  filename = sourcedir + "/data/constitbounds_data/" + ons + ".geojson"
+  gdf = gpd.read_file(filename)
+  gdf = gdf.to_crs("EPSG:4326")
+  
+  try:
+    g = json.loads(gdf.to_json())
+    coords = g['features'][0]['geometry']['coordinates'][0]
+  except:
+    gdf = gpd.read_file(sourcedir + "/data/constitbounds_data/Local_Authority_Districts_December_2020_UK_BUC_2022.GEOJSON")
+    gdf = gdf.loc[gdf['LAD20CD'] == str(ons)]
+    gdf = gdf.to_crs("EPSG:4326")
+    g = json.loads(gdf.to_json())
+    coords = g['features'][0]['geometry']['coordinates'][0]
 
   shapefile = "LAD_DEC_2022_UK_BUC.shp"
   uk_bounds = gpd.GeoDataFrame.from_file(sourcedir + "/data/Shapefile/" + shapefile)
 
+  for row in uk_bounds.itertuples():
+    if row[2] == constit_name:
+      lad_bounds = row
+      break
+  
+  poly = lad_bounds[8]
+
+  
+  combo_df, combined_dict = combinesubstationdata(nationalgrid, northernpower)
+  
+
+  valid_substations = {}
+  for key, vals in combined_dict.items():
+    if vals[2] != 'Primary':
+      continue
+    lat = vals[3]
+    long = vals[4]
+    e, n = WGS84toOSGB36(float(lat), float(long))
+    P = Point(e,n)
+    if P.within(poly) == True:
+      valid_substations[key] = vals
+    
+  if not valid_substations:
+    return False
+
+  validsubs_df = pd.DataFrame.from_dict(valid_substations, orient='index', columns=['Substation Name', 'ID', 'Type', 'Latitude', 'Longitude', 'Firm Capacity', 'Demand Headroom (MVA)', 'Demand Peak (MVA)', 'Demand Headroom RAG', 'DNO'])
+
+  w = w*0.66
+  h = h*0.84
+
+  mapbox_toke = "pk.eyJ1IjoiYmVuYnJvd25lNyIsImEiOiJjbGo1eWhsbnIwNDJsM21xcG1lcTJxY2thIn0.6alroAlfLvYEQlD8A8339g"
+  px.set_mapbox_access_token(mapbox_toke)
+
+  lats = validsubs_df['Latitude']
+  lons = validsubs_df['Longitude']
+  av_lat = statistics.mean(lats)
+  av_lon = statistics.mean(lons)
+
+  zoom, center = zoom_center(lons=lons, lats=lats)
+  zoom = zoom*0.9
+
+
+  fig = px.scatter_mapbox(validsubs_df, lat="Latitude", lon="Longitude", hover_name="Substation Name", hover_data={"Type":True, "Demand Headroom (MVA)":True, "Demand Headroom RAG":False, 'Latitude':False, 'Longitude':False}, color='Demand Headroom RAG', color_discrete_map={'GREEN':'green', 'AMBER':'#FFBF00', 'RED':'red'}, height=h, width=w, zoom=zoom, center=center)
+  fig.update_layout(mapbox_style="dark")
+  fig.update_traces(marker={'size': 18})
+  fig.update_layout(legend=(dict(yanchor="top", y=0.99, xanchor="left", x=0.01)))
+  fig.update_layout(
+    mapbox = {
+        'style': "dark",
+        'center': center,
+        'zoom': zoom, 'layers': [{
+            'source': {
+                'type': "FeatureCollection",
+                'features': [{
+                    'type': "Feature",
+                    'geometry': {
+                        'type': "MultiPolygon",
+                        'coordinates': [[
+                            coords
+                        ]]
+                    }
+                }]
+            },
+            'type': "fill", 'below': "traces", 'color': "aliceblue", "opacity":0.2}]},
+    margin = {'l':0, 'r':0, 'b':0, 't':0})
+  fig.update_layout(mapbox_bounds={"west":av_lon-1, "east": av_lon+1, "south":av_lat-1, "north":av_lat+1})
+
+
+  fig.write_html(sourcedir + "/templates/biggrid/biggridsingle.html")
+
+  return valid_substations
+
+  
+def calculatetotalheadroom(combined_dict):
+  capacity_sum = 0
+  demand_sum = 0
+  headroom_sum = 0
+  for key, vals in combined_dict.items():
+    if vals[2] != 'Primary':
+      continue
+    else:
+      if math.isnan(vals[5]) or math.isnan(vals[6] or math.isnan(vals[7])):
+        continue
+      else:
+        capacity_sum += float(vals[5])
+        demand_sum += float(vals[7])
+        headroom_sum += float(vals[6])
+
+
+  return capacity_sum, headroom_sum
+
+def combinesubstationdata(nationalgrid, northernpower):
+  northernpow_dict = {}
+  nationalgrid_dict = {}
+
+  #makes dict for nationalgrid
   for index, row in nationalgrid.iterrows():
     sub_name = row['Substation Name']
     sub_number = row['Substation Number']
@@ -684,70 +875,32 @@ def biggridsingle(w, h, constit_name):
     firm_capacity = row['Firm Capacity of Substation (MVA)']
     demand_headroom = row['Demand Headroom (MVA)']
     demand_peak = row['Measured Peak Demand (MVA)']
-    demand_headroom_rag = row['Demand Headroom RAG']
-    nationalgrid_dict[sub_number] = [sub_name, sub_type, lat, long, firm_capacity, demand_headroom, demand_peak, demand_headroom_rag]
-
-  for row in uk_bounds.itertuples():
-    if row[2] == constit_name:
-      lad_bounds = row
-      break
+    demand_headroom_rag = str(row['Demand Headroom RAG']).upper()
+    nationalgrid_dict[sub_name] = [sub_name, sub_number, sub_type, lat, long, firm_capacity, demand_headroom, demand_peak, demand_headroom_rag, "nationalgrid"]
   
-  poly = lad_bounds[8]
-  shape_coords = list(poly.exterior.coords)
-  constit_e = []
-  constit_n = []
-  for coord in shape_coords:
-    e, n = WGS84toOSGB36(coord[0], coord[1])
-    constit_e.append(e)
-    constit_n.append(n)
+  #makes dict for northernpow
+  for index, row in northernpower.iterrows():
+    sub_name = row['Substation Name']
+    sub_number = row['Substation ID']
+    sub_type = row['Substation Class']
+    firm_capacity = row['Firm Capacity']
+    demand_peak = row['Maximum Demand (MVA)']
+    try: 
+      demand_headroom = float(firm_capacity) - float(demand_peak)
+    except: 
+      demand_headroom = 0
+    demand_headroom_rag = row['Demand Classification'].upper()
+    lat = row['lat']
+    long = row['long']
+    northernpow_dict[sub_name] = [sub_name, sub_number, sub_type, lat, long, firm_capacity, demand_headroom, demand_peak, demand_headroom_rag, "northernpower"]
   
-
   
-  valid_substations = {}
-  for key, vals in nationalgrid_dict.items():
-    if vals[1] != 'Primary':
-      continue
-    lat = vals[2]
-    long = vals[3]
-    e, n = WGS84toOSGB36(float(lat), float(long))
-    P = Point(e,n)
-    if P.within(poly) == True:
-      valid_substations[key] = vals
-    
-  if not valid_substations:
-    return False
+  combined_dict = nationalgrid_dict.copy()
 
-  nationalgrid_new = pd.DataFrame.from_dict(valid_substations, orient='index', columns=['sub_name', 'sub_type', 'lat', 'long', 'firm_capacity', 'demand_headroom', 'demand_peak', 'demand_headroom_rag'])
+  combined_dict.update(northernpow_dict)
+  combo_df = pd.DataFrame.from_dict(combined_dict, orient='index', columns=['Substation Name', 'ID', 'Type', 'Latitude', 'Longitude', 'Firm Capacity', 'Demand Headroom (MVA)', 'Demand Peak (MVA)', 'Demand Headroom RAG', 'DNO'])
 
-  w = w*0.66
-  h = h*0.84
-
-  mapbox_toke = "pk.eyJ1IjoiYmVuYnJvd25lNyIsImEiOiJjbGo1eWhsbnIwNDJsM21xcG1lcTJxY2thIn0.6alroAlfLvYEQlD8A8339g"
-  px.set_mapbox_access_token(mapbox_toke)
-
-  names = nationalgrid_new['sub_name']
-  lats = nationalgrid_new['lat']
-  lons = nationalgrid_new['long']
-
-  zoom, center = zoom_center(lons=lons, lats=lats)
-
-
-  fig = px.scatter_mapbox(nationalgrid_new, lat="lat", lon="long", hover_name="sub_name", hover_data={"sub_type":True, "demand_headroom":True, "demand_headroom_rag":True, 'lat':False, 'long':False}, color='demand_headroom_rag', color_discrete_map={'Green':'green', 'Amber':'#FFBF00', 'Red':'red'}, height=h, width=w, zoom=zoom, center=center)
-  fig.update_traces(marker={'size': 20})
-  fig.update_layout(mapbox_style="dark")
-  fig.update_layout(legend=(dict(yanchor="top", y=0.99, xanchor="left", x=0.01)))
-  fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
-  fig.update_layout(mapbox_bounds={"west":-10, "east": 10, "south":48, "north":60})
-
-  #fig.add_trace(go.Scatter(x=constit_e, y=constit_n))
-
-  fig.write_html(sourcedir + "/templates/biggrid/biggrid.html")
-
-  return valid_substations
-
-  
-
-
+  return combo_df, combined_dict
 
   
 

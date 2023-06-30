@@ -35,7 +35,7 @@
     {% endif %}
 
     {% if epc_string1 is defined %}
-    <iframe  src="/ladmapleft" id="bigmap"></iframe>
+    <iframe  src="/ladmapleft" id="bigmap" style="left:0%; top:0%; margin-left: 0%; margin-top: 0%;"></iframe>
     {% endif %}
 
 
@@ -84,7 +84,7 @@
             {% if epc_string1 is defined %}
             <div id="responseboxright">
             <div class="singleinfo">
-                <div class="switchtabbuttons"><button type="button" class="btn btn-primary btn-sm me-2" onclick="ladperf();">{{name}} Energy Performance</button><button type="button" class="btn btn-primary btn-sm" onclick="ladadoption();">{{name}} Heat Pump Adoption</button></div>
+                <div class="switchtabbuttons"><button type="button" class="btn btn-primary btn-sm me-2" onclick="ladperf();">{{name}} Energy Perf</button><button type="button" class="btn btn-primary btn-sm" onclick="ladadoption();">{{name}} Heat Pump Adoption</button></div>
 
                 <div class="heading">Averages over all Local Authority Districts</div>
                 <div class="responsetext">Average EPC: {{LAD_EPC_MEAN}}</div>

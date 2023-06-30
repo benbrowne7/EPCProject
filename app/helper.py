@@ -200,13 +200,13 @@ def extractsubstationinfo(valid_substations):
     total_headroom = 0
     invalid = 0
     for key, val in valid_substations.items():
-        if math.isnan(val[5]):
+        if math.isnan(val[6]):
             invalid += 1
             continue
-        total_capacity += float(val[4])
-        total_headroom += float(val[5])
+        total_capacity += float(val[5])
+        total_headroom += float(val[6])
     utilization = round(((total_capacity - total_headroom) / total_capacity * 100),1)
-    return num_substations, total_capacity, total_headroom, utilization
+    return num_substations, round(total_capacity,2), round(total_headroom,2), utilization
     
 
 

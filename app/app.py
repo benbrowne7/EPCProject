@@ -94,11 +94,23 @@ def grid():
 
 @app.route('/gridsingle', methods=['POST', 'GET'])
 def gridsingle():
+
     constit_name = request.form['singlegrid']
     (w,h) = session['dimen']
     constit22 = session['constit22']
+    constit22.remove(constit_name)
+    constit22.append(constit_name)
     (capacity, headroom, utilization) = session['grid-stats']
     valid_substations = biggridsingle(w,h, constit_name)
+
+    ons2lad = pd.read_csv(sourcedir + "/data/ONS2LAD.csv")
+    row = ons2lad.loc[ons2lad['LAD20NM'] == constit_name]
+    ons = row['LAD20CD'].values[0]
+    num_epcs_df = pd.read_csv(sourcedir + "/data/number_epcs.csv")
+    row = num_epcs_df.loc[num_epcs_df['ONS'] == ons]
+    num_epcs = int(row['NUM'].values[0])
+
+
     if not valid_substations:
         valid = False
         return render_template('grid.html', capacity=capacity, headroom=headroom, utilization=utilization, constit22=constit22, valid=valid, constit_name=constit_name)
@@ -106,7 +118,11 @@ def gridsingle():
         valid = True
         num_substations, capacity_single, headroom_single, utilization_single = extractsubstationinfo(valid_substations)
 
-        return render_template('grid.html', constit22=constit22, valid=valid, constit_name=constit_name, capacity=capacity, headroom=headroom, utilization=utilization, capacity_single=capacity_single, headroom_single=headroom_single, utilization_single=utilization_single, num_substations=num_substations)
+        
+        max_support = int((headroom_single-(capacity_single*0.1)) / 0.0017)
+        perc_homes = round((max_support / num_epcs)*100,1)
+
+        return render_template('grid.html', constit22=constit22, valid=valid, constit_name=constit_name, capacity=capacity, headroom=headroom, utilization=utilization, capacity_single=capacity_single, headroom_single=headroom_single, utilization_single=utilization_single, num_substations=num_substations, num_epcs=num_epcs, max_support=max_support, perc_homes=perc_homes)
     
     
 
@@ -472,7 +488,7 @@ def rendermap1():
 def rendermap2():
     w,h = session['dimen']
     adoptionmap(w,h)
-    return render_template('adoptionmap/adoption_map.html')
+    return render_template('bigmap/adoption_map.html')
 
 @app.route('/graphpane')
 def rendermap5():
@@ -491,6 +507,10 @@ def rendermap7():
 @app.route('/biggrid')
 def rendermap8():
     return render_template('biggrid/biggrid.html')
+
+@app.route('/biggridsingle')
+def rendermap9():
+    return render_template('biggrid/biggridsingle.html')
 
 
 
