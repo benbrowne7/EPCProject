@@ -194,7 +194,7 @@ def singleladrequest(ons, av_yoy):
     return epc_string1, hpr_string1, epc_string2, hpr_string2, tag1, tag2, proportion_string, name, n_over1
 
 def extractsubstationinfo(valid_substations):
-    #[sub_name, sub_type, lat, long, firm_capacity, demand_headroom, demand_peak, demand_headroom_rag]
+    #[sub_name, sub_number, sub_type, lat, long, firm_capacity, demand_headroom, demand_peak, demand_headroom_rag, "DNO"]
     num_substations = len(valid_substations)
     total_capacity = 0
     total_headroom = 0
@@ -205,8 +205,12 @@ def extractsubstationinfo(valid_substations):
             continue
         total_capacity += float(val[5])
         total_headroom += float(val[6])
+        dno = val[9]
     utilization = round(((total_capacity - total_headroom) / total_capacity * 100),1)
-    return num_substations, round(total_capacity,2), round(total_headroom,2), utilization
+    if dno == 'Electricity North West':
+        total_capacity = 0
+        utilization = 0
+    return num_substations, round(total_capacity,2), round(total_headroom,2), utilization, dno
     
 
 

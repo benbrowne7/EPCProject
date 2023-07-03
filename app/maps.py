@@ -657,7 +657,6 @@ def ladmap(ons,w,h):
 
 
 
-
 def biggrid(w,h):
 
   abspath = os.path.abspath(__file__)
@@ -665,20 +664,17 @@ def biggrid(w,h):
 
   northernpower = pd.read_csv(sourcedir + "/powerdata/raw/" + "northern-pow-demand.csv")
   nationalgrid = pd.read_csv(sourcedir + "/powerdata/raw/" + "WPD-Network-Capacity-Map.csv", low_memory=False)
+  ukpowernetworks = pd.read_csv(sourcedir + "/powerdata/raw/" + "ukpn_primary_postcode_area.csv", low_memory=True)
+  northwestelectric = pd.read_csv(sourcedir + "/powerdata/raw/" + "northwest-elec-primary-demand.csv")
+
+  ukpowernetworks = ukpowernetworks.drop(['Geo Shape'], axis=1)
 
   constit_names = []
   shapefile = "LAD_DEC_2022_UK_BUC.shp"
   uk_bounds = gpd.GeoDataFrame.from_file(sourcedir + "/data/Shapefile/" + shapefile)
 
 
-  combo_df, combined_dict = combinesubstationdata(nationalgrid, northernpower)
-
-
-  drop_inds = []
-  for index, row in combo_df.iterrows():
-    if row['Type'] != 'Primary':
-      drop_inds.append(index)
-  combo_df = combo_df.drop(drop_inds, axis=0)
+  combo_df, combined_dict = combinesubstationdata(nationalgrid, northernpower, ukpowernetworks, northwestelectric)
 
 
   w = w*0.66
@@ -693,7 +689,7 @@ def biggrid(w,h):
   zoom, center = zoom_center(lons=lons, lats=lats)
   #zoom = int(zoom*0.8)
 
-  fig = px.scatter_mapbox(combo_df, lat="Latitude", lon="Longitude", hover_name="Substation Name", hover_data={"Type":True, "Demand Headroom (MVA)":True, "Demand Headroom RAG":False, 'Latitude':False, 'Longitude':False}, color='DNO', color_discrete_map={'nationalgrid':'green', 'northernpower':'#FFBF00'}, height=h, width=w, zoom=zoom, center=center)
+  fig = px.scatter_mapbox(combo_df, lat="Latitude", lon="Longitude", hover_name="Substation Name", hover_data={"Type":False, "Demand Headroom (MVA)":True, "Demand Headroom RAG":False, 'Firm Capacity (MVA)':True, 'Latitude':False, 'Longitude':False}, color='DNO', color_discrete_map={'nationalgrid':'green', 'northernpower':'#FFBF00'}, height=h, width=w, zoom=zoom, center=center)
   fig.update_layout(mapbox_style="dark")
   fig.update_traces(marker={'size': 6})
 
@@ -747,6 +743,10 @@ def biggridsingle(w, h, constit_name):
 
   northernpower = pd.read_csv(sourcedir + "/powerdata/raw/" + "northern-pow-demand.csv")
   nationalgrid = pd.read_csv(sourcedir + "/powerdata/raw/" + "WPD-Network-Capacity-Map.csv", low_memory=False)
+  ukpowernetworks = pd.read_csv(sourcedir + "/powerdata/raw/" + "ukpn_primary_postcode_area.csv", low_memory=True)
+  northwestelectric = pd.read_csv(sourcedir + "/powerdata/raw/" + "northwest-elec-primary-demand.csv")
+
+  ukpowernetworks = ukpowernetworks.drop(['Geo Shape'], axis=1)
 
 
   #get lad bounds
@@ -778,13 +778,11 @@ def biggridsingle(w, h, constit_name):
   poly = lad_bounds[8]
 
   
-  combo_df, combined_dict = combinesubstationdata(nationalgrid, northernpower)
+  combo_df, combined_dict = combinesubstationdata(nationalgrid, northernpower, ukpowernetworks, northwestelectric)
   
 
   valid_substations = {}
   for key, vals in combined_dict.items():
-    if vals[2] != 'Primary':
-      continue
     lat = vals[3]
     long = vals[4]
     e, n = WGS84toOSGB36(float(lat), float(long))
@@ -795,7 +793,7 @@ def biggridsingle(w, h, constit_name):
   if not valid_substations:
     return False
 
-  validsubs_df = pd.DataFrame.from_dict(valid_substations, orient='index', columns=['Substation Name', 'ID', 'Type', 'Latitude', 'Longitude', 'Firm Capacity', 'Demand Headroom (MVA)', 'Demand Peak (MVA)', 'Demand Headroom RAG', 'DNO'])
+  validsubs_df = pd.DataFrame.from_dict(valid_substations, orient='index', columns=['Substation Name', 'ID', 'Type', 'Latitude', 'Longitude', 'Firm Capacity (MVA)', 'Demand Headroom (MVA)', 'Demand Peak (MVA)', 'Demand Headroom RAG', 'DNO'])
 
   w = w*0.66
   h = h*0.84
@@ -812,7 +810,7 @@ def biggridsingle(w, h, constit_name):
   zoom = zoom*0.9
 
 
-  fig = px.scatter_mapbox(validsubs_df, lat="Latitude", lon="Longitude", hover_name="Substation Name", hover_data={"Type":True, "Demand Headroom (MVA)":True, "Demand Headroom RAG":False, 'Latitude':False, 'Longitude':False}, color='Demand Headroom RAG', color_discrete_map={'GREEN':'green', 'AMBER':'#FFBF00', 'RED':'red'}, height=h, width=w, zoom=zoom, center=center)
+  fig = px.scatter_mapbox(validsubs_df, lat="Latitude", lon="Longitude", hover_name="Substation Name", hover_data={"Type":False, "Demand Headroom (MVA)":True, "Demand Headroom RAG":False, 'Firm Capacity (MVA)':True, 'Latitude':False, 'Longitude':False}, color='Demand Headroom RAG', color_discrete_map={'GREEN':'green', 'AMBER':'#FFBF00', 'RED':'red'}, height=h, width=w, zoom=zoom, center=center)
   fig.update_layout(mapbox_style="dark")
   fig.update_traces(marker={'size': 18})
   fig.update_layout(legend=(dict(yanchor="top", y=0.99, xanchor="left", x=0.01)))
@@ -844,61 +842,107 @@ def biggridsingle(w, h, constit_name):
 
   
 def calculatetotalheadroom(combined_dict):
+  #[sub_name, sub_number, sub_type, lat, long, firm_capacity, demand_headroom, demand_peak, demand_headroom_rag, "DNO"]
   capacity_sum = 0
   demand_sum = 0
   headroom_sum = 0
   for key, vals in combined_dict.items():
-    if vals[2] != 'Primary':
+    if math.isnan(vals[5]) or math.isnan(vals[6] or math.isnan(vals[7])):
       continue
-    else:
-      if math.isnan(vals[5]) or math.isnan(vals[6] or math.isnan(vals[7])):
-        continue
-      else:
-        capacity_sum += float(vals[5])
-        demand_sum += float(vals[7])
-        headroom_sum += float(vals[6])
-
+    if vals[9] == 'Electricity North West':
+      continue
+    capacity_sum += float(vals[5])
+    demand_sum += float(vals[7])
+    headroom_sum += float(vals[6])
 
   return capacity_sum, headroom_sum
 
-def combinesubstationdata(nationalgrid, northernpower):
+def combinesubstationdata(nationalgrid, northernpower, ukpowernetworks, northwestelectric):
   northernpow_dict = {}
   nationalgrid_dict = {}
+  ukpowernetworks_dict = {}
+  northwestelectric_dict = {}
 
   #makes dict for nationalgrid
   for index, row in nationalgrid.iterrows():
+    sub_type = row['Asset Type']
+    if sub_type != 'Primary':
+      continue
     sub_name = row['Substation Name']
     sub_number = row['Substation Number']
-    sub_type = row['Asset Type']
-    lat = row['Latitude']
-    long = row['Longitude']
-    firm_capacity = row['Firm Capacity of Substation (MVA)']
-    demand_headroom = row['Demand Headroom (MVA)']
+    lat = float(row['Latitude'])
+    long = float(row['Longitude'])
+    firm_capacity = float(row['Firm Capacity of Substation (MVA)'])
+    demand_headroom = round(float(row['Demand Headroom (MVA)']),2)
     demand_peak = row['Measured Peak Demand (MVA)']
     demand_headroom_rag = str(row['Demand Headroom RAG']).upper()
-    nationalgrid_dict[sub_name] = [sub_name, sub_number, sub_type, lat, long, firm_capacity, demand_headroom, demand_peak, demand_headroom_rag, "nationalgrid"]
+    nationalgrid_dict[sub_name] = [sub_name, sub_number, sub_type, lat, long, firm_capacity, demand_headroom, demand_peak, demand_headroom_rag, "National Grid"]
   
   #makes dict for northernpow
   for index, row in northernpower.iterrows():
+    sub_type = row['Substation Class']
+    if sub_type != 'Primary':
+      continue
     sub_name = row['Substation Name']
     sub_number = row['Substation ID']
-    sub_type = row['Substation Class']
     firm_capacity = row['Firm Capacity']
     demand_peak = row['Maximum Demand (MVA)']
     try: 
-      demand_headroom = float(firm_capacity) - float(demand_peak)
+      demand_headroom = round(float(firm_capacity) - float(demand_peak),2)
     except: 
       demand_headroom = 0
     demand_headroom_rag = row['Demand Classification'].upper()
-    lat = row['lat']
-    long = row['long']
-    northernpow_dict[sub_name] = [sub_name, sub_number, sub_type, lat, long, firm_capacity, demand_headroom, demand_peak, demand_headroom_rag, "northernpower"]
+    lat = float(row['lat'])
+    long = float(row['long'])
+    northernpow_dict[sub_name] = [sub_name, sub_number, sub_type, lat, long, firm_capacity, demand_headroom, demand_peak, demand_headroom_rag, "Northern Power"]
   
+  #make dict for ukpowernetworks
+  for index, row in ukpowernetworks.iterrows():
+    sub_name = row['PrimarySubstationName']
+    sub_number = row['PrimaryAlias']
+    sub_type = 'Primary'
+    try:
+      firm_capacity = float(row['FirmCapacityWinter'])
+    except:
+      firm_capacity = 0
+    try:
+      demand_headroom = round(firm_capacity * float(row['DemandHeadroom'][:-1]) / 100,2)
+    except:
+      demand_headroom = 0
+    demand_peak = firm_capacity - demand_headroom  
+    try:
+      demand_headroom_rag = str(row['DemandRAG']).split(" ")[0].upper()
+      if demand_headroom_rag == 'YELLOW':
+        demand_headroom_rag = 'AMBER'
+    except:
+      demand_headroom_rag = "NA"
+    lat = float(row['Geo Point'].split(',')[0])
+    long = float(row['Geo Point'].split(',')[1])
+    ukpowernetworks_dict[sub_name] = [sub_name, sub_number, sub_type, lat, long, firm_capacity, demand_headroom, demand_peak, demand_headroom_rag, "UK Power Networks"]
+
+  #make dict for northwestelec
+  for index, row in northwestelectric.iterrows():
+    sub_name = row['Primary Substation']
+    sub_number = 'na'
+    sub_type = 'Primary'
+    firm_capacity = 0.1
+    demand_headroom = float(row['Demand Headroom (MW)'])
+    if demand_headroom == 0:
+      demand_headroom_rag = 'RED'
+    elif demand_headroom < 2:
+      demand_headroom_rag = 'AMBER'
+    else:
+      demand_headroom_rag = 'GREEN'
+    (lat, long) = OSGB36toWGS84(float(row['Easting']), float(row['Northing']))
+    demand_peak = round(firm_capacity - demand_headroom,2)
+    northwestelectric_dict[sub_name] = [sub_name, sub_number, sub_type, lat, long, firm_capacity, demand_headroom, demand_peak, demand_headroom_rag, "Electricity North West"]
   
   combined_dict = nationalgrid_dict.copy()
 
   combined_dict.update(northernpow_dict)
-  combo_df = pd.DataFrame.from_dict(combined_dict, orient='index', columns=['Substation Name', 'ID', 'Type', 'Latitude', 'Longitude', 'Firm Capacity', 'Demand Headroom (MVA)', 'Demand Peak (MVA)', 'Demand Headroom RAG', 'DNO'])
+  combined_dict.update(ukpowernetworks_dict)
+  combined_dict.update(northwestelectric_dict)
+  combo_df = pd.DataFrame.from_dict(combined_dict, orient='index', columns=['Substation Name', 'ID', 'Type', 'Latitude', 'Longitude', 'Firm Capacity (MVA)', 'Demand Headroom (MVA)', 'Demand Peak (MVA)', 'Demand Headroom RAG', 'DNO'])
 
   return combo_df, combined_dict
 

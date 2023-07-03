@@ -15,10 +15,12 @@ from numpy import interp
 import pandas as pd
 from helper import *
 from os.path import exists
+from __init__ import *
 
 app = Flask(__name__)
 nav = Navigation(app)
 app.config.from_object(Config)
+
 
 
 
