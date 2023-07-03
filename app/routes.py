@@ -3,9 +3,10 @@ from flask import Flask, render_template, flash, redirect, url_for, request, ses
 
 from flask_navigation import Navigation
 from config import Config
+from flask import current_app as app
 
 
-from maps import *
+from .maps import *
 import requests
 import json
 import os
@@ -13,13 +14,13 @@ from datetime import datetime, timedelta
 import numpy as np
 from numpy import interp
 import pandas as pd
-from helper import *
+from .helper import *
 from os.path import exists
-from __init__ import *
 
-app = Flask(__name__)
-nav = Navigation(app)
-app.config.from_object(Config)
+
+#app = Flask(__name__)
+#nav = Navigation(app)
+#app.config.from_object(Config)
 
 
 
@@ -43,7 +44,7 @@ LAD_HPR_MEAN = 0.875
 abspath = os.path.abspath(__file__)
 sourcedir = os.path.dirname(abspath)
 
-nav.Bar('top', [nav.Item('Grid', 'grid'), nav.Item('Individual', 'individual'), nav.Item('LAD', 'lad'), nav.Item('Reset', 'index')])
+
 
 @app.route('/')
 def index():
