@@ -94,8 +94,13 @@ def grid():
 
 @app.route('/gridsingle', methods=['POST', 'GET'])
 def gridsingle():
+    try:
+        constit_name = request.form['singlegrid']
+    except:
+        constit22 = session['constit22']
+        (capacity, headroom, utilization) = session['grid-stats']
+        return render_template('grid.html', capacity=capacity, headroom=headroom, utilization=utilization, constit22=constit22)
 
-    constit_name = request.form['singlegrid']
     (w,h) = session['dimen']
     constit22 = session['constit22']
     constit22.remove(constit_name)
@@ -116,13 +121,23 @@ def gridsingle():
         return render_template('grid.html', capacity=capacity, headroom=headroom, utilization=utilization, constit22=constit22, valid=valid, constit_name=constit_name)
     else:
         valid = True
-        num_substations, capacity_single, headroom_single, utilization_single = extractsubstationinfo(valid_substations)
-
-        
+        num_substations, capacity_single, headroom_single, utilization_single, dno = extractsubstationinfo(valid_substations)
         max_support = int((headroom_single-(capacity_single*0.1)) / 0.0017)
         perc_homes = round((max_support / num_epcs)*100,1)
 
-        return render_template('grid.html', constit22=constit22, valid=valid, constit_name=constit_name, capacity=capacity, headroom=headroom, utilization=utilization, capacity_single=capacity_single, headroom_single=headroom_single, utilization_single=utilization_single, num_substations=num_substations, num_epcs=num_epcs, max_support=max_support, perc_homes=perc_homes)
+        if utilization_single == 0 and capacity_single == 0:
+            utilization_single = 'Data Not Available'
+            capacity_single = 'Data Not Available'
+            northwest = True
+            max_support = int(headroom_single*0.9 / 0.0017)
+            perc_homes = round((max_support / num_epcs)*100,1)
+        else:
+            northwest = False
+
+        
+        
+
+        return render_template('grid.html', constit22=constit22, valid=valid, constit_name=constit_name, capacity=capacity, headroom=headroom, utilization=utilization, capacity_single=capacity_single, headroom_single=headroom_single, utilization_single=utilization_single, num_substations=num_substations, num_epcs=num_epcs, max_support=max_support, perc_homes=perc_homes, dno=dno, northwest=northwest)
     
     
 
