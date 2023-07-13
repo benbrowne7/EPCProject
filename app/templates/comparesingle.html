@@ -23,7 +23,7 @@
 
     {% block contentboxleft %}
     <div class="contentboxleft">
-        <div class="switchmapbuttons"><button type="button" class="btn btn-dark btn-sm me-2" onclick="bigmap();">UK Energy Performance</button><button type="button" class="btn btn-dark btn-sm" onclick="adoptionmap();">UK Heat Pump Adoption</button></div>
+        <div class="switchmapbuttons"><button type="button" class="btn btn-dark btn-sm me-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Maps showing average EPC (energy performance) and HPR (heat pump readiness) for Districts in England and Wales" onclick="bigmap();">UK Energy Performance</button><button type="button" class="btn btn-dark btn-sm" onclick="adoptionmap();">UK Heat Pump Adoption</button></div>
         <iframe src="/bigmap" width=100%; id="bigmap"></iframe>
        
     </div>

@@ -67,6 +67,7 @@ def individual():
         session.pop('compare', None)
         session.pop('save1', None)
         session.pop('grid-stats', None)
+        session.pop('keys', None)
         abspath = os.path.abspath(__file__)
         sourcedir = os.path.dirname(abspath)
         rendermap1()
@@ -78,6 +79,7 @@ def lad():
     session.pop('house_list', None)
     session.pop('compare', None)
     session.pop('grid-stats', None)
+    session.pop('keys', None)
     names = getconstitnames()
 
     if 'save1' not in session:

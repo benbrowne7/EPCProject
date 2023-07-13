@@ -28,7 +28,7 @@
 
 <div class="contentboxleft">
 
-    <div class="switchmapbuttons"><button type="button" class="btn btn-dark btn-sm me-2" onclick="ladmapleft();">{{name}} District Map</button><button type="button" class="btn btn-dark btn-sm" onclick="adoptionmap();">UK Heat Pump Adoption</button></div>
+    <div class="switchmapbuttons"><button type="button" class="btn btn-dark btn-sm me-2"  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="District Map showing energy performance at postcode level" onclick="ladmapleft();">{{name}} District Map</button><button type="button" class="btn btn-dark btn-sm"  data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Maps Heat Pump Adoption Levels for Districts in England and Wales" onclick="adoptionmap();">UK Heat Pump Adoption</button></div>
     <iframe  src="/adoptionmap" id="bigmap"></iframe>
 
 </div>
@@ -52,18 +52,18 @@
             {% if av_rate_string is defined %}
             <div id="responseboxright">
             <div class="singleinfo">
-                <div class="switchtabbuttons"><button type="button" class="btn btn-primary btn-sm me-2" onclick="ladperf();">{{name}} Energy Performance</button><button type="button" class="btn btn-primary btn-sm" onclick="ladadoption();">{{name}} Heat Pump Adoption</button></div>
+                <div class="switchtabbuttons"><button type="button" class="btn btn-primary btn-sm me-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="View Energy Performance for the district" onclick="ladperf();">{{name}} Energy Perf</button><button type="button" class="btn btn-primary btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="View Heat Pump Adoption Data for the district" onclick="ladadoption();">{{name}} Heat Pump Adoption</button></div>
 
                 <div class="heading">Averages over all Local Authority Districts</div>
-                <div class="responsetext">{{av_rate_string}}</div>
-                <div class="responsetext">{{av_density_string}}</div>
+                <div class="responsetext">{{av_rate_string}} <span><i class="bi bi-info-circle icon-blue" data-bs-toggle="tooltip" data-bs-title="Average Yearly % Increase in Heat Pump Installations under the Renewable Heat Incentive (RHI) Scheme over all districts"></i></span></div>
+                <div class="responsetext">{{av_density_string}} <span><i class="bi bi-info-circle icon-blue" data-bs-toggle="tooltip" data-bs-title="Average Number of Heat Pump Installations under the Renewable Heat Incentive (RHI) Scheme per 1000 people over all districts"></i></span></div>
                 <hr style="width:101%; height:4px; margin-left:-1%; background-color: black;  position:relative; margin-top: 1%;" />
                 <div class="heading" style="margin-top:-1%;" >Comparing {{name}} ({{ons}}) to other Local Authority Districts</div> <div class="responsetext" >{{lad_rate_string}}</div>
                 <div class="responsetext">{{lad_density_string}}</div>
 
-                <div class="responsetext" >{% if tag0 == 0 %} <span class="notvalid">{{rate_percentile_string}}</span> {% elif tag0 == 1 %} <span class="orange">{{rate_percentile_string}}</span> {% elif tag0 == 2 %} <span class="valid">{{rate_percentile_string}}</span> {% endif %}</div>
+                <div class="responsetext" >{% if tag0 == 0 %} <span class="notvalid">{{rate_percentile_string}}</span> <span><i class="bi bi-info-circle icon-blue" data-bs-toggle="tooltip" data-bs-title="How district compares to others based on average yearly % increase in installations since 2020"></i></span> {% elif tag0 == 1 %} <span class="orange">{{rate_percentile_string}}</span> <span><i class="bi bi-info-circle icon-blue" data-bs-toggle="tooltip" data-bs-title="How district compares to others based on average yearly % increase in installations since 2020"></i></span> {% elif tag0 == 2 %} <span class="valid">{{rate_percentile_string}}</span> <span><i class="bi bi-info-circle icon-blue" data-bs-toggle="tooltip" data-bs-title="How district compares to others based on average yearly % increase in installations since 2020"></i></span> {% endif %}</div>
 
-                <div class="responsetext" >{% if tag1 == 0 %} <span class="notvalid">{{density_percentile_string}}</span> {% elif tag1 == 1 %} <span class="orange">{{density_percentile_string}}</span> {% elif tag1 == 2 %} <span class="valid">{{density_percentile_string}}</span> {% endif %} </div>
+                <div class="responsetext" >{% if tag1 == 0 %} <span class="notvalid">{{density_percentile_string}}</span> <span><i class="bi bi-info-circle icon-blue" data-bs-toggle="tooltip" data-bs-title="How district compares to others based on number installations per 1000 people (2022)"></i></span> {% elif tag1 == 1 %} <span class="orange">{{density_percentile_string}}</span> <span><i class="bi bi-info-circle icon-blue" data-bs-toggle="tooltip" data-bs-title="How district compares to others based on number installations per 1000 people (2022)"></i></span> {% elif tag1 == 2 %} <span class="valid">{{density_percentile_string}}</span> <span><i class="bi bi-info-circle icon-blue" data-bs-toggle="tooltip" data-bs-title="How district compares to others based on number installations per 1000 people (2022)"></i></span> {% endif %} </div>
 
                 <div class="responsetext" style="color:blue;">{{proportion_string}}</div>
                 <div class="responsetext" style="color:blue;">{{exp_str}}</div>

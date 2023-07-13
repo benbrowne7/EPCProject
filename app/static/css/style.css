@@ -32,6 +32,10 @@ html, body {width: 100%; max-width: 100%; overflow: hidden;}
 	text-align:right;
 }
 
+.icon-blue {
+	color:blue;
+}
+
 
 li a:hover:not(.active) {
 	background-color: grey;

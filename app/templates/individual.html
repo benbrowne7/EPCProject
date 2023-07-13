@@ -30,13 +30,14 @@
     
     {% if location is not defined %}
     
+    
     <div id="leftmaps">
-        <div class="switchmapbuttons"><button type="button" class="btn btn-dark btn-sm me-2" onclick="bigmap()">UK Energy Performance</button><button type="button" class="btn btn-dark btn-sm" onclick="adoptionmap()">UK Heat Pump Adoption</button></div>
-        
-            <iframe src="/bigmap" width=100%; id="bigmap"></iframe>
+        <div class="switchmapbuttons"><button type="button" class="btn btn-dark btn-sm me-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Maps showing average EPC (energy performance) and HPR (heat pump readiness) for Districts in England and Wales" onclick="bigmap()">UK Energy Performance</button><button type="button" class="btn btn-dark btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Maps Heat Pump Adoption Levels for Districts in England and Wales" onclick="adoptionmap()">UK Heat Pump Adoption</button>
+        </div>
+        <iframe src="/bigmap" width=100%; id="bigmap"></iframe>
     </div>
     
-
+    
     {% else %}
     
     <div class="switchmapbuttons"><button type="button" class="btn btn-dark btn-sm me-2" onclick="infoswap();">Information and Context</button><button type="button" class="btn btn-dark btn-sm" onclick="mapswap();">Nestas' Heat Pump Cost Calculator</button></div>
@@ -58,9 +59,9 @@
 
     {% if conf is defined %}
         <div class="heading" style="font-size: 4vh; text-decoration: underline;">Confidence in EPC Metric:</div>
-        {% if conf == 0 %} <div class="valid" style="font-size: 2vh; font-weight: 900; margin-top: 1%; font-family: Courier New;">High Confidence in EPC (<5 years old)</div>
-        {% elif conf == 1 %} <div class="orange" style="font-size: 2vh; font-weight: 900; margin-top: 1%; font-family: Courier New;">Moderate Confidence in EPC (< less >10 years old)</div>
-        {% else %} <div class="notvalid" style="font-size: 2vh; font-weight: 900; margin-top: 1%; font-family: Courier New;">Low Confidence in EPC (Expired Certificate)</div>
+        {% if conf == 0 %} <div class="valid" style="font-size: 2vh; font-weight: 900; margin-top: 1%; font-family: Courier New;">High Confidence in EPC (&lt;5 years old) <span><i class="bi bi-info-circle icon-blue" data-bs-toggle="tooltip" data-bs-title="A Confidence Metric to gauge the reliability and accuracy of a properties EPC information and rating."></i></span></div>
+        {% elif conf == 1 %} <div class="orange" style="font-size: 2vh; font-weight: 900; margin-top: 1%; font-family: Courier New;">Moderate Confidence in EPC (5 - 10 years old) <span><i class="bi bi-info-circle icon-blue" data-bs-toggle="tooltip" data-bs-title="A Confidence Metric to gauge the reliability and accuracy of a properties EPC information and rating."></i></span></div>
+        {% else %} <div class="notvalid" style="font-size: 2vh; font-weight: 900; margin-top: 1%; font-family: Courier New;">Low Confidence in EPC (Expired Certificate) <span><i class="bi bi-info-circle icon-blue" data-bs-toggle="tooltip" data-bs-title="A Confidence Metric to gauge the reliability and accuracy of a properties EPC information and rating."></i></span></div>
         {% endif %} {% endif %}
 
     <br>
@@ -90,7 +91,7 @@
     <form class="form-inline form-control-sm" action="/postcode" style="position: absolute; top:50%; transform: translateY(-50%); margin-left: 1%;"  method="post" required id="postcodeform">
         <div class="input-group">
             <input type="text" class="form-control me-1" id="postcode" name="postcode" placeholder="Postcode">
-            <button type="submit" form="postcodeform" class="btn btn-primary btn-sm">Get Address</button>
+            <button type="submit" form="postcodeform" class="btn btn-primary btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Returns list of addresses for the postcode">Get Address</button>
         </div>
       </form>
     {% if valid is defined %}
@@ -110,7 +111,7 @@
             <option value="{{o}}" SELECTED>{{o}}</option>
         {% endfor %}
         </select>
-        <button type="submit" class="btn btn-primary btn-sm">Request Info</button>
+        <button type="submit" class="btn btn-primary btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Returns EPC information for the property and an estimated 'Heat Pump Readiness' (HPR) Rating">Request Info</button>
         </div>
     </form>
     {% endif %}
@@ -124,10 +125,10 @@
             {% if location is defined %}
 
             <div class="singleinfo" >
-                <div class="switchtabbuttons"><button type="button" class="btn btn-primary btn-sm me-2" onclick="epcdetails();">EPC Details</button><button type="button" class="btn btn-primary btn-sm" onclick="compare();">Compare</button></div>
+                <div class="switchtabbuttons"><button type="button" class="btn btn-primary btn-sm me-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="EPC and HPR information for the property" onclick="epcdetails();">EPC Details</button><button type="button" class="btn btn-primary btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Compare your homes energy performance to rest of your postcode and local authority district" onclick="compare();">Compare</button></div>
 
                 <div class="heading">Property Address: </div> <div class="responsetext" >{{location['address1']}} {{location['postcode']}} ,{{location['county']}}</div>
-                <div class="heading">Certificate Ratings :</div><div class="responsetext" >Current Rating: {{ratings['current']}} || Current Efficiency: {{ratings['current-int']}} || Tolerance: ({{ratings['band'][0]}} -> {{ratings['band'][1]}})</div>
+                <div class="heading">Certificate Ratings:</div><div class="responsetext" >Current Rating: {{ratings['current']}} || Current Efficiency: {{ratings['current-int']}} <span><i class="bi bi-info-circle icon-blue" data-bs-toggle="tooltip" data-bs-title="Overall Energy Performance Rating (0-100)"></i></span></div>
                 <div class="heading">Property Type: </div><div class="responsetext" >Type: {{property['type']}} || Form: {{property['form']}} || Tenure: {{property['tenure']}} || Age: {{property['age']}} || Floor Area: {{property['floor-area']}}m<sup>2</sup> || Cert Date: {{property['date']}}</div>
                 <div class="heading">Property Features: </div><div class="responsetext" >Windows: {{features['windows']}} <span class="rate">[{{features['windows-rate']}}]</span> || Flooring: {{features['floors']}} <span class="rate">[{{features['floors-rate']}}]</span> || Walls: {{features['walls']}} <span class="rate">[{{features['walls-rate']}}]</span> || Roofing: {{features['roof']}} <span class="rate">[{{features['roof-rate']}}]</span> || Main Heat: {{features['mainheat']}} <span class="rate">[{{features['mainheat-rate']}}]</span> || Hot Water: {{features['hot-water']}} || Fuel: {{features['mainfuel']}}</div>
             
@@ -137,7 +138,7 @@
 
             {% if improvements is defined %}
             
-                <div class="heading" style="margin-top: 1.5%;">Recommended Improvements: <span style="font-size: 1vw; font-weight: 400;">({{improve_str}})</span> <span style="position: absolute; right: 1%;"><a href={{epc_link}} target="_blank">-> Full EPC Link </a></span> </div>
+                <div class="heading" style="margin-top: 1.5%;">Recommended Improvements: <span style="font-size: 1vw; font-weight: 400;">({{improve_str}})</span> <span><i class="bi bi-info-circle icon-blue" data-bs-toggle="tooltip" data-bs-title="Recommended Improvements pulled from the EPC [Unreliable - For all recommendations see full epc link]"></i></span> <span style="position: absolute; right: 1%;"><a href={{epc_link}} target="_blank">-> Full EPC Link </a></span></div>
                 {% for key, value in improvements.items() %}
                 <div class="responsetext">{{key}} -> {{value}}</div>
                 {% endfor %}
@@ -146,28 +147,28 @@
         {% endif %}
 
         {% if e_date is defined %}
-            <div class="heading" style="margin-top: 1.5%;">Eligibility for Boiler Upgrade Scheme: </div>
+            <div class="heading" style="margin-top: 1.5%;">Eligibility for Boiler Upgrade Scheme (BUS): <span><i class="bi bi-info-circle icon-blue" data-bs-toggle="tooltip" data-bs-title="Boiler Upgrade Scheme (BUS) - Goverment Grant of up to £5k for an Air Source heat pump installation"></i></span> <span style="position: absolute; right: 1%;"><a href="https://www.gov.uk/apply-boiler-upgrade-scheme/check-if-youre-eligible" target="_blank">-> Check BUS Eligibility</a></span></div>
             {% if e_date == False %}
-                <div class="notvalid">Certificate is not Valid (10+ years old)</div>
+                <div class="notvalid">Certificate is not Valid (10+ years old) <span><i class="bi bi-info-circle icon-blue" data-bs-toggle="tooltip" data-bs-title="BUS requires a valid (in date) EPC Certificate"></i></span></div>
             {% else %}
-                <div class="valid">Certificate is Valid (in date)</div>
+                <div class="valid">Certificate is Valid (in date) <span><i class="bi bi-info-circle icon-blue" data-bs-toggle="tooltip" data-bs-title="BUS requires a valid (in date) EPC Certificate"></i></span></div>
             {% endif %}
             {% if e_walls == False %}
-                <div class="notvalid">Walls insufficiently insulated, rated: {{features['walls-rate']}}</div>
+                <div class="notvalid">Walls likely insufficiently insulated, rated: {{features['walls-rate']}} <span><i class="bi bi-info-circle icon-blue" data-bs-toggle="tooltip" data-bs-title="BUS requires no outstanding wall insulation improvements on the EPC (A rating of 'Average' or above may be sufficient but a the full recomendations on the EPC must be checked)"></i></span></div>
             {% else %}
-            <div class="valid">Walls sufficiently insulated, rated: {{features['walls-rate']}}</div>
+            <div class="valid">Walls likely sufficiently insulated, rated: {{features['walls-rate']}} <span><i class="bi bi-info-circle icon-blue" data-bs-toggle="tooltip" data-bs-title="BUS requires no outstanding roof/loft insulation improvements on the EPC (A rating of 'Average' or above may be sufficient but a the full recomendations on the EPC must be checked)"></i></span></div>
             {% endif %}
             {% if e_roof == False %}
-            <div class="notvalid">Roof insufficiently insulated, rated: {{features['roof-rate']}}</div>
+            <div class="notvalid">Roof likely insufficiently insulated, rated: {{features['roof-rate']}} <span><i class="bi bi-info-circle icon-blue" data-bs-toggle="tooltip" data-bs-title="BUS requires no outstanding roof/loft insulation improvements on the EPC (A rating of 'Average' or above may be sufficient but the full recomendations on the EPC must be checked)"></i></span></div>
             {% else %}
-            <div class="valid">Roof sufficiently insulated, rated: {{features['roof-rate']}}</div>
+            <div class="valid">Roof likely sufficiently insulated, rated: {{features['roof-rate']}} <span><i class="bi bi-info-circle icon-blue" data-bs-toggle="tooltip" data-bs-title="BUS requires no outstanding roof/loft insulation improvements on the EPC (A rating of 'Average' or above may be sufficient but the full recomendations on the EPC must be checked)"></i></span></div>
             <hr style="width:101%; height:4px; background-color: black;  position:absolute; margin-top: 1%; margin-left: -1%;" />
             {% endif %}
 
             {% if hpr is defined %}
             <div id="hprrating" style="margin-top:-1.5%;">
             <span id="boot-icon" class="bi bi-arrow-return-right" style="font-size: 5vw; margin-top: -1%; color: rgb(0, 0, 255); -webkit-text-stroke-width: 6px;"></span> 
-                <div class="heading1" style= "text-align: center; left:30%;">HEAT PUMP READY RATING: <span class="hpr">{{hpr}}</span><span style="font-size: 2.2vw; color: blue; font-weight: bold;"> ({{tag}})</span></div>
+                <div class="heading1" style= "text-align: center; left:30%;">HEAT PUMP READY RATING: <span class="hpr">{{hpr}}</span> <span><i class="bi bi-info-circle icon-blue" data-bs-toggle="tooltip" data-bs-title="Calculated using details from the EPC, a rating over 1 indicates the home may be suitable for a heat pump. (See the Docs for more info)"></i></span> <span style="font-size: 2.2vw; color: blue; font-weight: bold;"> ({{tag}})</span></div>
             </div>
             {% endif %}
         </div>
