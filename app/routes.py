@@ -123,7 +123,11 @@ def gridsingle():
 
     ons2lad = pd.read_csv(sourcedir + "/data/ONS2LAD.csv")
     row = ons2lad.loc[ons2lad['LAD20NM'] == constit_name]
-    ons = row['LAD20CD'].values[0]
+    try:
+        ons = row['LAD20CD'].values[0]
+    except:
+        valid = False
+        return render_template('grid.html', capacity=capacity, headroom=headroom, utilization=utilization, constit22=constit22, valid=valid, constit_name=constit_name)
     num_epcs_df = pd.read_csv(sourcedir + "/data/number_epcs.csv")
     row = num_epcs_df.loc[num_epcs_df['ONS'] == ons]
     num_epcs = int(row['NUM'].values[0])
