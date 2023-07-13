@@ -4,5 +4,7 @@
 /app/templates/graphs/
 /app/templates/ladmaps/
 /app/templates/maps/
-/wsgi.py
+/app/templates/biggrid/
 /app/__init__.py
+/__pycache__/
+/app/__pycache__
