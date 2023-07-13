@@ -65,6 +65,8 @@ def individual():
         session.pop('save', None)
         session.pop('house_list', None)
         session.pop('compare', None)
+        session.pop('save1', None)
+        session.pop('grid-stats', None)
         abspath = os.path.abspath(__file__)
         sourcedir = os.path.dirname(abspath)
         rendermap1()
@@ -75,6 +77,7 @@ def lad():
     session.pop('save', None)
     session.pop('house_list', None)
     session.pop('compare', None)
+    session.pop('grid-stats', None)
     names = getconstitnames()
 
     if 'save1' not in session:
@@ -88,15 +91,15 @@ def lad():
             print("name not in list")
         else:
             names.append(name)
-            session['names'] = names
 
         return render_template('lad.html', epc_string1=epc_string1, hpr_string1=hpr_string1, epc_string2=epc_string2, hpr_string2=hpr_string2, tag1=tag1, tag2=tag2, proportion_string=proportion_string, name=name, names=names, ons=ons, LAD_EPC_MEAN=LAD_EPC_MEAN, LAD_HPR_MEAN=LAD_HPR_MEAN, n_over1=n_over1)
 
 @app.route('/grid', methods=['GET','POST'])
 def grid():
     (w,h) = session['dimen']
+    session.clear()
+    session['dimen'] = (w,h)
     capacity, headroom, utilization, constit22 = biggrid(w,h)
-    session['constit22'] = constit22
     session['grid-stats'] = (capacity, headroom, utilization)
     return render_template('grid.html', capacity=capacity, headroom=headroom, utilization=utilization, constit22=constit22)
 
@@ -105,12 +108,12 @@ def gridsingle():
     try:
         constit_name = request.form['singlegrid']
     except:
-        constit22 = session['constit22']
+        constit22 = getconstitnames()
         (capacity, headroom, utilization) = session['grid-stats']
         return render_template('grid.html', capacity=capacity, headroom=headroom, utilization=utilization, constit22=constit22)
 
     (w,h) = session['dimen']
-    constit22 = session['constit22']
+    constit22 = getconstitnames()
     constit22.remove(constit_name)
     constit22.append(constit_name)
     (capacity, headroom, utilization) = session['grid-stats']
@@ -168,7 +171,6 @@ def ladsingle():
         session['name'] = name
         names.remove(constit_name)
         names.append(constit_name)
-        session['names'] = names
         ladmap(ons,w,h)
 
         exp_str = "{}% of Certificates for {} have Expired".format(exp,ons)
@@ -307,13 +309,11 @@ def compare():
 def postcodereq():
     if request.method == 'POST':
         session['keys'] = {}
-        print(request.form['postcode'])
 
         if len(request.form) == 1:
             postcode = request.form["postcode"]
             if (len(postcode) < 5) or (len(postcode) > 8):
                 valid = False
-                print("g")
                 return render_template('individual.html', valid=valid)
             postcode = ''.join(postcode.split())
             postcode = postcode.upper()
@@ -341,7 +341,6 @@ def postcodereq():
 
 @app.route('/singlerequest', methods=['POST', 'GET'])
 def singlerequest():
-
     session.pop('save', None)
     session.pop('compare', None)
     house_list = session['house_list']
@@ -435,11 +434,11 @@ def singlerequest():
 def ladadoption():
     try:
         ons = session['ons']
-        names = session['names']
     except:
         valid = False
         return render_template("lad.html", valid=valid)
     
+    names = getconstitnames()
     (w,h) = session['dimen']
     graphadoption(ons,w,h)
 

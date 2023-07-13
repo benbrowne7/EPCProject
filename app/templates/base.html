@@ -129,6 +129,13 @@ function hprmap() {
         }
     };
 </script>
+
+<script type="text/javascript">
+    const tooltips = document.querySelectorAll('.tippy')
+    tooltips.forEach(t => {
+        new bootstrap.Tooltip(t)
+    })
+</script>
 {% endblock %}
 
 
@@ -182,9 +189,13 @@ function hprmap() {
 {% block footer %}
 <footer class="footer">
     Heat Pump Ready Project by Ben Browne - University of Bristol
-    <div id="rightfooter">Data Sourced from: <a href="https://epc.opendatacommunities.org/">epc.opendatacommunities.org</a></div>
+    <div id="rightfooter"><a href="/docs" target="_blank" style="font-weight: bold;">Explore the Documentation for the Tool:</a></div>
 </footer>
 {% endblock %} 
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+<script src="static/js/tip.js"></script>
+
 
 </body>
 </html>

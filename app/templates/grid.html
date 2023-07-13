@@ -45,10 +45,10 @@
         {% block topcontent %}
         <div id="gridtoprightbox"> 
             <div class="singleinfo" style="margin-top: 1%;">
-                <div class="heading" style="text-align: center; color: blue; font-size: 1.8vw; text-decoration: underline; margin-top: 1%;">National Grid Primary Substations</div>
-                <div class="responsetext" style="margin-top:1%">Firm Capacity for all Primary Substations: <span style="font-weight: bold;">{{capacity}} MVA</span></div>
-                <div class="responsetext">Demand Headroom for all Primary Substations: <span style="font-weight: bold;">{{headroom}} MVA</span></div>
-                <div class="responsetext">Total Utilization: <span style="font-weight: bold;">{{utilization}}%</span></div>
+                <div class="heading" style="text-align: center; color: blue; font-size: 1.8vw; text-decoration: underline; margin-top: 1%;"><a href="#" data-bs-toggle="tooltip" data-bs-title="Primary substations drop voltage from 33kV to 11kV and are owned by various DNOs, which operate on the National Grid, owned by National Grid plc">National Grid Primary Substations</a> </div>
+                <div class="responsetext" style="margin-top:1%">Firm Capacity for all Primary Substations: <span style="font-weight: bold;">{{capacity}} MVA</span> <span><i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-title="excludes Electricity North West"></i></span> </div>
+                <div class="responsetext">Demand Headroom for all Primary Substations: <span style="font-weight: bold;">{{headroom}} MVA</span> </div>
+                <div class="responsetext">Total Utilization: <span style="font-weight: bold;">{{utilization}}%</span> <span><i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-title="(Capacity - Headroom) / Capacity * 100"></i></span> </div>
                 <hr style="width:101%; height:4px; background-color: black;  position: absolute; margin-top: 1%; margin-left: -1%;" />
             </div>
             
@@ -76,20 +76,20 @@
             {% else %} 
             <div class="singleinfo">
                 <div class="responsetext">The Distribution Network Operator (DNO) for {{constit_name}} is <span style="font-weight: bold;">{{dno}}</span></div>
-                <div class="responsetext">Number of Substations in {{constit_name}}: <span style="font-weight:bold;">{{num_substations}}</span></div>
-                <div class="responsetext">Total (Primary) Substation Capacity: <span style="font-weight: bold;">{{capacity_single}} MVA</span> </div>
-                <div class="responsetext">Total (Primary) Substation Headroom: <span style="font-weight: bold;">{{headroom_single}} MVA</span> </div>
+                <div class="responsetext">Number of Primary Substations in {{constit_name}}: <span style="font-weight:bold;">{{num_substations}}</span></div>
+                <div class="responsetext">Total (Primary) Substation Capacity: <span style="font-weight: bold;">{{capacity_single}} MVA</span> <span><i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-title="Summed Firm Capacity for all Primary Substations in district"></i></span> </div>
+                <div class="responsetext">Total (Primary) Substation Headroom: <span style="font-weight: bold;">{{headroom_single}} MVA</span><span><i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-title="Summed Demand Headroom for all Primary Substations in district"></i></span> </div>
                 <div class="responsetext">Utilization for {{constit_name}} is <span style="font-weight: bold;">{{utilization_single}}%</span> </div>
             </div>
             <hr style="width:100%; height:2px; background-color: black;  position: absolute; margin-top:2.5%; " />
             <div class="singleinfo" style="margin-top: 4%;">
                 <div class="responsetext">Assuming the Average Maximum Demand for a Heat Pump is <span style="font-weight: bold;">~1.7KW.</span><span><a href="https://www.sciencedirect.com/science/article/pii/S0306261917308954">[ref]</a></span></div>
-                <div class="responsetext">Total Electricity Demand for 10% of homes in {{constit_name}}: <span style="font-weight: bold">{{ten_perc}} MVA</span> </div>
+                <div class="responsetext">Total Electricity Demand for 10% of homes in {{constit_name}}: <span style="font-weight: bold">{{ten_perc}} MVA</span> <span><i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-title="0.1 * number EPCs for district * 0.0017 MVA"></i></span> </div>
                 {% if northwest == False %}
-                <div class="responsetext">At 90% Utilization, {{constit_name}} could theoretically support up to <span style="font-weight: bold;">{{max_support}}</span> of additional heat pumps.</div>
+                <div class="responsetext">At 90% Utilization, {{constit_name}} could theoretically support up to <span style="font-weight: bold;">{{max_support}}</span> of additional heat pumps. <span><i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-title="If Current Primary Substation Capacity is 90% Full"></i></span> </div>
                 <div class="responsetext">This is approximately <span style="font-weight: bold;">{{perc_homes}}%</span> of homes within {{constit_name}}.</div>
                 {% else %}
-                <div class="responsetext">By Utilising 90% of Available Demand Headroom, {{constit_name}} could theoretically support up to <span style="font-weight: bold;">{{max_support}}</span> of additional heat pumps.</div>
+                <div class="responsetext">By Utilising 90% of Available Demand Headroom, {{constit_name}} could theoretically support up to <span style="font-weight: bold;">{{max_support}}</span> of additional heat pumps. <span><i class="bi bi-info-circle" data-bs-toggle="tooltip" data-bs-title="If Current Primary Substation Capacity is 90% Full"></i></span> </div>
                 <div class="responsetext">This is approximately <span style="font-weight: bold;">{{perc_homes}}%</span> of homes within {{constit_name}}.</div>
                 {% endif %}
 

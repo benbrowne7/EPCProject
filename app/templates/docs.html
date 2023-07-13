@@ -45,7 +45,7 @@
 		<button id="sidebarCollapse" class="navbar-toggler d-block d-md-none" type="button"><span></span><span class="w-75"></span><span class="w-50"></span></button>
 		
 		<!-- Logo --> 
-        <a class="logo ml-md-3" href="/lad" title="Heat Pump Ready App"> <img src="assets/images/logo.png" alt="Heat Pump Ready App Home"/> </a> 
+        <a class="logo ml-md-3" href="/lad" title="Heat Pump Ready App"> <img src="/staticf/images/logo.png" alt="Heat Pump Ready App Home"/> </a> 
 		
         <!-- Logo End -->
         
@@ -77,8 +77,7 @@
         <li class="nav-item"><a class="nav-link active" href="#idocs_start">Project Overview</a></li>
         <li class="nav-item"><a class="nav-link" href="#idocs_grid">Grid</a></li>
         <li class="nav-item"><a class="nav-link" href="#idocs_individual">Individual</a>
-        <li class="nav-item"><a class="nav-link" href="#idocs_typography">Local Authority District (LAD)</a></li>
-        <li class="nav-item"><a class="nav-link" href="#idocs_code">Code</a></li>
+        <li class="nav-item"><a class="nav-link" href="#idocs_lad">Local Authority District (LAD)</a></li>
         <li class="nav-item"><a class="nav-link active" href="#idocs_datasets">Datasets</a>
           <ul class="nav flex-column">
             <li class="nav-item"><a class="nav-link" href="#idocs_griddata">Grid</a></li>
@@ -155,12 +154,12 @@
     <hr class="divider">
     <section id="idocs_individual">
       <h2>Individual</h2>
-      <p class="lead">The <a href="/individual">Individual</a> page is targeted towards the individual home owner, looking to learn more about there homes energy performance and heat pump suitability. </p>
+      <p class="lead">The <a href="/individual" target="_blank">Individual</a> page is targeted towards the individual home owner, looking to learn more about there homes energy performance and heat pump suitability. </p>
       <img src="/static/images/individual_home.jpg" class="img-fluid" alt="Individual Home Page">
-      <p class="lead"> The left hand side box contains a map of England and Wales, seperated into local authority districts and coloured by average EPC rating or HPR (heat pump readiness) rating, switchable in the top left of the plot. Average EPC rating is calculated as an average of all certificates classified in that local authority district. These certificates were downloaded offline (See <a href="idocs_epcdata">Datasets - EPC</a> for more info). A HPR rating is also calculated for each home/certificate using various properties of the EPC: 'walls-energy-efficiency', 'floor-energy-efficiency', 'window-energy-efficiency', 'roof-energy-efficiency' and the overall 'current-energy-efficiency', the walls and roof components are weighted double. A HPR rating of over 1 corresponds to a 'likely suitable heat pump candidate', with a rating below 1 indicating the home may not be very suitable in its current form. The HPR rating is therefore an indication of a homes energy efficiency levels, specifically its insulation, an often important factor in heat pump suitability. A more comprehensive overview of the HPR calculation can be found in the <a href="/static/thesis/Final_Year_Dissertation__Ben_Browne.pdf" download="heat_pump_ready_thesis.pdf">written thesis</a>, section 3.2.2.</p>
+      <p class="lead"> The left hand side box contains a chloropleth map of England and Wales, seperated into local authority districts and coloured by average EPC rating or HPR (heat pump readiness) rating, switchable in the top left of the plot. Average EPC rating is calculated as an average of all certificates classified in that local authority district. These certificates were downloaded offline (See <a href="idocs_epcdata">Datasets - EPC</a> for more info). A HPR rating is also calculated for each home/certificate using various properties of the EPC: 'walls-energy-efficiency', 'floor-energy-efficiency', 'window-energy-efficiency', 'roof-energy-efficiency' and the overall 'current-energy-efficiency', the walls and roof components are weighted double. A HPR rating of over 1 corresponds to a 'likely suitable heat pump candidate', with a rating below 1 indicating the home may not be very suitable in its current form. The HPR rating is therefore an indication of a homes energy efficiency levels, specifically its insulation, an often important factor in heat pump suitability. A more comprehensive overview of the HPR calculation can be found in the <a href="/static/thesis/Final_Year_Dissertation__Ben_Browne.pdf" download="heat_pump_ready_thesis.pdf">written thesis</a>, section 3.2.2.</p>
       
       <p class="lead">Through the buttons on the top right of the map, the 'UK Heat Pump Adoption' button switches the maps dataset to 'heat pump installations under the RHI scheme' (see <a href="#idocs_heatpumpadoptiondata">Datasets - Heat Pump Adoption</a>) </p>
-      <p class="lead">The 2 plots for heat pump adoption are: 'Average Yearly % Increase in Installations since 2020' and 'Installed Heat Pumps Per 1000 People (RHI Scheme - 2022)', population counts for each district were taken from the <a href="https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/populationestimates/datasets/populationandhouseholdestimatesenglandandwalescensus2021">Office for National Statistics</a>. Both these plots colour code each local authority district by 'average % increase' and 'installations per 1000 people' respectively. </p>
+      <p class="lead">The 2 plots for heat pump adoption are: 'Average Yearly % Increase in Installations since 2020' and 'Installed Heat Pumps Per 1000 People (RHI Scheme - 2022)', population counts for each district were taken from the <a href="https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/populationestimates/datasets/populationandhouseholdestimatesenglandandwalescensus2021">Office for National Statistics</a>. Both these plots colour code each local authority district by 'average % increase' and 'installations per 1000 people' respectively and are produced using the <a href="https://docs.bokeh.org/en/latest/">Bokeh Library.</a> </p>
 
       <br></br>
       <img src="/static/images/individual_return.jpg" class="img-fluid" alt="Individual Return Page">
@@ -171,7 +170,28 @@
       <img src="/static/images/individual_compare.jpg" class="img-fluid" alt="Individual Compare Page">
       <p class="lead">A user can then 'compare' their homes energy performance to those of their postcode and local authority district, by using the buttons in the top right of the box. This shows average EPC and HPR ratings for the postcode, calculated from data obtained through an <a href="idocs_epcdata">API request</a> for all EPCs for the postcode. Percentiles are also calculated for postcodes EPC and HPR ratings, showing where the individuals home lies in comparison. This is colour coded: 'red' for 0th -> 30th percentiles, 'amber' for 31st -> 70th percentiles and 'green' for the 71st -> 100th percentiles. The same is done for the properties local authority district, with the averages and percentiles having been precomputed using the <a href="idocs_epcdata">full EPC dataset.</a></p>
 
+    </section>
 
+
+    <hr class="divider">
+    <section id="idocs_lad">
+      <h2>Local Authority District (LAD)</h2>
+      <p class="lead">The <a href="/lad" target="_blank">LAD Page</a> is targeted towards policy makers/officals and those interested in learning more about the UKs energy performance levels at a postcode/district level.</p>
+      <img src="/static/images/lad_return.jpg" class="img-fluid" alt="LAD Return Page">
+      <p class="lead">A user selects a Local Authority District from the drop down menu or inputs an ONS code. The highlighted <span style="color: red;">red box </span>contains information regarding average EPC/HPR for all LADs and compares the chosen LAD to all others in percentile terms for those 2 metrics. All averages and percentiles are precomputed using the entire <a href="idocs_epcdata">EPC dataset</a> for each LAD. The proportion of EPCs regarded as good candidates (HPR ratings over 1) and proportion of expired certificates for the LAD is also displayed.</p>
+      <p class="lead">The graph pane is the lower half of the <span style="color: red;">red box </span>contains graphs with various insights into energy performance <a href="idocs_epcdata">(see Datasets - EPC)</a> for the district. 
+        <ul>
+          <li><p class="lead">'EPC Trend' Graph shows the average EPC rating for all certificates issued in that year.</p> </li>
+          <li><p class="lead">'EPC Y/Y' Graph shows the % change Year-over-Year between average EPC rating for all certificates issued in that year.</p></li>
+          <li><p class="lead">'Age Distribution' Graph shows the distribution of the age of all EPCs, from 2008-2022. </p> </li>
+        </ul>
+        <img src="/static/images/lad_return_adoption.jpg" class="img-fluid" alt="LAD Return Adoption Page">
+      <p class="lead">Buttons in the <span style="color:greenyellow">green box</span> switches content between 'Energy Performance' and 'Heat Pump Adoption' for the chosen LAD. The Heat Pump Adoption tab displays the average yearly % increase in Heat Pumps (under RHI) and average number of installations per 1000 people over all LADs. These figures for the chosen LAD are then shown below, as well as, where it lies in percentile terms when compared to all other local authority districts. The graph pane below displays heat pump installation data <a href="idocs_heatpumpadoptiondata">(see Datasets - Heat Pump Adoption)</a> for the district. The left hand side box shows the England/Wales heat adoption map as described in <a href="idocs_individual">Docs - Individual.</a> </p>
+      <ul>
+        <li><p class="lead">'Heat Pump Installations' Graph shows the cumulative number of heat pump installations (under RHI scheme) by year, seperated by <span style="color:blue">air source</span> and <span style="color:red">ground source</span> installations.</p> </li>
+        <li><p class="lead">'Annual % Increase in Installations' Graph shows the % increase each year in the number of heat pump installations under the RHI scheme. The white line at 47% represents the average annual % increase in installations required to reach the <a href="https://www.gov.uk/government/publications/energy-security-bill-factsheets/energy-security-bill-factsheet-low-carbon-heat-scheme" target="_blank">goverments target</a> of 600,000 installations per year by 2028, from 2022 levels. 
+        </p> </li>
+      </ul>
 
 
     </section>
@@ -193,7 +213,7 @@
 
       <p class="lead">The 'Demand Headroom Rating' for each substation is either 'RED', 'AMBER' or 'GREEN', the classfications for each determined by the substations DNO. The method of classifying substations is not always clear and is not necessarily consistent between DNOs. Electricity North West did not have such a rating so was added: set to 'RED' if headroom = 0, 'AMBER' if headroom less than 2 MVA and 'GREEN' otherwise. </p>
 
-      <h5>Supplementary Grid Data</h5>
+      <h4>Supplementary Grid Data</h4>
       <p class="lead">The Northern Power Grid and Electricity North West capacity datasets do not include geospatial data for its substations, so supplementary data is used to match each substations capacity data to its corresponding Latitude/Longitude Coordinates. This data is combined into a single .csv file, to be used directly in the application. 
       <ul>
       <li><a href="https://northernpowergrid.opendatasoft.com/explore/dataset/substation_sites_list/information/">Northern Power Substations Sites List</a></li>
@@ -206,7 +226,7 @@
       <section id="idocs_geodata">
 
       <h3>Geo Boundaries Data</h3>
-      <h5>Local Authority District Boundaries</h5>
+      <h4>Local Authority District Boundaries</h4>
       <p class="lead">Local Authority Districts (LADs) are present throughout the application as a high level way of grouping and visualizing data. Due to the ever evolving nature of these boundaries, with additions and deletions fairly common each year, they are a source of potential error in the application (mismatches and missing boundary data). In an attempt to mitigate this, boundary information from multiple years is often utilized.</p>
       <ul>
         <li><a href="https://geoportal.statistics.gov.uk/datasets/ons::local-authority-districts-december-2022-boundaries-uk-buc/explore">LAD Boundaries - December 2022</a> </li>
