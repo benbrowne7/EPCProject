@@ -490,8 +490,6 @@ def docs():
 
 
 
-
-
 @app.route('/graphdimen', methods=['POST'])
 def graphdimen():
     out = request.get_json(force=True)
@@ -503,14 +501,22 @@ def graphdimen():
 
 @app.route('/bigmap', methods=['GET'])
 def rendermap1():
-    w,h = session['dimen']
-    bigmap(w,h)
+    try:
+        w,h = session['dimen']
+    except:
+        True
+    else:
+        bigmap(w,h)
     return render_template('bigmap/constit_map.html')
 
 @app.route('/adoptionmap')
 def rendermap2():
-    w,h = session['dimen']
-    adoptionmap(w,h)
+    try:
+        w,h = session['dimen']
+    except:
+        True
+    else:
+        adoptionmap(w,h)
     return render_template('bigmap/adoption_map.html')
 
 @app.route('/graphpane')
