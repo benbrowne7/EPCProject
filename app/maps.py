@@ -649,10 +649,8 @@ def ladmap(ons,w,h):
     margin = {'l':0, 'r':0, 'b':0, 't':0})
   fig.update_layout(mapbox_bounds={"west":av_lon-1, "east": av_lon+1, "south":av_lat-1, "north":av_lat+1})
   fig.update_layout(mapbox_accesstoken=mapbox_toke)
-  
 
-  name = ons + "_map" ".html"
-  fig.write_html(sourcedir + "/templates/ladmaps/" + name)
+  return fig
 
 
 
@@ -901,10 +899,22 @@ def combinesubstationdata(nationalgrid, northernpower, ukpowernetworks, northwes
     sub_name = row['PrimarySubstationName']
     sub_number = row['PrimaryAlias']
     sub_type = 'Primary'
-    try:
-      firm_capacity = float(row['FirmCapacityWinter'])
-    except:
-      firm_capacity = 0
+    if row['SeasonOfConstraint'] == 'Winter':
+      try:
+        firm_capacity = float(row['FirmCapacityWinter'])
+      except:
+        firm_capacity = 0
+    elif row['SeasonOfConstraint'] == 'Summer':
+      try:
+        firm_capacity = float(row['FirmCapacitySummer'])
+      except:
+        firm_capacity = 0
+    else:
+      try:
+        firm_capacity = float(row['FirmCapacityWinter'])
+      except:
+        firm_capacity = 0
+
     try:
       demand_headroom = round(firm_capacity * float(row['DemandHeadroom'][:-1]) / 100,2)
     except:

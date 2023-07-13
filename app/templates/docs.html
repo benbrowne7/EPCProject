@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, shrink-to-fit=no">
+<title>Docs</title>
+<meta name="description" content="Heat Pump Ready App">
+<meta name="author" content="harnishdesign.net">
+
+<!-- Stylesheet
+============================== -->
+<!-- Bootstrap -->
+<link rel="stylesheet" type="text/css" href="static/vendor/bootstrap/css/bootstrap.min.css" />
+
+<!-- Font Awesome Icon -->
+<link rel="stylesheet" type="text/css" href="static/vendor/font-awesome/css/all.min.css" />
+<!-- Magnific Popup -->
+<link rel="stylesheet" type="text/css" href="static/vendor/magnific-popup/magnific-popup.min.css" />
+<!-- Highlight Syntax -->
+<link rel="stylesheet" type="text/css" href="static/vendor/highlight.js/styles/github.css" />
+<!-- Custom Stylesheet -->
+<link rel="stylesheet" type="text/css" href="static/css/stylesheet.css" />
+<link rel="stylesheet" type="text/css" href="static/css/color-cyan.css" />
+
+</head>
+
+<body data-spy="scroll" data-target=".idocs-navigation" data-offset="125">
+
+<!-- Preloader -->
+
+<!-- Preloader End --> 
+
+<!-- Document Wrapper   
+=============================== -->
+<div id="main-wrapper"> 
+  
+  <!-- Header
+  ============================ -->
+  <header id="header" class="sticky-top"> 
+    <!-- Navbar -->
+    <nav class="primary-menu navbar navbar-expand-lg navbar-dropdown-dark">
+      <div class="container-fluid">
+        <!-- Sidebar Toggler -->
+		<button id="sidebarCollapse" class="navbar-toggler d-block d-md-none" type="button"><span></span><span class="w-75"></span><span class="w-50"></span></button>
+		
+		<!-- Logo --> 
+        <a class="logo ml-md-3" href="/lad" title="Heat Pump Ready App"> <img src="assets/images/logo.png" alt="Heat Pump Ready App Home"/> </a> 
+		
+        <!-- Logo End -->
+        
+		<!-- Navbar Toggler -->
+		<button class="navbar-toggler ml-auto" type="button" data-toggle="collapse" data-target="#header-nav"><span></span><span></span><span></span></button>
+        
+		<div id="header-nav" class="collapse navbar-collapse justify-content-end">
+          <ul class="navbar-nav">
+            <li><a target="_blank" href="/docs">Documentation</a></li>
+            <li><a target="_blank" href="/grid">Grid</a></li>
+            <li><a target="_blank" href="/individual">Individual</a></li>
+            <li><a target="_blank" href="/lad">Local Authority District</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <!-- Navbar End --> 
+  </header>
+  <!-- Header End --> 
+  
+  <!-- Content
+  ============================ -->
+  <div id="content" role="main">
+    
+	<!-- Sidebar Navigation
+	============================ -->
+	<div class="idocs-navigation bg-dark docs-navigation-dark">
+      <ul class="nav flex-column ">
+        <li class="nav-item"><a class="nav-link active" href="#idocs_start">Project Overview</a></li>
+        <li class="nav-item"><a class="nav-link" href="#idocs_grid">Grid</a></li>
+        <li class="nav-item"><a class="nav-link" href="#idocs_individual">Individual</a>
+        <li class="nav-item"><a class="nav-link" href="#idocs_typography">Local Authority District (LAD)</a></li>
+        <li class="nav-item"><a class="nav-link" href="#idocs_code">Code</a></li>
+        <li class="nav-item"><a class="nav-link active" href="#idocs_datasets">Datasets</a>
+          <ul class="nav flex-column">
+            <li class="nav-item"><a class="nav-link" href="#idocs_griddata">Grid</a></li>
+            <li class="nav-item"><a class="nav-link" href="#idocs_geodata">Geo Spatial </a></li>
+            <li class="nav-item"><a class="nav-link" href="#idocs_epcdata">EPC</a></li>
+            <li class="nav-item"><a class="nav-link" href="#idocs_heatpumpadoptiondata">Heat Pump Adoption</a></li>
+          </ul>
+        </li>
+		</li>
+      </ul>
+    </div>
+    
+    <!-- Docs Content
+	============================ -->
+    <div class="idocs-content">
+      <div class="container"> 
+        
+        <!-- Getting Started
+		============================ -->
+        <section id="idocs_start">
+        <h1>Heat Pump Ready App - Documentation</h1>
+		<hr>
+		<div class="row">
+			<div class="col-sm-6 col-lg-4">
+				<ul class="list-unstyled">
+					<li><strong>Version:</strong> 1.0</li>
+					<li><strong>Developer:</strong> Ben Browne - University of Bristol</li>
+				</ul>
+			</div>
+			<div class="col-sm-6 col-lg-4">
+				<ul class="list-unstyled">
+					<li><strong class="font-weight-700">Created:</strong> 4 May, 2023</li>
+					<li><strong>Update:</strong> 04 July, 2023</li>
+				</ul>
+			</div>
+		</div>
+        </section>
+        
+		<hr class="divider">
+		
+        <!-- Installation
+		============================ -->
+        <section id="idocs_tool">
+          <h2>Tool Overview</h2>
+          <p class="lead">The Heat Pump Ready App is a tool designed to provide users with insights into the state of heat pump adoption within the UK, a critical technology in the UK's drive to net zero across the economy, particularly in heating of buildings, where 'virtually all heat will need to be decarbonised'. <a href="https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/1044598/6.7408_BEIS_Clean_Heat_Heat___Buildings_Strategy_Stage_2_v5_WEB.pdf">[Heat and Buildings Strategy (BEIS)]</a></p>
+          <p class="lead">The Tool is targeted at individual homeowners interested in upgrading to a heat pump and policy makers (local council and authority district level) wanting information regarding energy performance and heat pump suitability at various geographic levels, to support heat pump programmes and related investment.</p>
+          <p class="lead">The various features of the tool and the datasets they rely on are detailed in different sections of the documents page.</p>
+          <p class="lead">The Tool was developed by Ben Browne, with the support of the University of Bristol, Dr Ruzanna Chitchyan and the Center for Sustainable Energy (CSE). A full thesis written during the initial development of the tool, detailing motivations, context and more technical aspects of the tool is available for download here: <a href="/static/thesis/Final_Year_Dissertation__Ben_Browne.pdf" download="heat_pump_ready_thesis.pdf">Heat Pump Tool Thesis.</a></p>
+        </section>
+
+    <hr class="divider">
+    <section id="idocs_grid">
+        <h2>Grid</h2>
+        <p class="lead"><a href="/grid">The Grid Page</a> attempts to provide insights into the national grids infrastructure at a local authority district level, 
+        specifically focusing on Primary substations which handle the distribution and voltage step down of electricity. The electricity distribution network is owned and operated by the National Grid, with 14 licensed distribution operators (DNOs) in Britain, owned by 6 different groups.  </p>
+        <img src="/static/images/dnos.jpg" class="img-fluid" alt="UK DNOs">
+        <p class="lead">Primary Substation Capacity is available for some of these DNOs: National Grid (formerly Western Power), Northern Power, UK Power Networks and Electricity North West. The data incorporated into the tool includes Primary Substation names, Demand Headrooms (MVA), Firm Capacities (MVA), Current Maximum Demand (MVA), Lat/Long Coordinates and a Demand Headroom Rating (RED, AMBER, GREEN). The exception to this is Electricity North West, where Firm Capacities are not clear and the Demand Headroom Rating is manually set to 'RED' if headroom = 0, 'AMBER' if headroom less than 2 MVA and 'GREEN' otherwise. The link to these datasets are specified in the <a href="#idocs_datasets">dataset section.</a></p>
+
+        <br></br>
+
+        <img src="/static/images/grid_sum.jpg" class="img-fluid" alt="Main Grid Page">
+        <p class="lead">This is the main landing page for the 'Grid' part of the application. The large map shows Primary Substations from the 4 DNOs described above, displaying Demand Headroom and Firm Capacities information on hover. The map is plotted using the <span><a href="https://plotly.com/python/plotly-express/">Plotly Express Library</a></span>, using map data from <span><a href="https://www.mapbox.com/">mapbox.</a></span>
+        The highlighted red box shows the summed Firm Capacities and Demand Headroom figures, calculating total utilization as: (Total Firm Capacity - Total Demand Headroom) / Total Firm Capacity. Substation data from Electricity North West and the other 2 DNO groups (Scottish and Southern Electricity Networks, SP Energy Networks) are not included in these calculations.</p>
+
+        <br></br>
+
+        <img src="/static/images/grid_selector.jpg" class="img-fluid" alt="Main Grid Page">
+        <p class="lead">A Local Authority District can be chosen, where the district boundaries are plotted onto the mapbox. The boundary data used is from the Office for National Statistics, for more information see the <a href="#idocs_datasets">dataset section.</a> A combined dictionary of substations {key:substation_name, value:[substation_data]} is then iterated through, with those <span style="font-weight: bold;">not</span> falling within the selected LAD boundaries being dropped. Those remaining are then plotted on the map, colour coded by the corresponding 'Demand Headroom RAG' Rating. Unfortunately, this means that primary substations that lie outside the geographical LAD boundary but supply areas of the district are not included.</p>
+        <p class="lead">The the highlighted box contains information regarding the primary substations within the district and can estimation as to the number of additional heat pumps the district could support. Assumptions made include: maximum demand of a domestic heat pump to be <a href="https://www.sciencedirect.com/science/article/pii/S0306261917308954" target="_blank">1.7kW</a>, a primary substation capacity utilization of 90%, no infrastructure improvements and no additional demand loads other than heat pumps. This number of additional heat pumps is then divided by the sum of the number of <a href="#idocs_epc">EPCs</a> for the district, to give a approximate % of homes supported for the district. The (theoretical) required electricity to meet the demand for 10% of homes in the district with a heat pump is also shown.</p>
+
+    </section>
+
+
+    <hr class="divider">
+    <section id="idocs_individual">
+      <h2>Individual</h2>
+      <p class="lead">The <a href="/individual">Individual</a> page is targeted towards the individual home owner, looking to learn more about there homes energy performance and heat pump suitability. </p>
+      <img src="/static/images/individual_home.jpg" class="img-fluid" alt="Individual Home Page">
+      <p class="lead"> The left hand side box contains a map of England and Wales, seperated into local authority districts and coloured by average EPC rating or HPR (heat pump readiness) rating, switchable in the top left of the plot. Average EPC rating is calculated as an average of all certificates classified in that local authority district. These certificates were downloaded offline (See <a href="idocs_epcdata">Datasets - EPC</a> for more info). A HPR rating is also calculated for each home/certificate using various properties of the EPC: 'walls-energy-efficiency', 'floor-energy-efficiency', 'window-energy-efficiency', 'roof-energy-efficiency' and the overall 'current-energy-efficiency', the walls and roof components are weighted double. A HPR rating of over 1 corresponds to a 'likely suitable heat pump candidate', with a rating below 1 indicating the home may not be very suitable in its current form. The HPR rating is therefore an indication of a homes energy efficiency levels, specifically its insulation, an often important factor in heat pump suitability. A more comprehensive overview of the HPR calculation can be found in the <a href="/static/thesis/Final_Year_Dissertation__Ben_Browne.pdf" download="heat_pump_ready_thesis.pdf">written thesis</a>, section 3.2.2.</p>
+      
+      <p class="lead">Through the buttons on the top right of the map, the 'UK Heat Pump Adoption' button switches the maps dataset to 'heat pump installations under the RHI scheme' (see <a href="#idocs_heatpumpadoptiondata">Datasets - Heat Pump Adoption</a>) </p>
+      <p class="lead">The 2 plots for heat pump adoption are: 'Average Yearly % Increase in Installations since 2020' and 'Installed Heat Pumps Per 1000 People (RHI Scheme - 2022)', population counts for each district were taken from the <a href="https://www.ons.gov.uk/peoplepopulationandcommunity/populationandmigration/populationestimates/datasets/populationandhouseholdestimatesenglandandwalescensus2021">Office for National Statistics</a>. Both these plots colour code each local authority district by 'average % increase' and 'installations per 1000 people' respectively. </p>
+
+      <br></br>
+      <img src="/static/images/individual_return.jpg" class="img-fluid" alt="Individual Return Page">
+      <p class="lead">Once a user has inputted a postcode and selected a property, an API request for the properties EPC is made <a href="idocs_epcdata">(see Datasets - EPC)</a>. The highlighted <span style="color: red;">red box</span> contains basic EPC information for the property and associated recommended improvements. The 'Eligibility for Boiler Upgrade Scheme' section states 3 requirements: Valid Certificate (&lt;10 years old) and no Outstanding Walls and Roof Insulation upgrade recommendations. Due to inconsistencies in the Recommendations API, eligibility for the last 2 requirements are determined by the walls and roof efficiency ratings on the EPC. These range from 'Very Poor' to 'Very Good', a rating of 'Average' is enough to meet the requirement set. A user would need to double check aganist there full EPC recomendations to ensure there are no outstanding wall/loft upgrades, a link to find this EPC is included. The properties <a href="idocs_epcdata">calculated HPR rating</a> is displayed in blue</p>
+      <p class="lead">The highlighted <span style="color: blue;">blue box</span> includes some context/background for the displayed information on the right and a 'Confidence in EPC Metric': Low Confidence for Expired Certificates (10+ years old), Medium Confidence for Certificates 5-10 years old and High Confidence for Certificates less than 5 years old. Links to additional resources including information on heat pump grants/funding and finding MCS Certified Installers are also included. Nestas Heat Pump Cost Calculator is also embedded into the page, accessible through buttons in the top right of the box.</p>
+
+      <br></br>
+      <img src="/static/images/individual_compare.jpg" class="img-fluid" alt="Individual Compare Page">
+      <p class="lead">A user can then 'compare' their homes energy performance to those of their postcode and local authority district, by using the buttons in the top right of the box. This shows average EPC and HPR ratings for the postcode, calculated from data obtained through an <a href="idocs_epcdata">API request</a> for all EPCs for the postcode. Percentiles are also calculated for postcodes EPC and HPR ratings, showing where the individuals home lies in comparison. This is colour coded: 'red' for 0th -> 30th percentiles, 'amber' for 31st -> 70th percentiles and 'green' for the 71st -> 100th percentiles. The same is done for the properties local authority district, with the averages and percentiles having been precomputed using the <a href="idocs_epcdata">full EPC dataset.</a></p>
+
+
+
+
+    </section>
+
+
+    <hr class="divider">
+    <section id="idocs_datasets">
+      <h2>Datasets</h2>
+      <p class="lead">Various datasets are used by the tool, often requiring small modifications and cleaning before being read in as a pandas dataframe. Some data is requested through APIs and is therefore the latest available, but many datasets are manual downloads and so may not always be the latest version.</p>
+
+      <section id="idocs_griddata">
+      <h3>Grid Data</h3>
+      <ul>
+      <li><p class="lead"><a href="https://www.nationalgrid.co.uk/our-network/network-capacity-map-application">National Grid Substation Capacity Map Data</a> - Primary Substation Demand and Demand Headrooms </p></li>
+      <li><p class="lead"><a href="https://www.northernpowergrid.com/demand-availability-map">Northern Power Grid Demand Availability Map Data</a> - Primary Substation Demand and Demand Headrooms. Data in .xlsx format, split into 'Northeast Demand' and 'Yorkshire Demand' tabs. These sheets are manually merged into a single .csv file, with demand headroom for each primary substation calculated as 'Firm Capacity (MVA)' - 'Maximum Demand (MVA)'. </p></li>
+      <li><p class="lead"><a href="https://ukpowernetworks.opendatasoft.com/explore/dataset/ukpn_primary_postcode_area/table/">UK Power Networks Primary Substation Distribution Areas Data</a> - Primary Substation Demand and Demand Headrooms. This data specifies 2 firm capacities for Summer and Winter alongside a 'Season of Constraint' field. The firm capacity corresponding to the substations 'Season of Constraint' is used as the firm capacity. For those with no Season of Constraint, the Winter Firm Capacity is used. </p></li>
+      <li><p class="lead"><a href="https://www.enwl.co.uk/get-connected/network-information/heatmap-tool/">Electricity North West Heatmap Tool Data</a> - Primary Substation Demand Headrooms. Data in .xlsx format, with the 'Primary Headroom Data' sheet being manually converted into a .csv file. This data lacks firm capacity data for each substation so only uses the 'Firm Demand Headroom (MW)' field.</p></li>
+      </ul>
+
+      <p class="lead">The 'Demand Headroom Rating' for each substation is either 'RED', 'AMBER' or 'GREEN', the classfications for each determined by the substations DNO. The method of classifying substations is not always clear and is not necessarily consistent between DNOs. Electricity North West did not have such a rating so was added: set to 'RED' if headroom = 0, 'AMBER' if headroom less than 2 MVA and 'GREEN' otherwise. </p>
+
+      <h5>Supplementary Grid Data</h5>
+      <p class="lead">The Northern Power Grid and Electricity North West capacity datasets do not include geospatial data for its substations, so supplementary data is used to match each substations capacity data to its corresponding Latitude/Longitude Coordinates. This data is combined into a single .csv file, to be used directly in the application. 
+      <ul>
+      <li><a href="https://northernpowergrid.opendatasoft.com/explore/dataset/substation_sites_list/information/">Northern Power Substations Sites List</a></li>
+      <li><a href="https://electricitynorthwest.opendatasoft.com/explore/dataset/enwl-substation/">Electricity North West Substations List</a> </li>
+    </ul>
+
+    </section>
+      <br></br>
+
+      <section id="idocs_geodata">
+
+      <h3>Geo Boundaries Data</h3>
+      <h5>Local Authority District Boundaries</h5>
+      <p class="lead">Local Authority Districts (LADs) are present throughout the application as a high level way of grouping and visualizing data. Due to the ever evolving nature of these boundaries, with additions and deletions fairly common each year, they are a source of potential error in the application (mismatches and missing boundary data). In an attempt to mitigate this, boundary information from multiple years is often utilized.</p>
+      <ul>
+        <li><a href="https://geoportal.statistics.gov.uk/datasets/ons::local-authority-districts-december-2022-boundaries-uk-buc/explore">LAD Boundaries - December 2022</a> </li>
+      <li><a href="https://geoportal.statistics.gov.uk/datasets/ons::local-authority-districts-december-2020-uk-buc/explore">LAD Boundaries - December 2020</a></li>
+
+      </ul>
+      <p class="lead">The boundary type chosen was 'BUC' or ultra generalised boundaries (500m), clipped to the coastline. This data is used in Shapefile (.shp) format and GEOJSON format depending on the requirements. Shapefile format for plotting all boundaries at once and GEOJSON when plotting a single LAD. (The GEOJSON was manually seperated into its constituent parts for efficiency purposes.) </p>
+    </section>
+
+    <br></br>
+
+    <section id="idocs_epcdata">
+
+      <h3>Energy Performance Certificate (EPC) Data</h3>
+      <p class="lead">The Energy Performance Certificate is required for any dwelling that is to be sold or rented. It contains information regarding the energy performance of a home: physical features (i.e.. wall insulation levels) and recommended improvements to increase the EPC rating (score 0-100).</p>
+      <p class="lead">When requesting data for an <a href="idocs_individual">individual dwelling</a> requests to the following endpoints are made:</p>
+      <ul>
+        <li><a href="https://epc.opendatacommunities.org/api/v1/domestic/search">https://epc.opendatacommunities.org/api/v1/domestic/search</a></li>
+        <li><a href="https://epc.opendatacommunities.org/api/v1/domestic/recommendations/:lmk-key">https://epc.opendatacommunities.org/api/v1/domestic/recommendations/:lmk-key</a></li>
+      </ul>
+      <p class="lead">This developer API requires an api key registered to an email address. Full documentation for the API can be found at <a href="https://epc.opendatacommunities.org/docs/api/domestic">epc.opendatacommunties.org</a> </p>
+      <br></br>
+
+      <p class="lead">EPC data when used at <a href="idocs_lad">local authority district</a> level, was downloaded offline and saved in a reduced feature format for space efficiency. This data is used in all calculations at LAD level and is used to calculate a Heat Pump Readiness (HPR) Rating for every EPC.</p>
+      <p class="lead">This data is downloaded as a .zip, with folders for each district containing a .csv file of all EPCs classified at this district. It should be noted here that these .csv files were found to contain a small amount of EPCs corresponding to homes and postcodes not located within the district (geographically), it is likely these are due to errors and highly insignificant over the whole set.</p>
+
+    </section>
+
+    <section id="idocs_heatpumpadoptiondata">
+        <p class="lead">Data regarding heat pump adoption was requested through <span style="font-weight: bold;">information.rights@ofgem.gov.uk</span> and was accepted under the Environmental Information Regulations 2004 (EIR). This data was 'Cumulative Number of Heat Pumps Installed by Local Authority by Year in Great Britain' and was seperated by air source or ground source installations. These heat pump installations were all under the RHI (Renewable Heat Incentive) scheme, which was recently replaced by the Boiler Upgrade Scheme (BUS), both goverment ran.</p>
+
+    </section>
+      
+    </section>
+        
+
+		  
+		  <hr class="divider">
+		  
+		  <!-- Helper Classes
+		  ============================ -->
+          <section id="idocs_helper_classes">
+            <h3>Helper Classes</h3>
+            <p>We have created some really useful helper classes for you. Here are a few of them. also, You can refer other default bootstrap helper classes here: <a class="ml-1" target="_blank" href="https://getbootstrap.com/docs/4.4/utilities/"><i class="fas fa-external-link-alt"></i> Bootstrap Documentation</a> </p>
+			            
+			<h5>Text Size:</h5>
+            <ul>
+              <li><code>.text-0</code> - Changes the Font size to 11px.</li>
+              <li><code>.text-1</code> - Changes the Font size to 12px.</li>
+              <li><code>.text-2</code> - Changes the Font size to 14px.</li>
+              <li><code>.text-3</code> - Changes the Font size to 16px.</li>
+              <li><code>.text-4</code> - Changes the Font size to 18px.</li>
+              <li><code>.text-5</code> - Changes the Font size to 21px.</li>
+              <li><code>.text-6</code> - Changes the Font size to 24px.</li>
+              <li><code>.text-7</code> - Changes the Font size to 28px.</li>
+              <li><code>.text-8</code> - Changes the Font size to 32px.</li>
+              <li><code>.text-9</code> - Changes the Font size to 36px.</li>
+              <li><code>.text-10</code> - Changes the Font size to 40px.</li>
+              <li><code>.text-11</code> - Changes the Font size to 44px.</li>
+              <li><code>.text-12</code> - Changes the Font size to 48px.</li>
+              <li><code>.text-13</code> - Changes the Font size to 52px.</li>
+              <li><code>.text-14</code> - Changes the Font size to 56px.</li>
+              <li><code>.text-15</code> - Changes the Font size to 60px.</li>
+              <li><code>.text-16</code> - Changes the Font size to 64px.</li>
+              <li><code>.text-17</code> - Changes the Font size to 72px.</li>
+              <li><code>.text-18</code> - Changes the Font size to 80px.</li>
+              <li><code>.text-19</code> - Changes the Font size to 84px.</li>
+              <li><code>.text-20</code> - Changes the Font size to 92px.</li>
+            </ul>
+            <h5>Font Weight:</h5>
+            <ul>
+              <li><code>.font-weight-100</code> - For font weight of 100.</li>
+              <li><code>.font-weight-200</code> - For font weight of 200.</li>
+              <li><code>.font-weight-300</code> - For font weight of 300.</li>
+              <li><code>.font-weight-400</code> - For font weight of 400.</li>
+              <li><code>.font-weight-500</code> - For font weight of 500.</li>
+              <li><code>.font-weight-600</code> - For font weight of 600.</li>
+              <li><code>.font-weight-700</code> - For font weight of 700.</li>
+              <li><code>.font-weight-800</code> - For font weight of 800.</li>
+              <li><code>.font-weight-900</code> - For font weight of 900.</li>
+            </ul>
+            <h5>Background Color:</h5>
+            <ul>
+              <li><code>.bg-transparent</code> - For background color of transparent</li>
+              <li><code>.bg-light</code> - For background color of light gray</li>
+              <li><code>.bg-light-1</code> - For background color of more light gray</li>
+              <li><code>.bg-light-2</code> - For background color of more light gray</li>
+              <li><code>.bg-light-3</code> - For background color of more light gray</li>
+              <li><code>.bg-light-4</code> - For background color of more light gray</li>
+              <li><code>.bg-dark</code> - For background color of dark</li>
+              <li><code>.bg-dark-1</code> - For background color of dark gray</li>
+              <li><code>.bg-dark-2</code> - For background color of more dark gray</li>
+              <li><code>.bg-dark-3</code> - For background color of more dark gray</li>
+              <li><code>.bg-dark-4</code> - For background color of more dark gray</li>
+            </ul>
+            <h5>Box Shadow</h5>
+            <ul>
+              <li><code>.shadow-none</code> - For No shadow to elements with box-shadow utilities.</li>
+              <li><code>.shadow-sm</code> - For Small shadow to elements with box-shadow utilities.</li>
+              <li><code>.shadow</code> - For Regular shadow to elements with box-shadow utilities.</li>
+              <li><code>.shadow-md</code> - For medium light shadows to elements with box-shadow utilities.</li>
+              <li><code>.shadow-lg</code> - For Larger shadows to elements with box-shadow utilities.</li>
+            </ul>
+            <h5>Opacity</h5>
+            <ul>
+              <li><code>.opacity-1</code> - For 10% opacity.</li>
+              <li><code>.opacity-2</code> - For 20% opacity.</li>
+              <li><code>.opacity-3</code> - For 30% opacity.</li>
+              <li><code>.opacity-4</code> - For 40% opacity.</li>
+              <li><code>.opacity-5</code> - For 50% opacity.</li>
+              <li><code>.opacity-6</code> - For 60% opacity.</li>
+              <li><code>.opacity-7</code> - For 70% opacity.</li>
+              <li><code>.opacity-8</code> - For 80% opacity.</li>
+              <li><code>.opacity-9</code> - For 90% opacity.</li>
+            </ul>
+            <h5>Border Radius</h5>
+            <ul>
+              <li><code>.rounded-top-0</code> - No Border Radius for top.</li>
+              <li><code>.rounded-bottom-0</code> - No Border Radius for bottom.</li>
+              <li><code>.rounded-left-0</code> - No Border Radius for left.</li>
+              <li><code>.rounded-right-0</code> - No Border Radius for right.</li>
+            </ul>
+            <h5>Borders, Sizing, Spacing (margin & padding) and also much more....</h5>
+            <div class="alert alert-info">You can refer for use other default bootstrap helper classes here - <a href="https://getbootstrap.com/docs/4.4/utilities/">https://getbootstrap.com/docs/4.4/utilities/</a></div>
+          </section>
+  
+</body>
+</html>

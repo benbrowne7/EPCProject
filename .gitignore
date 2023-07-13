@@ -4,3 +4,5 @@ app/templates/bigmap/
 app/templates/graphs/
 app/templates/ladmaps/
 app/templates/maps/
+wsgi.py
+app/__init__.py

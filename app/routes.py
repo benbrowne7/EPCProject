@@ -49,10 +49,15 @@ sourcedir = os.path.dirname(abspath)
 @app.route('/')
 def index():
     session.clear()
-    if os.path.exists(sourcedir + "/templates/bigmap/constit_map.html"):
+    try:
         os.remove(sourcedir + "/templates/bigmap/constit_map.html")
-    if os.path.exists(sourcedir + "/templates/adoptionmap/adoption_map.html"):
+    except:
+        True
+    try:
         os.remove(sourcedir + "/templates/adoptionmap/adoption_map.html")
+    except:
+        True
+     
     return render_template("base.html")
 
 @app.route('/individual', methods=['GET', 'POST'])
@@ -127,6 +132,7 @@ def gridsingle():
         num_substations, capacity_single, headroom_single, utilization_single, dno = extractsubstationinfo(valid_substations)
         max_support = int((headroom_single-(capacity_single*0.1)) / 0.0017)
         perc_homes = round((max_support / num_epcs)*100,1)
+        ten_perc = int(int(num_epcs*0.1) * 0.0017)
 
         if utilization_single == 0 and capacity_single == 0:
             utilization_single = 'Data Not Available'
@@ -137,10 +143,7 @@ def gridsingle():
         else:
             northwest = False
 
-        
-        
-
-        return render_template('grid.html', constit22=constit22, valid=valid, constit_name=constit_name, capacity=capacity, headroom=headroom, utilization=utilization, capacity_single=capacity_single, headroom_single=headroom_single, utilization_single=utilization_single, num_substations=num_substations, num_epcs=num_epcs, max_support=max_support, perc_homes=perc_homes, dno=dno, northwest=northwest)
+        return render_template('grid.html', constit22=constit22, valid=valid, constit_name=constit_name, capacity=capacity, headroom=headroom, utilization=utilization, capacity_single=capacity_single, headroom_single=headroom_single, utilization_single=utilization_single, num_substations=num_substations, num_epcs=num_epcs, max_support=max_support, perc_homes=perc_homes, dno=dno, northwest=northwest, ten_perc=ten_perc)
     
     
 
@@ -406,11 +409,13 @@ def singlerequest():
 
     #calculate confidence metric
     year = int(cert_date.split('-')[0])
+    today = datetime.today()
+    current_year = int(today.year)
     while True:
-        if year >= 2018:
+        if year >= current_year-5:
             conf = 0
             break
-        if year >= 2013:
+        if year >= current_year-10:
             conf = 1
             break
         else:
@@ -477,7 +482,9 @@ def ladadoption():
 
     return render_template("ladadoption.html", valid=valid, av_rate_string=av_rate_string, av_density_string=av_density_string, lad_rate_string=lad_rate_string, lad_density_string=lad_density_string, rate_percentile_string=rate_percentile_string, density_percentile_string=density_percentile_string, name=name, ons=ons, tag0=tag0, tag1=tag1, names=names)
 
-
+@app.route('/docs', methods=['GET'])
+def docs():
+    return render_template("docs.html")
 
 
 
@@ -487,14 +494,12 @@ def ladadoption():
 
 @app.route('/graphdimen', methods=['POST'])
 def graphdimen():
-    print("in graphdimen", flush=True)
     out = request.get_json(force=True)
-    print(out)
     w = out['data1']
     h = out['data2']
     session['dimen'] = (w,h)
     print(session['dimen'])
-    return 'h'
+    return render_template('lad.html')
 
 @app.route('/bigmap', methods=['GET'])
 def rendermap1():
