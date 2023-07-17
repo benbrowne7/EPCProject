@@ -407,7 +407,7 @@ def graphadoption(ons,w,h):
     rates.append(val)
 
   hover = HoverTool(tooltips = [('%Y/Y', '$y'), ('Year', '$x{0000}')], )
-  p1 = figure(title="Annual % Change for Heat Pump Installations (RHI Scheme) for {}".format(ons), x_axis_label='Year', y_axis_label='% Change', sizing_mode="stretch_width", toolbar_location = 'right', toolbar_sticky = False, tools = [hover], width=w, height=h)
+  p1 = figure(title="Annual % Change for Heat Pump Installations (RHI Scheme) for {}".format(ons), x_axis_label='Year', y_axis_label='% Change', sizing_mode="stretch_width", toolbar_location = 'right', toolbar_sticky = False, tools = [hover], width=w_plot, height=h_plot)
   p1.title.text_font_size = '16pt'
   p1.title.align = "center"
   p1.line(years[1:], rates, line_width=6, legend_label=ons_str, color='blue')

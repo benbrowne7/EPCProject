@@ -36,7 +36,7 @@
         {% if valid == True %} 
         <iframe src="/biggridsingle" width=100%; id="biggrid"></iframe>
         {% else %}
-        <iframe src="/biggrid" width=100%; id="biggrid1"></iframe>
+        <iframe src="/biggrid" width=100%; id="biggrid"></iframe>
         {% endif %} 
         {% endif %}
     </div>
@@ -76,7 +76,7 @@
                 </div>
             {% else %} 
             <div class="singleinfo">
-                <div class="responsetext">The Distribution Network Operator (DNO) for {{constit_name}} is <span style="font-weight: bold;">{{dno}}</span></div>
+                <div class="responsetext">The Distribution Network Operator (DNO) for {{constit_name}} is <span style="font-weight: bold;">{{dno}}</span><span><i class="bi bi-info-circle icon-red" data-bs-toggle="tooltip" data-bs-title="Electricity North West Substations all have Firm Capacities set at 0.1 MVA due to missing data"></i></span></div>
                 <div class="responsetext">Number of Primary Substations in {{constit_name}}: <span style="font-weight:bold;">{{num_substations}}</span></div>
                 <div class="responsetext">Total (Primary) Substation Capacity: <span style="font-weight: bold;">{{capacity_single}} MVA</span> <span><i class="bi bi-info-circle icon-blue" data-bs-toggle="tooltip" data-bs-title="Summed Firm Capacity for all Primary Substations in district"></i></span> </div>
                 <div class="responsetext">Total (Primary) Substation Headroom: <span style="font-weight: bold;">{{headroom_single}} MVA</span> <span><i class="bi bi-info-circle icon-blue" data-bs-toggle="tooltip" data-bs-title="Summed Demand Headroom for all Primary Substations in district"></i></span> </div>
