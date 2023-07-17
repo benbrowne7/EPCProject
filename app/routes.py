@@ -101,7 +101,8 @@ def grid():
     (w,h) = session['dimen']
     session.clear()
     session['dimen'] = (w,h)
-    capacity, headroom, utilization, constit22 = biggrid(w,h)
+    capacity, headroom, utilization = biggrid(w,h)
+    constit22 = getconstitnames()
     session['grid-stats'] = (capacity, headroom, utilization)
     return render_template('grid.html', capacity=capacity, headroom=headroom, utilization=utilization, constit22=constit22)
 
@@ -113,13 +114,24 @@ def gridsingle():
         constit22 = getconstitnames()
         (capacity, headroom, utilization) = session['grid-stats']
         return render_template('grid.html', capacity=capacity, headroom=headroom, utilization=utilization, constit22=constit22)
+    
+    if constit_name == "na":
+        (w,h) = session['dimen']
+        capacity, headroom, utilization = biggrid(w,h)
+        session['grid-stats'] = (capacity, headroom, utilization)
+        return render_template('grid.html', capacity=capacity, headroom=headroom, utilization=utilization, constit22=constit22)
+
 
     (w,h) = session['dimen']
     constit22 = getconstitnames()
     constit22.remove(constit_name)
     constit22.append(constit_name)
-    (capacity, headroom, utilization) = session['grid-stats']
-    valid_substations = biggridsingle(w,h, constit_name)
+    try:
+        (capacity, headroom, utilization) = session['grid-stats']
+    except:
+        capacity, headroom, utilization = biggrid(5,5,True)
+        session['grid-stats'] = (capacity, headroom, utilization)
+    
 
     ons2lad = pd.read_csv(sourcedir + "/data/ONS2LAD.csv")
     row = ons2lad.loc[ons2lad['LAD20NM'] == constit_name]
@@ -128,6 +140,9 @@ def gridsingle():
     except:
         valid = False
         return render_template('grid.html', capacity=capacity, headroom=headroom, utilization=utilization, constit22=constit22, valid=valid, constit_name=constit_name)
+    
+    valid_substations = biggridsingle(w,h, constit_name, ons)
+
     num_epcs_df = pd.read_csv(sourcedir + "/data/number_epcs.csv")
     row = num_epcs_df.loc[num_epcs_df['ONS'] == ons]
     num_epcs = int(row['NUM'].values[0])
@@ -186,7 +201,7 @@ def ladsingle():
         session['save1'] = [epc_string1, hpr_string1, epc_string2, hpr_string2, tag1, tag2, proportion_string, name, ons, n_over1, exp_str]
         session['ons'] = ons
 
-        return render_template("lad.html", epc_string1=epc_string1, hpr_string1=hpr_string1, epc_string2=epc_string2, hpr_string2=hpr_string2, tag1=tag1, tag2=tag2, proportion_string=proportion_string, name=name, names=names, ons=ons, LAD_EPC_MEAN=LAD_EPC_MEAN, LAD_HPR_MEAN=LAD_HPR_MEAN, n_over1=n_over1, exp_str=exp_str)
+        return render_template("lad.html", epc_string1=epc_string1, hpr_string1=hpr_string1, epc_string2=epc_string2, hpr_string2=hpr_string2, tag1=tag1, tag2=tag2, proportion_string=proportion_string, name=name, names=names, ons=ons, LAD_EPC_MEAN=LAD_EPC_MEAN, LAD_HPR_MEAN=LAD_HPR_MEAN, n_over1=n_over1, exp_str=exp_str, constit_name=constit_name)
 
 
 @app.route('/ladreq', methods=['POST'])
@@ -338,6 +353,8 @@ def postcodereq():
                 house_list.append(house['address'])
                 key_dict[house['address']] = house['lmk-key']
             session['keys'] = key_dict
+
+            house_list.sort(key=natural_keys)
             session['house_list'] = house_list
             return render_template('addressselector.html', house_list=house_list)
 
@@ -347,9 +364,12 @@ def postcodereq():
 
 @app.route('/singlerequest', methods=['POST', 'GET'])
 def singlerequest():
-    session.pop('save', None)
-    session.pop('compare', None)
-    house_list = session['house_list']
+    #session.pop('save', None)
+    #session.pop('compare', None)
+    try:
+        house_list = session['house_list']
+    except:
+        return render_template('individual.html')
 
     #get certificate info
     if request.method == 'GET':
@@ -360,7 +380,10 @@ def singlerequest():
     url = endpointcert + key
     r = requests.get(url, headers=headers)
     data = r.json()
+    
     d = data['rows'][0]
+    ons = d['local-authority']
+
 
     comparisons = {}
     comparisons['postcode'] = d['postcode']
@@ -434,7 +457,14 @@ def singlerequest():
     session['compare'] = comparisons
     session['save'] = [location, ratings, property, features, improvements, e_date, e_walls, e_roof, hpr, tag, conf, improve_str, epc_link]
 
-    return render_template('individual.html', location=location, ratings=ratings, property=property, features=features, improvements=improvements, e_date=e_date, e_walls=e_walls, e_roof=e_roof, hpr=hpr, tag=tag, house_list=house_list, conf=conf, improve_str=improve_str, epc_link=epc_link)
+    df = pd.read_csv(sourcedir + "/data/ONS2LAD.csv", low_memory=False)
+    index = df.index[df['LAD20CD'] == ons].tolist()
+    if index == []:
+        local = "na"
+    else:
+        local = df['LAD20NM'][index[0]]
+        
+    return render_template('individual.html', location=location, ratings=ratings, property=property, features=features, improvements=improvements, e_date=e_date, e_walls=e_walls, e_roof=e_roof, hpr=hpr, tag=tag, house_list=house_list, conf=conf, improve_str=improve_str, epc_link=epc_link, local=local)
 
 @app.route('/ladadoption', methods=['POST', 'GET'])
 def ladadoption():
@@ -450,7 +480,7 @@ def ladadoption():
 
     ons2lad = pd.read_csv(sourcedir + "/data/ONS2LAD.csv")
     name = ons2lad.loc[ons2lad['LAD20CD'] == ons].values[0]
-    name = name[1]
+    constit_name = name[1]
 
     av_rate = 28.8
     rate_percentile = [12.59, 16.24, 18.97, 20.66, 23.1, 26.22, 30.6,  38.46, 51.34]
@@ -485,7 +515,7 @@ def ladadoption():
     rate_percentile_string = "{} is within the {}th -> {}th percentile for Local Authority Districts (av. annual % Increase)".format(name, index0*10, (index0+1)*10)
     density_percentile_string = "{} is within the {}th -> {}th percentile for Local Authority Districts (Heat Pumps per 1000)".format(name, index1*10, (index1+1)*10)
 
-    return render_template("ladadoption.html", valid=valid, av_rate_string=av_rate_string, av_density_string=av_density_string, lad_rate_string=lad_rate_string, lad_density_string=lad_density_string, rate_percentile_string=rate_percentile_string, density_percentile_string=density_percentile_string, name=name, ons=ons, tag0=tag0, tag1=tag1, names=names)
+    return render_template("ladadoption.html", valid=valid, av_rate_string=av_rate_string, av_density_string=av_density_string, lad_rate_string=lad_rate_string, lad_density_string=lad_density_string, rate_percentile_string=rate_percentile_string, density_percentile_string=density_percentile_string, constit_name=constit_name, ons=ons, tag0=tag0, tag1=tag1, names=names)
 
 @app.route('/docs', methods=['GET'])
 def docs():

@@ -85,6 +85,12 @@
             <div id="responseboxright">
             <div class="singleinfo">
                 <div class="switchtabbuttons"><button type="button" class="btn btn-primary btn-sm me-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="View Energy Performance for the district" onclick="ladperf();">{{name}} Energy Perf</button><button type="button" class="btn btn-primary btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="View Heat Pump Adoption Data for the district" onclick="ladadoption();">{{name}} Heat Pump Adoption</button></div>
+                
+                <div id="grid-link" style="position: absolute; top:0%; right:0%;">
+                    <form action="/gridsingle" method="POST" target="_blank">
+                        <input type="hidden" name="singlegrid" value="{{constit_name}}"><br><br>
+                        <button class="btn btn-danger btn-sm me-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Check Grid Availability for this District" type="submit" formmethod="post">Check Grid Data</button>
+                      </form></div>
 
                 <div class="heading">Averages over all Local Authority Districts</div>
                 <div class="responsetext">Average EPC: {{LAD_EPC_MEAN}} <span><i class="bi bi-info-circle icon-blue" data-bs-toggle="tooltip" data-bs-title="Average EPC Rating for all Local Authority Districts (England and Wales)"></i></span></div>

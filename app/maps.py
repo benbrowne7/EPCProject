@@ -430,7 +430,7 @@ def graphadoption(ons,w,h):
   save(Tabs(tabs=[tab4,tab1], width=w))
 
 
-def ladmap1(ons,w,h):
+def ladmap(ons,w,h):
 
   abspath = os.path.abspath(__file__)
   sourcedir = os.path.dirname(abspath)
@@ -565,7 +565,7 @@ def ladmap1(ons,w,h):
   return True
 
 
-def ladmap(ons,w,h):
+def ladmap1(ons,w,h):
   abspath = os.path.abspath(__file__)
   sourcedir = os.path.dirname(abspath)
 
@@ -656,7 +656,7 @@ def ladmap(ons,w,h):
 
 
 
-def biggrid(w,h):
+def biggrid(w,h, getstats=False):
 
   abspath = os.path.abspath(__file__)
   sourcedir = os.path.dirname(abspath)
@@ -672,7 +672,11 @@ def biggrid(w,h):
   #uk_bounds = gpd.GeoDataFrame.from_file(sourcedir + "/data/Shapefile/" + shapefile)
 
   combo_df, combined_dict = combinesubstationdata(nationalgrid, northernpower, ukpowernetworks, northwestelectric)
-  
+
+  if getstats == True:
+    capacity_sum, headroom_sum = calculatetotalheadroom(combined_dict)
+    constit22 = getconstitnames()
+    return int(capacity_sum), int(headroom_sum), int((capacity_sum-headroom_sum)/capacity_sum*100)
 
 
   w = w*0.66
@@ -700,9 +704,8 @@ def biggrid(w,h):
 
   capacity_sum, headroom_sum = calculatetotalheadroom(combined_dict)
 
-  constit22 = getconstitnames()
 
-  return int(capacity_sum), int(headroom_sum), int((capacity_sum-headroom_sum)/capacity_sum*100), constit22
+  return int(capacity_sum), int(headroom_sum), int((capacity_sum-headroom_sum)/capacity_sum*100)
 
 def zoom_center(lons, lats, projection='mercator'):
     width_to_height = 2.0
@@ -737,7 +740,7 @@ def zoom_center(lons, lats, projection='mercator'):
     
     return zoom, center
 
-def biggridsingle(w, h, constit_name):
+def biggridsingle(w, h, constit_name, ons):
   abspath = os.path.abspath(__file__)
   sourcedir = os.path.dirname(abspath)
 
@@ -774,7 +777,7 @@ def biggridsingle(w, h, constit_name):
   uk_bounds = gpd.GeoDataFrame.from_file(sourcedir + "/data/Shapefile/" + shapefile)
 
   for row in uk_bounds.itertuples():
-    if row[2] == constit_name:
+    if row[1] == ons:
       lad_bounds = row
       break
   

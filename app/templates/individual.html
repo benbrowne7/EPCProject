@@ -125,7 +125,7 @@
             {% if location is defined %}
 
             <div class="singleinfo" >
-                <div class="switchtabbuttons"><button type="button" class="btn btn-primary btn-sm me-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="EPC and HPR information for the property" onclick="epcdetails();">EPC Details</button><button type="button" class="btn btn-primary btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Compare your homes energy performance to rest of your postcode and local authority district" onclick="compare();">Compare</button></div>
+                <div class="switchtabbuttons"><button type="button" class="btn btn-primary btn-sm me-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="EPC and HPR information for the property" onclick="epcdetails();">EPC Details</button><button type="button" class="btn btn-primary btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Compare your homes energy performance to rest of your postcode and local authority district" onclick="compare();">Compare</button> </div>
 
                 <div class="heading">Property Address: </div> <div class="responsetext" >{{location['address1']}} {{location['postcode']}} ,{{location['county']}}</div>
                 <div class="heading">Certificate Ratings:</div><div class="responsetext" >Current Rating: {{ratings['current']}} || Current Efficiency: {{ratings['current-int']}} <span><i class="bi bi-info-circle icon-blue" data-bs-toggle="tooltip" data-bs-title="Overall Energy Performance Rating (0-100)"></i></span></div>
@@ -138,7 +138,7 @@
 
             {% if improvements is defined %}
             
-                <div class="heading" style="margin-top: 1.5%;">Recommended Improvements: <span style="font-size: 1vw; font-weight: 400;">({{improve_str}})</span> <span><i class="bi bi-info-circle icon-blue" data-bs-toggle="tooltip" data-bs-title="Recommended Improvements pulled from the EPC [Unreliable - For all recommendations see full epc link]"></i></span> <span style="position: absolute; right: 1%;"><a href={{epc_link}} target="_blank">-> Full EPC Link </a></span></div>
+                <div class="heading" style="margin-top: 1.5%;">Recommended Improvements: <span style="font-size: 1vw; font-weight: 400;">({{improve_str}})</span> <span><i class="bi bi-info-circle icon-blue" data-bs-toggle="tooltip" data-bs-title="Recommended Improvements pulled from the EPC [Unreliable - For all recommendations see full epc link]"></i></span> <span style="position: absolute; right: 1%;"><a href={{epc_link}} data-bs-toggle="tooltip" data-bs-title="https://find-energy-certificate.service.gov.uk/find-a-certificate/" target="_blank">-> Full EPC Link </a></span></div>
                 {% for key, value in improvements.items() %}
                 <div class="responsetext">{{key}} -> {{value}}</div>
                 {% endfor %}
@@ -147,7 +147,7 @@
         {% endif %}
 
         {% if e_date is defined %}
-            <div class="heading" style="margin-top: 1.5%;">Eligibility for Boiler Upgrade Scheme (BUS): <span><i class="bi bi-info-circle icon-blue" data-bs-toggle="tooltip" data-bs-title="Boiler Upgrade Scheme (BUS) - Goverment Grant of up to £5k for an Air Source heat pump installation"></i></span> <span style="position: absolute; right: 1%;"><a href="https://www.gov.uk/apply-boiler-upgrade-scheme/check-if-youre-eligible" target="_blank">-> Check BUS Eligibility</a></span></div>
+            <div class="heading" style="margin-top: 1.5%;">Eligibility for Boiler Upgrade Scheme (BUS): <span><i class="bi bi-info-circle icon-blue" data-bs-toggle="tooltip" data-bs-title="Boiler Upgrade Scheme (BUS) - Goverment Grant of up to £5k for an Air Source heat pump installation"></i></span> <span style="position: absolute; right: 1%;"><a href="https://www.gov.uk/apply-boiler-upgrade-scheme/check-if-youre-eligible" data-bs-toggle="tooltip" data-bs-title="https://www.gov.uk/apply-boiler-upgrade-scheme/check-if-youre-eligible" target="_blank">-> Check BUS Eligibility</a></span></div>
             {% if e_date == False %}
                 <div class="notvalid">Certificate is not Valid (10+ years old) <span><i class="bi bi-info-circle icon-blue" data-bs-toggle="tooltip" data-bs-title="BUS requires a valid (in date) EPC Certificate"></i></span></div>
             {% else %}
@@ -168,7 +168,16 @@
             {% if hpr is defined %}
             <div id="hprrating" style="margin-top:-1.5%;">
             <span id="boot-icon" class="bi bi-arrow-return-right" style="font-size: 5vw; margin-top: -1%; color: rgb(0, 0, 255); -webkit-text-stroke-width: 6px;"></span> 
-                <div class="heading1" style= "text-align: center; left:30%;">HEAT PUMP READY RATING: <span class="hpr">{{hpr}}</span> <span><i class="bi bi-info-circle icon-blue" data-bs-toggle="tooltip" data-bs-title="Calculated using details from the EPC, a rating over 1 indicates the home may be suitable for a heat pump. (See the Docs for more info)"></i></span> <span style="font-size: 2.2vw; color: blue; font-weight: bold;"> ({{tag}})</span></div>
+                
+            <div class="heading1" style= "text-align: center; left:30%;">HEAT PUMP READY RATING: <a href="/docs#idocs_hprdata" target="_blank">
+                <span class="hpr" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Documentation - HPR Rating">{{hpr}}</span></a> 
+                <i class="bi bi-info-circle icon-blue" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Calculated using details from the EPC, a rating over 1 indicates the home may be suitable for a heat pump. (Click the rating to find out more)"></i> <span style="font-size: 2.2vw; color: blue; font-weight: bold;"> ({{tag}})</span></div>
+
+                <div id="grid-link" style="position: absolute; top:0%; right:0%;">
+                <form action="/gridsingle" method="POST" target="_blank">
+                    <input type="hidden" name="singlegrid" value="{{local}}"><br><br>
+                    <button class="btn btn-danger btn-sm me-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Check Grid Availability for this District" type="submit" formmethod="post">Check Grid Data</button>
+                  </form></div>
             </div>
             {% endif %}
         </div>

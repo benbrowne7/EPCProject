@@ -54,6 +54,12 @@
             <div class="singleinfo">
                 <div class="switchtabbuttons"><button type="button" class="btn btn-primary btn-sm me-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="View Energy Performance for the district" onclick="ladperf();">{{name}} Energy Perf</button><button type="button" class="btn btn-primary btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="View Heat Pump Adoption Data for the district" onclick="ladadoption();">{{name}} Heat Pump Adoption</button></div>
 
+                <div id="grid-link" style="position: absolute; top:0%; right:0%;">
+                    <form action="/gridsingle" method="POST" target="_blank">
+                        <input type="hidden" name="singlegrid" value="{{constit_name}}"><br><br>
+                        <button class="btn btn-danger btn-sm me-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Check Grid Availability for this District" type="submit" formmethod="post">Check Grid Data</button>
+                      </form></div>
+
                 <div class="heading">Averages over all Local Authority Districts</div>
                 <div class="responsetext">{{av_rate_string}} <span><i class="bi bi-info-circle icon-blue" data-bs-toggle="tooltip" data-bs-title="Average Yearly % Increase in Heat Pump Installations under the Renewable Heat Incentive (RHI) Scheme over all districts"></i></span></div>
                 <div class="responsetext">{{av_density_string}} <span><i class="bi bi-info-circle icon-blue" data-bs-toggle="tooltip" data-bs-title="Average Number of Heat Pump Installations under the Renewable Heat Incentive (RHI) Scheme per 1000 people over all districts"></i></span></div>
