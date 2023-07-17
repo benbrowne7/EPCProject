@@ -141,6 +141,8 @@ def gridsingle():
         valid = False
         return render_template('grid.html', capacity=capacity, headroom=headroom, utilization=utilization, constit22=constit22, valid=valid, constit_name=constit_name)
     
+    session['ons'] = ons
+    
     valid_substations = biggridsingle(w,h, constit_name, ons)
 
     num_epcs_df = pd.read_csv(sourcedir + "/data/number_epcs.csv")
@@ -539,42 +541,55 @@ def rendermap1():
     try:
         w,h = session['dimen']
     except:
-        True
+        return True
     else:
+        name = "constit_map_" + str(w) + "x" + str(h) + ".html"
         bigmap(w,h)
-    return render_template('bigmap/constit_map.html')
+        return render_template('bigmap/' + name)
 
 @app.route('/adoptionmap')
 def rendermap2():
     try:
         w,h = session['dimen']
     except:
-        True
+        return True
     else:
         adoptionmap(w,h)
-    return render_template('bigmap/adoption_map.html')
+        name = "adoption_map_" + str(w) + "x" + str(h) + ".html"
+        return render_template('bigmap/' + name)
 
 @app.route('/graphpane')
 def rendermap5():
-    file = session['name']
-    return render_template('graphs/' + file)
+    ons = session['ons']
+    w,h = session['dimen']
+    name = ons + "_graph_" + str(w) + "x" + str(h) + ".html"
+    return render_template('graphs/' + name)
 @app.route('/graphpaneadoption')
 def rendermap6():
-    file = session['name']
-    return render_template('graphsadoption/' + file)
+    ons = session['ons']
+    w,h = session['dimen']
+    name = ons + "_graph_" + str(w) + "x" + str(h) + ".html"
+    return render_template('graphsadoption/' + name)
 
 @app.route('/ladmapleft')
 def rendermap7():
     ons = session['ons']
-    return render_template('ladmaps/' + ons + '_map.html')
+    w, h = session['dimen']
+    name = ons + "_" + str(w) + "x" + str(h) +  ".html"
+    return render_template('ladmaps/' + name)
 
 @app.route('/biggrid')
 def rendermap8():
-    return render_template('biggrid/biggrid.html')
+    w, h = session['dimen']
+    name = "biggrid_" + str(w) + "x" + str(h) + ".html"
+    return render_template('biggrid/' + name)
 
 @app.route('/biggridsingle')
 def rendermap9():
-    return render_template('biggrid/biggridsingle.html')
+    ons = session['ons']
+    w, h = session['dimen']
+    name = ons + "_grid_" + str(w) + "x" + str(h) + ".html"
+    return render_template('biggrid/' + name)
 
 
 

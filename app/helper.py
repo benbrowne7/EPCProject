@@ -164,13 +164,14 @@ def singleladrequest(ons, av_yoy):
     getname = pd.read_csv(sourcedir + "/data/ONS2LAD.csv", low_memory=False)
     row = getname[getname['LAD20CD'] == ons]
     name = row['LAD20NM'].values[0]
-    l = name.split(" ")
-    if len(l) != 1:
-        name = '-'.join(l)
 
-    filename = "domestic-" + ons + "-" + name + "hprs.csv"
+    for file in os.listdir(sourcedir + "/data/hprs/"):
+        if ons in file:
+            os.chdir(sourcedir + "/data/hprs/")
+            data = pd.read_csv(file)
+            break
+    os.chdir(sourcedir)
 
-    data = pd.read_csv(sourcedir + "/data/hprs/" + filename, low_memory=False)
 
     #epc/hpr data for specific LAD
     epcs = data.iloc[:,0].tolist()

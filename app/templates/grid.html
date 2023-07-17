@@ -1,3 +1,4 @@
+<!doctype html>
 <html>
     {% extends "base.html" %}
 {% block head %}
@@ -5,13 +6,13 @@
 {% endblock %}
     {{super()}}
     <style type="text/css">
-        html {height:100%}
         body {
         margin:0;
         height:100%;
         overflow:hidden
         }
     </style>
+    <link rel="stylesheet" type="text/css" href="static/css/resize.css">
 
 {% endblock %}
 
@@ -30,12 +31,12 @@
     {% block content %} 
     <div id="contentboxgrid">
         {% if valid is not defined %} 
-        <iframe src="/biggrid" width=100%; id="biggrid"></iframe>
+        <iframe id="biggrid" src="/biggrid"></iframe>
         {% else %} 
         {% if valid == True %} 
         <iframe src="/biggridsingle" width=100%; id="biggrid"></iframe>
         {% else %}
-        <iframe src="/biggrid" width=100%; id="biggrid"></iframe>
+        <iframe src="/biggrid" width=100%; id="biggrid1"></iframe>
         {% endif %} 
         {% endif %}
     </div>
@@ -118,8 +119,6 @@
 
 {% block redirect %}
 {% endblock %}
-
-
 
 </body>
 </html>

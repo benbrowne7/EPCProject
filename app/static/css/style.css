@@ -128,16 +128,19 @@ li a:hover:not(.active) {
 	position: absolute;
 	left:1%;
 	top: 11.5%;
+	padding:0;
 }
 #contentboxgrid iframe {
 	position: absolute;
-	height: 100%;
-	width: 100%;
+	height:100%;
+	width:100%;
 	display: block;
 	margin-top: -0.5%;
 	margin-left: -0.5%;
-	overflow: none;
+	overflow:hidden;
+	
 }
+
 
 .contentboxright {
 	display: flex;
@@ -342,6 +345,8 @@ li a:hover:not(.active) {
 .link-button:active {
   color:red;
 }
+
+
 
 
 

@@ -25,6 +25,8 @@ from .helper import *
 import time
 
 
+
+
 def round_down(n, decimals=1):
     return int(math.floor(n / 10.0)) * 10
 
@@ -44,7 +46,7 @@ def bigmap(w,h):
   abspath = os.path.abspath(__file__)
   sourcedir = os.path.dirname(abspath)
 
-  if os.path.exists(sourcedir + "/templates/bigmap/constit_map.html"):
+  if os.path.exists(sourcedir + "/templates/bigmap/constit_map_" + str(w) + "x" + str(h) + ".html"):
       return True
 
   file = "Local_Authority_Districts_(December_2020)_UK_BUC.shp"
@@ -76,8 +78,8 @@ def bigmap(w,h):
   merged_json = json.loads(merged.to_json())
   json_data = json.dumps(merged_json)
 
-  w = int(0.412 * w)
-  h = int(0.8*h)
+  w_plot = int(0.412 * w)
+  h_plot = int(0.8*h)
 
   curdoc().theme = "dark_minimal"
 
@@ -87,7 +89,7 @@ def bigmap(w,h):
   hover = HoverTool(tooltips = [('LAD', '@LAD20NM'), ('ONS', '@LAD20CD'),('Av. EPC', '@epc_means')])
   tools = "pan,wheel_zoom,reset"
   color_bar = ColorBar(color_mapper=color_mapper, bar_line_color='black', major_tick_line_color='black', ticker=BasicTicker(desired_num_ticks=len(palette)+1))
-  p1 = figure(title = 'Av. EPC Rating by Local Authority District', toolbar_location = 'right', toolbar_sticky = False, tools = [tools, hover], active_scroll='wheel_zoom', width=w, height=h)
+  p1 = figure(title = 'Av. EPC Rating by Local Authority District', toolbar_location = 'right', toolbar_sticky = False, tools = [tools, hover], active_scroll='wheel_zoom', width=w_plot, height=h_plot)
   p1.title.text_font_size = '18pt'
   p1.title.align = "center"
   p1.axis.visible = False
@@ -104,7 +106,7 @@ def bigmap(w,h):
   hover = HoverTool(tooltips = [('LAD', '@LAD20NM'), ('ONS', '@LAD20CD'), ('Av. HPR', '@hpr_means')])
   tools = "pan,wheel_zoom,reset"
   color_bar = ColorBar(color_mapper=color_mapper, bar_line_color='black', major_tick_line_color='black', ticker=BasicTicker(desired_num_ticks=len(palette)+1))
-  p2 = figure(title = 'Av. HPR by Local Authority District', toolbar_location = 'right', toolbar_sticky = False, tools = [tools,hover], active_scroll='wheel_zoom', width=w, height=h)
+  p2 = figure(title = 'Av. HPR by Local Authority District', toolbar_location = 'right', toolbar_sticky = False, tools = [tools,hover], active_scroll='wheel_zoom', width=w_plot, height=h_plot)
   p2.title.text_font_size = '18pt'
   p2.title.align = "center"
   p2.axis.visible = False
@@ -116,14 +118,15 @@ def bigmap(w,h):
   tab2 = TabPanel(child=p2, title="Heat Pump Readiness")
 
   os.chdir(sourcedir + "/templates/bigmap")
-  output_file("constit_map.html")
-  save(Tabs(tabs=[tab1,tab2], width=w))
+  name = "constit_map_" + str(w) + "x" + str(h) + ".html"
+  output_file(name)
+  save(Tabs(tabs=[tab1,tab2], width=w_plot))
 
 def adoptionmap(w,h):
   abspath = os.path.abspath(__file__)
   sourcedir = os.path.dirname(abspath)
 
-  if os.path.exists(sourcedir + "/templates/bigmap/adoption_map.html"):
+  if os.path.exists(sourcedir + "/templates/bigmap/adoption_map_" + str(w) + "x" + str(h) + ".html"):
       return True
 
   file = "LAD_DEC_2022_UK_BUC.shp"
@@ -136,8 +139,8 @@ def adoptionmap(w,h):
   rate_col = []
   pop_col = []
 
-  w = int(0.412 * w)
-  h = int(0.8*h)
+  w_plot = int(0.412 * w)
+  h_plot = int(0.8*h)
 
   curdoc().theme = "dark_minimal"
 
@@ -211,7 +214,7 @@ def adoptionmap(w,h):
   hover = HoverTool(tooltips = [('LAD', '@LAD22NM'),('HP per 1000', '@hp_density{0.0}')])
   tools = "pan,wheel_zoom,reset"
   color_bar = ColorBar(color_mapper=color_mapper, bar_line_color='black', major_tick_line_color='black', ticker=FixedTicker(ticks=x_ticks))
-  p1 = figure(title = 'Installed Heat Pumps Per 1000 People (RHI Scheme - 2022)', toolbar_location = 'right', toolbar_sticky = False, tools = [tools, hover], active_scroll='wheel_zoom', width=w, height=h)
+  p1 = figure(title = 'Installed Heat Pumps Per 1000 People (RHI Scheme - 2022)', toolbar_location = 'right', toolbar_sticky = False, tools = [tools, hover], active_scroll='wheel_zoom', width=w_plot, height=h_plot)
 
   
   p1.axis.visible = False
@@ -237,7 +240,7 @@ def adoptionmap(w,h):
   color_bar = ColorBar(color_mapper=color_mapper, bar_line_color='black', major_tick_line_color='black', ticker=FixedTicker(ticks=x_ticks))
 
   
-  p2 = figure(title = 'Average Yearly % Increase in Heat Pumps under RHI (since 2020)', toolbar_location = 'right', toolbar_sticky = False, tools = [tools,hover], active_scroll='wheel_zoom', width=w, height=h)
+  p2 = figure(title = 'Average Yearly % Increase in Heat Pumps under RHI (since 2020)', toolbar_location = 'right', toolbar_sticky = False, tools = [tools,hover], active_scroll='wheel_zoom', width=w_plot, height=h_plot)
   p2.axis.visible = False
   p2.xgrid.grid_line_color = None
   p2.ygrid.grid_line_color = None#Add patch renderer to figure. 
@@ -249,14 +252,11 @@ def adoptionmap(w,h):
   tab2 = TabPanel(child=p2, title="Rate Heat Pump Adoption")
 
 
-  try:
-    os.chdir(sourcedir + "/templates/bigmap")
-  except:
-    return True
-  else:
-    output_file("adoption_map.html")
+  os.chdir(sourcedir + "/templates/bigmap/")
+  name = "adoption_map_" + str(w) + "x" + str(h) + ".html"
+  output_file(name)
 
-  save(Tabs(tabs=[tab1,tab2], width=w))
+  save(Tabs(tabs=[tab1,tab2], width=w_plot))
 
 def graph(ons,w,h):
 
@@ -273,13 +273,13 @@ def graph(ons,w,h):
   dates = [int(x) for x in dates]
   ratings = [int(x) for x in ratings]
 
-  w = int(0.535 * w)
-  h = int(0.444*0.85*h)
+  w_plot = int(0.535 * w)
+  h_plot = int(0.444*0.85*h)
 
   curdoc().theme = "dark_minimal"
   tools = "reset,save"
   hover = HoverTool(tooltips = [('EPC', '$y'), ('Year', '$x{0000}')], )
-  p1 = figure(title="Average EPC for {}".format(ons), x_axis_label='Year', y_axis_label='EPC Rating', sizing_mode="stretch_width", toolbar_location = 'right', toolbar_sticky = False, tools = [tools, hover], width=w, height=h)
+  p1 = figure(title="Average EPC for {}".format(ons), x_axis_label='Year', y_axis_label='EPC Rating', sizing_mode="stretch_width", toolbar_location = 'right', toolbar_sticky = False, tools = [tools, hover], width=w_plot, height=h_plot)
   p1.title.text_font_size = '16pt'
   p1.title.align = "center"
   p1.line(dates, ratings, line_width=6, legend_label=ons_str, color='blue')
@@ -293,7 +293,7 @@ def graph(ons,w,h):
 
 
   hover = HoverTool(tooltips = [('%Y/Y', '$y'), ('Year', '$x{0000}')], )
-  p2 = figure(title="EPC %Y/Y for {}".format(ons), x_axis_label='Year', y_axis_label="% Change", sizing_mode="stretch_width", toolbar_location = 'right', toolbar_sticky = False, tools = [tools,hover], width=w, height=h)
+  p2 = figure(title="EPC %Y/Y for {}".format(ons), x_axis_label='Year', y_axis_label="% Change", sizing_mode="stretch_width", toolbar_location = 'right', toolbar_sticky = False, tools = [tools,hover], width=w_plot, height=h_plot)
   p2.title.text_font_size = '16pt'
   p2.title.align = "center"
   p2.line(dates, yoy, line_width=6, legend_label=ons_str, color='blue')
@@ -329,7 +329,7 @@ def graph(ons,w,h):
     expired = sum(data[:5])
     exp = int(expired/total*100)
     hover = HoverTool(tooltips = [('Number', '@data'), ('Year', '@x')], )
-    p3 = figure(x_range=years, title="Age Distribution of EPCs for {}".format(ons), x_axis_label='Year', y_axis_label="Certificates", toolbar_location=None, tools=[hover], width=w, height=h)
+    p3 = figure(x_range=years, title="Age Distribution of EPCs for {}".format(ons), x_axis_label='Year', y_axis_label="Certificates", toolbar_location=None, tools=[hover], width=w_plot, height=h_plot)
     p3.title.text_font_size = '16pt'
     p3.title.align = "center"
     p3.vbar(x='x', top='data', width=0.4, source=source, color='blue')
@@ -340,9 +340,9 @@ def graph(ons,w,h):
   #-----------------------------------------------------------------
 
   os.chdir(sourcedir + "/templates/graphs")
-  name = ons + "_graph" ".html"
+  name = ons + "_graph_" + str(w) + "x" + str(h) + ".html"
   output_file(name)
-  save(Tabs(tabs=[tab1,tab2,tab3], width=w))
+  save(Tabs(tabs=[tab1,tab2,tab3], width=w_plot))
 
   return name, av_yoy, exp
 
@@ -351,8 +351,8 @@ def graphadoption(ons,w,h):
   sourcedir = os.path.dirname(abspath)
   ons_str = str(ons)
 
-  w = int(0.535 * w)
-  h = int(0.444*0.85*h)
+  w_plot = int(0.535 * w)
+  h_plot = int(0.444*0.85*h)
   curdoc().theme = "dark_minimal"
 
   os.chdir(sourcedir + "/data/culmulative_hp")
@@ -380,7 +380,7 @@ def graphadoption(ons,w,h):
 
 
  
-    p4 = figure(x_range=years, title="Cumulative Heat Pump Installations under RHI Scheme for {}".format(ons),x_axis_label='Year', y_axis_label="Heat Pumps", toolbar_location=None, tools="hover", tooltips="$name @years: @$name", width=w, height=h)
+    p4 = figure(x_range=years, title="Cumulative Heat Pump Installations under RHI Scheme for {}".format(ons),x_axis_label='Year', y_axis_label="Heat Pumps", toolbar_location=None, tools="hover", tooltips="$name @years: @$name", width=w_plot, height=h_plot)
     p4.title.text_font_size = '16pt'
     p4.title.align = "center"
     p4.vbar_stack(heatpumps, x='years', source=data, width=0.4, legend_label=heatpumps, color=['blue', 'red'])
@@ -425,12 +425,12 @@ def graphadoption(ons,w,h):
 
 
   os.chdir(sourcedir + "/templates/graphsadoption")
-  name = ons + "_graph" ".html"
+  name = ons + "_graph_" + str(w) + "x" + str(h) + ".html"
   output_file(name)
-  save(Tabs(tabs=[tab4,tab1], width=w))
+  save(Tabs(tabs=[tab4,tab1], width=w_plot))
 
 
-def ladmap(ons,w,h):
+def ladmap1(ons,w,h):
 
   abspath = os.path.abspath(__file__)
   sourcedir = os.path.dirname(abspath)
@@ -559,13 +559,13 @@ def ladmap(ons,w,h):
 
 
   os.chdir(sourcedir + "/templates/ladmaps")
-  name = ons + "_map" ".html"
+  name = ons + "_" + str(w) + "x" + str(h) +  ".html"
   output_file(name)
   save(Tabs(tabs=[tab1,tab2], width=w))
   return True
 
 
-def ladmap1(ons,w,h):
+def ladmap(ons,w,h):
   abspath = os.path.abspath(__file__)
   sourcedir = os.path.dirname(abspath)
 
@@ -605,8 +605,8 @@ def ladmap1(ons,w,h):
         inds.append(index)
   outcode_df = outcode_df.drop(inds, axis=0)
 
-  w = int(0.41 * w)
-  h = int(0.8*h)
+  w_plot = int(0.41 * w)
+  h_plot = int(0.8*h)
 
   mapbox_toke = "pk.eyJ1IjoiYmVuYnJvd25lNyIsImEiOiJjbGo1eWhsbnIwNDJsM21xcG1lcTJxY2thIn0.6alroAlfLvYEQlD8A8339g"
   
@@ -620,10 +620,10 @@ def ladmap1(ons,w,h):
   zoom, center = zoom_center(lons=lons, lats=lats)
   zoom = int(zoom*0.88)
 
-  fig = px.scatter_mapbox(outcode_df, lat="lat", lon="long", hover_name="outcode", hover_data={'epc':True, 'hpr':True, 'lat':False, 'long':False}, color='epc', height=h, width=w, zoom=zoom, center=center)
+  fig = px.scatter_mapbox(outcode_df, lat="lat", lon="long", hover_name="outcode", hover_data={'epc':True, 'hpr':True, 'lat':False, 'long':False}, color='epc', height=h_plot, width=w_plot, zoom=zoom, center=center)
   fig.update_traces(marker={'size': 14})
 
-  fig1 = px.scatter_mapbox(sector_df, lat="long", lon="lat", hover_name="sector", hover_data={'epc':True, 'hpr':True, 'lat':False, 'long':False}, color='hpr', height=h, width=w, zoom=zoom, center=center)
+  fig1 = px.scatter_mapbox(sector_df, lat="long", lon="lat", hover_name="sector", hover_data={'epc':True, 'hpr':True, 'lat':False, 'long':False}, color='hpr', height=h_plot, width=w_plot, zoom=zoom, center=center)
   fig1.update_traces(marker={'size': 14})
 
   fig.add_trace(fig1.data[0])
@@ -651,7 +651,9 @@ def ladmap1(ons,w,h):
   fig.update_layout(mapbox_bounds={"west":av_lon-1, "east": av_lon+1, "south":av_lat-1, "north":av_lat+1})
   fig.update_layout(mapbox_accesstoken=mapbox_toke)
 
-  return fig
+  name = ons + "_" + str(w) + "x" + str(h)
+  fig.write_html(sourcedir + "/templates/ladmaps/" + name + ".html")
+  return True
 
 
 
@@ -679,8 +681,9 @@ def biggrid(w,h, getstats=False):
     return int(capacity_sum), int(headroom_sum), int((capacity_sum-headroom_sum)/capacity_sum*100)
 
 
-  w = w*0.66
-  h = h*0.84
+  w_plot = w*0.66
+  h_plot = h*0.84
+
 
   mapbox_toke = "pk.eyJ1IjoiYmVuYnJvd25lNyIsImEiOiJjbGo1eWhsbnIwNDJsM21xcG1lcTJxY2thIn0.6alroAlfLvYEQlD8A8339g"
   px.set_mapbox_access_token(mapbox_toke)
@@ -689,9 +692,9 @@ def biggrid(w,h, getstats=False):
   lons = combo_df['Longitude']
 
   zoom, center = zoom_center(lons=lons, lats=lats)
-  #zoom = int(zoom*0.8)
+  zoom = int(zoom*0.8)
 
-  fig = px.scatter_mapbox(combo_df, lat="Latitude", lon="Longitude", hover_name="Substation Name", hover_data={"Type":False, "Demand Headroom (MVA)":True, "Demand Headroom RAG":False, 'Firm Capacity (MVA)':True, 'Latitude':False, 'Longitude':False}, color='DNO', color_discrete_map={'nationalgrid':'green', 'northernpower':'#FFBF00'}, height=h, width=w, zoom=zoom, center=center)
+  fig = px.scatter_mapbox(combo_df, lat="Latitude", lon="Longitude", hover_name="Substation Name", hover_data={"Type":False, "Demand Headroom (MVA)":True, "Demand Headroom RAG":False, 'Firm Capacity (MVA)':True, 'Latitude':False, 'Longitude':False}, color='DNO', color_discrete_map={'nationalgrid':'green', 'northernpower':'#FFBF00'}, height=h_plot, width=w_plot, zoom=zoom, center=center)
   fig.update_layout(mapbox_style="dark")
   fig.update_traces(marker={'size': 6})
 
@@ -700,10 +703,15 @@ def biggrid(w,h, getstats=False):
   fig.update_layout(legend=(dict(yanchor="top", y=0.99, xanchor="left", x=0.01)))
   fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
   fig.update_layout(mapbox_bounds={"west":-10, "east": 10, "south":48, "north":60})
-  fig.write_html(sourcedir + "/templates/biggrid/biggrid.html")
+  name = str(w) + "x" + str(h)
+  fig.write_html(sourcedir + "/templates/biggrid/biggrid_" + name + ".html")
 
+  #scale_str = str(round(w/2000*0.7,2)) 
+  #with open(sourcedir + '/static/css/resize.css', 'w') as f:
+    #f.write("#contentboxgrid iframe {zoom:"+scale_str+"; -moz-transform: scale("+scale_str+"); -moz-transform-origin: 0 0;-o-transform: scale("+scale_str+"); -o-transform-origin: 0 0; -webkit-transform: scale("+scale_str+"); -webkit-transform-origin: 0 0;}")
+   # f.close()
+    
   capacity_sum, headroom_sum = calculatetotalheadroom(combined_dict)
-
 
   return int(capacity_sum), int(headroom_sum), int((capacity_sum-headroom_sum)/capacity_sum*100)
 
@@ -801,8 +809,9 @@ def biggridsingle(w, h, constit_name, ons):
 
   validsubs_df = pd.DataFrame.from_dict(valid_substations, orient='index', columns=['Substation Name', 'ID', 'Type', 'Latitude', 'Longitude', 'Firm Capacity (MVA)', 'Demand Headroom (MVA)', 'Demand Peak (MVA)', 'Demand Headroom RAG', 'DNO'])
 
-  w = w*0.66
-  h = h*0.84
+  w_plot = w*0.66
+  h_plot = h*0.84
+
 
   mapbox_toke = "pk.eyJ1IjoiYmVuYnJvd25lNyIsImEiOiJjbGo1eWhsbnIwNDJsM21xcG1lcTJxY2thIn0.6alroAlfLvYEQlD8A8339g"
   px.set_mapbox_access_token(mapbox_toke)
@@ -816,7 +825,7 @@ def biggridsingle(w, h, constit_name, ons):
   zoom = zoom*0.9
 
 
-  fig = px.scatter_mapbox(validsubs_df, lat="Latitude", lon="Longitude", hover_name="Substation Name", hover_data={"Type":False, "Demand Headroom (MVA)":True, "Demand Headroom RAG":False, 'Firm Capacity (MVA)':True, 'Latitude':False, 'Longitude':False}, color='Demand Headroom RAG', color_discrete_map={'GREEN':'green', 'AMBER':'#FFBF00', 'RED':'red'}, height=h, width=w, zoom=zoom, center=center)
+  fig = px.scatter_mapbox(validsubs_df, lat="Latitude", lon="Longitude", hover_name="Substation Name", hover_data={"Type":False, "Demand Headroom (MVA)":True, "Demand Headroom RAG":False, 'Firm Capacity (MVA)':True, 'Latitude':False, 'Longitude':False}, color='Demand Headroom RAG', color_discrete_map={'GREEN':'green', 'AMBER':'#FFBF00', 'RED':'red'}, height=h_plot, width=w_plot, zoom=zoom, center=center)
   fig.update_layout(mapbox_style="dark")
   fig.update_traces(marker={'size': 18})
   fig.update_layout(legend=(dict(yanchor="top", y=0.99, xanchor="left", x=0.01)))
@@ -841,8 +850,9 @@ def biggridsingle(w, h, constit_name, ons):
     margin = {'l':0, 'r':0, 'b':0, 't':0})
   fig.update_layout(mapbox_bounds={"west":av_lon-1, "east": av_lon+1, "south":av_lat-1, "north":av_lat+1})
 
+  name = ons + "_grid_" + str(w) + "x" + str(h) + ".html"
 
-  fig.write_html(sourcedir + "/templates/biggrid/biggridsingle.html")
+  fig.write_html(sourcedir + "/templates/biggrid/" + name)
 
   return valid_substations
 
