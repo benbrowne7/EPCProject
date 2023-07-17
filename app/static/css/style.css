@@ -129,6 +129,7 @@ li a:hover:not(.active) {
 	left:1%;
 	top: 11.5%;
 	padding:0;
+	background-color: #A8D0E6;
 }
 #contentboxgrid iframe {
 	position: absolute;

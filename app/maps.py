@@ -621,10 +621,10 @@ def ladmap(ons,w,h):
   zoom = int(zoom*0.88)
 
   fig = px.scatter_mapbox(outcode_df, lat="lat", lon="long", hover_name="outcode", hover_data={'epc':True, 'hpr':True, 'lat':False, 'long':False}, color='epc', height=h_plot, width=w_plot, zoom=zoom, center=center)
-  fig.update_traces(marker={'size': 14})
+  fig.update_traces(name="outcodes", marker={'size': 14})
 
   fig1 = px.scatter_mapbox(sector_df, lat="long", lon="lat", hover_name="sector", hover_data={'epc':True, 'hpr':True, 'lat':False, 'long':False}, color='hpr', height=h_plot, width=w_plot, zoom=zoom, center=center)
-  fig1.update_traces(marker={'size': 14})
+  fig1.update_traces(name="sectors", marker={'size': 14})
 
   fig.add_trace(fig1.data[0])
 
@@ -665,15 +665,16 @@ def biggrid(w,h, getstats=False):
 
   northernpower = pd.read_csv(sourcedir + "/powerdata/raw/" + "northern-pow-demand.csv")
   nationalgrid = pd.read_csv(sourcedir + "/powerdata/raw/" + "WPD-Network-Capacity-Map.csv", low_memory=False)
-  ukpowernetworks = pd.read_csv(sourcedir + "/powerdata/raw/" + "ukpn_primary_postcode_area.csv", low_memory=True)
+  ukpowernetworks = pd.read_csv(sourcedir + "/powerdata/raw/" + "ukpn_primary_postcode_area_nocoords.csv")
   northwestelectric = pd.read_csv(sourcedir + "/powerdata/raw/" + "northwest-elec-primary-demand.csv")
 
-  ukpowernetworks = ukpowernetworks.drop(['Geo Shape'], axis=1)
+  #ukpowernetworks = ukpowernetworks.drop(['Geo Shape'], axis=1)
+  #ukpowernetworks.to_csv(sourcedir + "/powerdata/raw/" + "ukpn_primary_postcode_area_nocoords.csv", index=False)
 
   #shapefile = "LAD_DEC_2022_UK_BUC.shp"
   #uk_bounds = gpd.GeoDataFrame.from_file(sourcedir + "/data/Shapefile/" + shapefile)
 
-  combo_df, combined_dict = combinesubstationdata(nationalgrid, northernpower, ukpowernetworks, northwestelectric)
+  combo_df, combined_dict = combinesubstationdata_fast(nationalgrid, northernpower, ukpowernetworks, northwestelectric)
 
   if getstats == True:
     capacity_sum, headroom_sum = calculatetotalheadroom(combined_dict)
@@ -962,6 +963,108 @@ def combinesubstationdata(nationalgrid, northernpower, ukpowernetworks, northwes
     else:
       demand_headroom_rag = 'GREEN'
     (lat, long) = OSGB36toWGS84(float(row['Easting']), float(row['Northing']))
+    demand_peak = round(firm_capacity - demand_headroom,2)
+    northwestelectric_dict[sub_name] = [sub_name, sub_number, sub_type, lat, long, firm_capacity, demand_headroom, demand_peak, demand_headroom_rag, "Electricity North West"]
+  
+  combined_dict = nationalgrid_dict.copy()
+
+  combined_dict.update(northernpow_dict)
+  combined_dict.update(ukpowernetworks_dict)
+  combined_dict.update(northwestelectric_dict)
+  combo_df = pd.DataFrame.from_dict(combined_dict, orient='index', columns=['Substation Name', 'ID', 'Type', 'Latitude', 'Longitude', 'Firm Capacity (MVA)', 'Demand Headroom (MVA)', 'Demand Peak (MVA)', 'Demand Headroom RAG', 'DNO'])
+
+  return combo_df, combined_dict
+
+
+def combinesubstationdata_fast(nationalgrid, northernpower, ukpowernetworks, northwestelectric):
+  northernpow_dict = {}
+  nationalgrid_dict = {}
+  ukpowernetworks_dict = {}
+  northwestelectric_dict = {}
+
+  #makes dict for nationalgrid
+  for row in nationalgrid.itertuples(index=False):
+    sub_type = row[4]
+    if sub_type != 'Primary':
+      continue
+    sub_name = row[2]
+    sub_number = row[3]
+    lat = float(row[5])
+    long = float(row[6])
+    firm_capacity = float(row[13])
+    demand_headroom = round(float(row[32]),2)
+    demand_peak = row[15]
+    demand_headroom_rag = str(row[36]).upper()
+    nationalgrid_dict[sub_name] = [sub_name, sub_number, sub_type, lat, long, firm_capacity, demand_headroom, demand_peak, demand_headroom_rag, "National Grid"]
+  
+  #makes dict for northernpow
+  for row in northernpower.itertuples(index=False):
+    sub_type = row[7]
+    if sub_type != 'Primary':
+      continue
+    sub_name = row[1]
+    sub_number = row[0]
+    firm_capacity = row[4]
+    demand_peak = row[5]
+    try: 
+      demand_headroom = round(float(firm_capacity) - float(demand_peak),2)
+    except: 
+      demand_headroom = 0
+    demand_headroom_rag = row[6].upper()
+    lat = float(row[9])
+    long = float(row[10])
+    northernpow_dict[sub_name] = [sub_name, sub_number, sub_type, lat, long, firm_capacity, demand_headroom, demand_peak, demand_headroom_rag, "Northern Power"]
+  
+  #make dict for ukpowernetworks
+  for row in ukpowernetworks.itertuples(index=False):
+    sub_name = row[4]
+    sub_number = row[3]
+    sub_type = 'Primary'
+    if row[9] == 'Winter':
+      try:
+        firm_capacity = float(row[6])
+      except:
+        firm_capacity = 0
+    elif row[9] == 'Summer':
+      try:
+        firm_capacity = float(row[5])
+      except:
+        firm_capacity = 0
+    else:
+      try:
+        firm_capacity = float(row[6])
+      except:
+        firm_capacity = 0
+
+    try:
+      demand_headroom = round(firm_capacity * float(row[7][:-1]) / 100,2)
+    except:
+      demand_headroom = 0
+    demand_peak = firm_capacity - demand_headroom  
+    try:
+      demand_headroom_rag = str(row[8]).split(" ")[0].upper()
+      if demand_headroom_rag == 'YELLOW':
+        demand_headroom_rag = 'AMBER'
+    except:
+      demand_headroom_rag = "NA"
+    lat = float(row[0].split(',')[0])
+    long = float(row[0].split(',')[1])
+    ukpowernetworks_dict[sub_name] = [sub_name, sub_number, sub_type, lat, long, firm_capacity, demand_headroom, demand_peak, demand_headroom_rag, "UK Power Networks"]
+
+  #make dict for northwestelec
+  for row in northwestelectric.itertuples(index=False):
+    sub_name = row[0]
+    sub_number = 'na'
+    sub_type = 'Primary'
+    firm_capacity = 0.1
+    demand_headroom = float(row[7])
+    if demand_headroom == 0:
+      demand_headroom_rag = 'RED'
+    elif demand_headroom < 2:
+      demand_headroom_rag = 'AMBER'
+    else:
+      demand_headroom_rag = 'GREEN'
+    (lat, long) = OSGB36toWGS84(float(row[4]), float(row[5]))
     demand_peak = round(firm_capacity - demand_headroom,2)
     northwestelectric_dict[sub_name] = [sub_name, sub_number, sub_type, lat, long, firm_capacity, demand_headroom, demand_peak, demand_headroom_rag, "Electricity North West"]
   

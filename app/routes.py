@@ -49,15 +49,6 @@ sourcedir = os.path.dirname(abspath)
 @app.route('/')
 def index():
     session.clear()
-    try:
-        os.remove(sourcedir + "/templates/bigmap/constit_map.html")
-    except:
-        True
-    try:
-        os.remove(sourcedir + "/templates/adoptionmap/adoption_map.html")
-    except:
-        True
-     
     return render_template("base.html")
 
 @app.route('/individual', methods=['GET', 'POST'])
@@ -176,10 +167,10 @@ def gridsingle():
 @app.route('/ladsingle', methods=['GET','POST'])
 def ladsingle():
     names = getconstitnames()
+    print(names)
     url = request.referrer
     if url == None:
         return render_template('lad.html', names=names)
-
 
     constit_name = request.form['singlelad']
     ons2lad = pd.read_csv(sourcedir + "/data/ONS2LAD.csv", low_memory=False)
@@ -191,7 +182,6 @@ def ladsingle():
     else:
         (w,h) = session['dimen']
         name, av_yoy, exp = graph(ons,w,h)
-        session['name'] = name
         names.remove(constit_name)
         names.append(constit_name)
         ladmap(ons,w,h)
