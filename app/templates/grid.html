@@ -31,12 +31,12 @@
     {% block content %} 
     <div id="contentboxgrid">
         {% if valid is not defined %} 
-        <iframe id="biggrid" src="/biggrid"></iframe>
+        <iframe id="biggrid" scrolling="no" src="/biggrid"></iframe>
         {% else %} 
         {% if valid == True %} 
-        <iframe src="/biggridsingle" width=100%; id="biggrid"></iframe>
+        <iframe src="/biggridsingle" scrolling="no" width=100%; id="biggrid"></iframe>
         {% else %}
-        <iframe src="/biggrid" width=100%; id="biggrid"></iframe>
+        <iframe src="/biggrid" scrolling="no" width=100%; id="biggrid"></iframe>
         {% endif %} 
         {% endif %}
     </div>
