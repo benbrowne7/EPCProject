@@ -598,12 +598,16 @@ def ladmap(ons,w,h):
   #get rid of outcodes not in area
   ons2outcodes = pd.read_csv(sourcedir + "/data/ons2outcodes.csv")
   inds = []
-  outcodes = ons2outcodes.loc[ons2outcodes['ONS'] == str(ons)].values[0][1:]
-  for index, row in outcode_df.iterrows():
-      postcode = row['outcode']
-      if postcode not in outcodes:
-        inds.append(index)
-  outcode_df = outcode_df.drop(inds, axis=0)
+  try:
+    outcodes = ons2outcodes.loc[ons2outcodes['ONS'] == str(ons)].values[0][1:]
+  except:
+    outcode = False
+  if outcode != False:
+    for index, row in outcode_df.iterrows():
+        postcode = row['outcode']
+        if postcode not in outcodes:
+          inds.append(index)
+    outcode_df = outcode_df.drop(inds, axis=0)
 
   w_plot = int(0.41 * w)
   h_plot = int(0.8*h)
@@ -611,12 +615,16 @@ def ladmap(ons,w,h):
   mapbox_toke = "pk.eyJ1IjoiYmVuYnJvd25lNyIsImEiOiJjbGo1eWhsbnIwNDJsM21xcG1lcTJxY2thIn0.6alroAlfLvYEQlD8A8339g"
   
 
-  lats = outcode_df['lat']
-  lons = outcode_df['long']
+  if outcode != False:
+    lats = outcode_df['lat']
+    lons = outcode_df['long']
+    
+  else:
+    lats = sector_df['lat']
+    lons = sector_df['long']
 
   av_lat = statistics.mean(lats)
   av_lon = statistics.mean(lons)
-
   zoom, center = zoom_center(lons=lons, lats=lats)
   zoom = int(zoom*0.88)
 
@@ -703,7 +711,7 @@ def biggrid(w,h, getstats=False):
 
   fig.update_layout(legend=(dict(yanchor="top", y=0.99, xanchor="left", x=0.01)))
   fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
-  fig.update_layout(mapbox_bounds={"west":-10, "east": 10, "south":48, "north":60})
+  fig.update_layout(mapbox_bounds={"west":-10, "east": 8, "south":48, "north":58})
   name = str(w) + "x" + str(h)
   fig.write_html(sourcedir + "/templates/biggrid/biggrid_" + name + ".html")
 
