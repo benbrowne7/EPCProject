@@ -600,6 +600,7 @@ def ladmap(ons,w,h):
   inds = []
   try:
     outcodes = ons2outcodes.loc[ons2outcodes['ONS'] == str(ons)].values[0][1:]
+    outcode = True
   except:
     outcode = False
   if outcode != False:

@@ -30,12 +30,12 @@
     
     {% if epc_string1 is not defined %}
     <div class="switchmapbuttons"><button type="button" class="btn btn-dark btn-sm me-2" ta-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Maps showing average EPC (energy performance) and HPR (heat pump readiness) for Districts in England and Wales" onclick="bigmap();">UK Energy Performance</button><button type="button" class="btn btn-dark btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Maps Heat Pump Adoption Levels for Districts in England and Wales" onclick="adoptionmap();">UK Heat Pump Adoption</button></div>
-     <iframe  src="/bigmap" id="bigmap"></iframe>
+     <iframe  src="/bigmap" id="bigmap" scrolling="no"></iframe>
 
     {% endif %}
 
     {% if epc_string1 is defined %}
-    <iframe  src="/ladmapleft" id="bigmap" style="left:0%; top:0%; margin-left: 0%; margin-top: 0%;"></iframe>
+    <iframe  src="/ladmapleft" id="bigmap" scrolling="no" style="left:0%; top:0%; margin-left: 0%; margin-top: 0%;"></iframe>
     {% endif %}
 
 
