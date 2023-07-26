@@ -48,6 +48,9 @@ def bigmap(w,h):
   abspath = os.path.abspath(__file__)
   sourcedir = os.path.dirname(abspath)
 
+  savepath = sourcedir + "/templates/bigmap/"
+  clean_files(savepath)
+
   if os.path.exists(sourcedir + "/templates/bigmap/constit_map_" + str(w) + "x" + str(h) + ".html"):
       return True
 
@@ -264,6 +267,10 @@ def graph(ons,w,h):
 
   abspath = os.path.abspath(__file__)
   sourcedir = os.path.dirname(abspath)
+
+  savepath = sourcedir + "/templates/graphs/"
+  clean_files(savepath)
+
   filename = sourcedir + "/data/EPCByYear/" + ons + "-yoy.csv"
   ons_str = str(ons)
 
@@ -351,7 +358,12 @@ def graph(ons,w,h):
 def graphadoption(ons,w,h):
   abspath = os.path.abspath(__file__)
   sourcedir = os.path.dirname(abspath)
+
+  savepath = sourcedir + "/templates/graphsadoption/"
+  clean_files(savepath)
+
   ons_str = str(ons)
+
 
   w_plot = int(0.535 * w)
   h_plot = int(0.444*0.85*h)
@@ -431,140 +443,6 @@ def graphadoption(ons,w,h):
   output_file(name)
   save(Tabs(tabs=[tab4,tab1], width=w_plot))
 
-
-def ladmap1(ons,w,h):
-
-  abspath = os.path.abspath(__file__)
-  sourcedir = os.path.dirname(abspath)
-
-  filename = sourcedir + "/data/constitbounds_data/" + ons + ".geojson"
-  ons_str = str(ons)
-  map = gpd.read_file(filename)
-  filename = sourcedir + "/data/postcode_data/" + ons_str + "-postcode.csv"
-  df = pd.read_csv(filename)
-  ons2outcodes = pd.read_csv(sourcedir + "/data/ons2outcodes.csv")
-
-  inds = []
-  
-  outcodes = ons2outcodes.loc[ons2outcodes['ONS'] == ons_str].values[0][1:]
-
-  for index, row in df.iterrows():
-      postcode = row['postcode']
-      if postcode not in outcodes:
-        inds.append(index)
-
-  df = df.drop(inds, axis=0)
-
-  lats = df['lat'].values.tolist()
-  longs = df['long'].values.tolist()
-  easts = []
-  norths = []
-  for i in range(0,len(lats)):
-    e, n = WGS84toOSGB36(float(lats[i]), float(longs[i]))
-    easts.append(e)
-    norths.append(n)
-
-  df['long'] = easts
-  df['lat'] = norths
-
-
-  epcs = df['epc'].values.tolist()
-  hprs = df['hpr'].values.tolist()
-  epc_min = np.min(epcs)
-  epc_max = np.max(epcs)
-  hpr_min = np.min(hprs)
-  hpr_max = np.max(hprs)
-
-  w = int(0.41 * w)
-  h = int(0.8*h)
-
-  low = round_down(epc_min)
-  high = round_up(epc_max)
-
-  if high - low <= 30:
-    x = 5
-  else:
-    x = 10
-
-  tick = np.arange(low, high+x, x)
-
-  t = len(tick)-1
-  if t == 2:
-    tick = np.arange(low,high+2.5, 2.5)
-
-
-  cds = ColumnDataSource(df)
-
-  merged_json = json.loads(map.to_json())
-  json_data = json.dumps(merged_json)
-  geosource = GeoJSONDataSource(geojson = json_data)
-
-  
-  if len(tick-1) <= 3:
-    palette = brewer['YlOrRd'][3]
-  else:
-    palette = brewer['YlOrRd'][len(tick)-1]
-
-  color_mapper = LinearColorMapper(palette=palette, low = low, high=high)
-  color_bar = ColorBar(color_mapper=color_mapper, bar_line_color='white', major_tick_line_color='white', ticker=FixedTicker(ticks=tick))
-
-
-  p1 = figure(title = 'Av. EPC By Postcode for {}'.format(ons),  toolbar_location = None, width=w, height=h)
-  p1.title.text_font_size = '16pt'
-  p1.title.align = "center"
-  p1.toolbar.active_drag = None
-  p1.toolbar.active_scroll = None
-  p1.toolbar.active_tap = None
-  p1.axis.visible = False
-  p1.xgrid.grid_line_color = None
-  p1.ygrid.grid_line_color = None
-  circ = p1.circle(x='long', y='lat', source=cds, size=20, name='circle', fill_color = {'field' :'epc', 'transform' : color_mapper}, alpha=1)
-  patch = p1.patches( source = geosource, fill_color='gray', fill_alpha=0.6, level='underlay')
-  hover = HoverTool(renderers=[circ], tooltips = [('Postcode', '@postcode'), ('EPC', '@epc')])
-  p1.add_tools(hover)
-  p1.add_layout(color_bar, 'below')
-  tab1 = TabPanel(child=p1, title="Av. EPC By Postcode")
-
-
-  low = round_down_hpr(hpr_min)
-  high = round_up_hpr(hpr_max)
-
-  if high - low <= 0.3:
-    x = 0.05
-  else:
-    x = 0.1
-
-  tick = np.arange(low,high+x, x)
-
-  if len(tick-1) <= 3:
-    palette = brewer['YlOrRd'][3]
-  else:
-    palette = brewer['YlOrRd'][len(tick)-1]
-  color_mapper = LinearColorMapper(palette=palette, low=low, high=high)
-  color_bar = ColorBar(color_mapper=color_mapper, bar_line_color='white', major_tick_line_color='white', ticker=FixedTicker(ticks=tick))
-
-  p2 = figure(title = 'Av. HPR By Postcode for {}'.format(ons),  toolbar_location = None, width=w, height=h)
-  p2.title.text_font_size = '16pt'
-  p2.title.align = "center"
-  p2.toolbar.active_drag = None
-  p2.toolbar.active_scroll = None
-  p2.toolbar.active_tap = None
-  p2.axis.visible = False
-  p2.xgrid.grid_line_color = None
-  p2.ygrid.grid_line_color = None
-  circ = p2.circle(x='long', y='lat', source=cds, size=20, name='circle', fill_color = {'field' :'hpr', 'transform' : color_mapper}, alpha=1)
-  patch = p2.patches( source = geosource, fill_color='gray', fill_alpha=0.6, level='underlay')
-  hover = HoverTool(renderers=[circ], tooltips = [('Postcode', '@postcode'), ('HPR', '@hpr')])
-  p2.add_tools(hover)
-  p2.add_layout(color_bar, 'below')
-  tab2 = TabPanel(child=p2, title="Av. HPR by Postcode")
-
-
-  os.chdir(sourcedir + "/templates/ladmaps")
-  name = ons + "_" + str(w) + "x" + str(h) +  ".html"
-  output_file(name)
-  save(Tabs(tabs=[tab1,tab2], width=w))
-  return True
 
 
 def ladmap_district(ons,w,h):
@@ -659,19 +537,18 @@ def ladmap_district(ons,w,h):
 
   fig = go.Figure(layout=dict(height=h_plot, width=w_plot, autosize=False, margin = {'l':0, 'r':0, 'b':0, 't':0}))
   
-  fig.add_trace(go.Choroplethmapbox(geojson=gdf, locations=district_df['district'], z=district_df['epc'], colorscale='Reds', featureidkey='properties.mapit_code', marker=dict(opacity=0.5), colorbar=dict(bgcolor='black', bordercolor='black', borderwidth=2, outlinewidth=0, tickcolor='white',outlinecolor='white', tickfont=dict(color='aqua'))))
+  fig.add_trace(go.Choroplethmapbox(name='epc_trace', geojson=gdf, locations=district_df['district'], z=district_df['epc'], colorscale='Reds', featureidkey='properties.mapit_code', marker=dict(opacity=0.5), colorbar=dict(bgcolor='rgb(64,64,64)', bordercolor='black', borderwidth=2, outlinewidth=0, tickcolor='white',outlinecolor='white', tickfont=dict(color='aqua'))))
   customdata=np.stack((district_df['district'], district_df['epc']), axis=-1)
-  fig.update_traces(customdata=customdata)
-  #fig.update_traces(hovertemplate="District: %{customdata[0]}" + '<br>' + "EPC:%{customdata[1]} <extra></extra>" )
+  fig.update_traces(customdata=customdata, selector=({'name':'epc_trace'}))
+  fig.update_traces(hovertemplate="District: %{customdata[0]}" + '<br>' + "EPC:%{customdata[1]} <extra></extra>",selector=({'name':'epc_trace'}) )
 
 
-  fig.add_trace(go.Choroplethmapbox(geojson=gdf, locations=district_df['district'], z=district_df['hpr'], colorscale='Reds', featureidkey='properties.mapit_code', marker=dict(opacity=0.5), visible=False, colorbar=dict(bgcolor='black', bordercolor='black', borderwidth=2, outlinewidth=0, tickcolor='white',outlinecolor='white', tickfont=dict(color='aqua'))))
+  fig.add_trace(go.Choroplethmapbox(name='hpr_trace', geojson=gdf, locations=district_df['district'], z=district_df['hpr'], colorscale='Reds', featureidkey='properties.mapit_code', marker=dict(opacity=0.5), visible=False, colorbar=dict(bgcolor='rgb(64,64,64)', bordercolor='black', borderwidth=2, outlinewidth=0, tickcolor='white',outlinecolor='white', tickfont=dict(color='aqua'))))
   customdata1=np.stack((district_df['district'], district_df['hpr']), axis=-1)
-  fig.update_traces(customdata=customdata1)
-  #fig.update_traces(hovertemplate="District: %{customdata[0]}" + '<br>' + "HPR:%{customdata[1]} <extra></extra>" )
+  fig.update_traces(customdata=customdata1, selector=({'name':'hpr_trace'}))
+  fig.update_traces(hovertemplate="District: %{customdata[0]}" + '<br>' + "HPR:%{customdata[1]} <extra></extra>", selector=({'name':'hpr_trace'}) )
   fig.update_traces(hoverlabel=dict(bgcolor='aqua'))
   
-
   fig.update_traces(marker_line_width = 2, marker_line_color = 'white')
 
  
@@ -810,19 +687,18 @@ def ladmap_sector(ons,w,h):
 
   fig = go.Figure(layout=dict(height=h_plot, width=w_plot, autosize=False, margin = {'l':0, 'r':0, 'b':0, 't':0}))
   
-  fig.add_trace(go.Choroplethmapbox(geojson=gdf, locations=sector_df['sector'], z=sector_df['epc'], colorscale='Reds', featureidkey='properties.sector', marker=dict(opacity=0.5), colorbar=dict(bgcolor='black', bordercolor='black', borderwidth=2, outlinewidth=0, tickcolor='white',outlinecolor='white', tickfont=dict(color='aqua'))))
+  fig.add_trace(go.Choroplethmapbox(name='epc_trace', geojson=gdf, locations=sector_df['sector'], z=sector_df['epc'], colorscale='Reds', featureidkey='properties.mapit_code', marker=dict(opacity=0.5), colorbar=dict(bgcolor='rgb(64,64,64)', bordercolor='black', borderwidth=2, outlinewidth=0, tickcolor='white',outlinecolor='white', tickfont=dict(color='aqua'))))
   customdata=np.stack((sector_df['sector'], sector_df['epc']), axis=-1)
-  fig.update_traces(customdata=customdata)
-  fig.update_traces(hovertemplate="sector: %{customdata[0]}" + '<br>' + "EPC:%{customdata[1]} <extra></extra>" )
+  fig.update_traces(customdata=customdata, selector=({'name':'epc_trace'}))
+  fig.update_traces(hovertemplate="Sector: %{customdata[0]}" + '<br>' + "EPC:%{customdata[1]} <extra></extra>",selector=({'name':'epc_trace'}) )
 
 
-  fig.add_trace(go.Choroplethmapbox(geojson=gdf, locations=sector_df['sector'], z=sector_df['hpr'], colorscale='Reds', featureidkey='properties.sector', marker=dict(opacity=0.5), visible=False, colorbar=dict(bgcolor='black', bordercolor='black', borderwidth=2, outlinewidth=0, tickcolor='white',outlinecolor='white', tickfont=dict(color='aqua'))))
+  fig.add_trace(go.Choroplethmapbox(name='hpr_trace', geojson=gdf, locations=sector_df['sector'], z=sector_df['hpr'], colorscale='Reds', featureidkey='properties.mapit_code', marker=dict(opacity=0.5), visible=False, colorbar=dict(bgcolor='rgb(64,64,64)', bordercolor='black', borderwidth=2, outlinewidth=0, tickcolor='white',outlinecolor='white', tickfont=dict(color='aqua'))))
   customdata1=np.stack((sector_df['sector'], sector_df['hpr']), axis=-1)
-  fig.update_traces(customdata=customdata1)
-  fig.update_traces(hovertemplate="Sector: %{customdata[0]}" + '<br>' + "HPR:%{customdata[1]} <extra></extra>" )
+  fig.update_traces(customdata=customdata1, selector=({'name':'hpr_trace'}))
+  fig.update_traces(hovertemplate="Sector: %{customdata[0]}" + '<br>' + "HPR:%{customdata[1]} <extra></extra>", selector=({'name':'hpr_trace'}) )
   fig.update_traces(hoverlabel=dict(bgcolor='aqua'))
   
-
   fig.update_traces(marker_line_width = 2, marker_line_color = 'white')
 
  
@@ -886,6 +762,9 @@ def biggrid(w,h, getstats=False):
 
   abspath = os.path.abspath(__file__)
   sourcedir = os.path.dirname(abspath)
+
+  savepath = sourcedir + "/templates/biggrid/"
+  clean_files(savepath)
 
   northernpower = pd.read_csv(sourcedir + "/powerdata/raw/" + "northern-pow-demand.csv")
   nationalgrid = pd.read_csv(sourcedir + "/powerdata/raw/" + "WPD-Network-Capacity-Map.csv", low_memory=False)
@@ -976,6 +855,9 @@ def zoom_center(lons, lats, projection='mercator'):
 def biggridsingle(w, h, constit_name, ons):
   abspath = os.path.abspath(__file__)
   sourcedir = os.path.dirname(abspath)
+
+  savepath = sourcedir + "/templates/biggrid/"
+  clean_files(savepath)
 
   northernpower = pd.read_csv(sourcedir + "/powerdata/raw/" + "northern-pow-demand.csv")
   nationalgrid = pd.read_csv(sourcedir + "/powerdata/raw/" + "WPD-Network-Capacity-Map.csv", low_memory=False)
