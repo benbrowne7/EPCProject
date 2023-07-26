@@ -8,3 +8,4 @@
 /app/__init__.py
 /__pycache__/
 /app/__pycache__
+/app/data/gb-postcodes-v5/

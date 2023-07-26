@@ -6,6 +6,8 @@ from numpy import interp
 import pandas as pd
 import math
 import re
+from pathlib import Path
+import arrow
 
 
 abspath = os.path.abspath(__file__)
@@ -243,3 +245,14 @@ def natural_keys(text):
     (See Toothy's implementation in the comments)
     '''
     return [ atoi(c) for c in re.split(r'(\d+)', text) ]
+
+def clean_files(path):
+    critical_time = arrow.now().shift(hours=+1)
+    try:
+        for item in Path(path).glob('*'):
+            if item.is_file():
+                itemTime = arrow.get(item.stat().st_mtime)
+                if itemTime > critical_time:
+                    os.remove(item)
+    except:
+        print("failed to clean path:", path)

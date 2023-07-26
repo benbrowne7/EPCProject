@@ -256,6 +256,16 @@
       <p class="lead">EPC data when used at <a href="#idocs_lad">local authority district</a> level, was downloaded offline and saved in a reduced feature format for space efficiency. This data is used in all calculations at LAD level and is used to calculate a Heat Pump Readiness (HPR) Rating for every EPC.</p>
       <p class="lead">This data is downloaded as a .zip, with folders for each district containing a .csv file of all EPCs classified at this district. It should be noted here that these .csv files were found to contain a small amount of EPCs corresponding to homes and postcodes not located within the district (geographically), it is likely these are due to errors and highly insignificant over the whole set.</p>
 
+      <h4>Limitations of the EPC</h4>
+      <p class="lead">It is important to discuss some of the limitations of using the EPC dataset to assess a properties energy performance and subsequent 'heat pump readiness'. Such criticisms lie in their inconsistencies and inaccuracies, which can stem from inconsistent evaluations between different assessors and the overall assumptive nature of the methodologies used to produce the EPC. </p>
+      <ul>
+        <li>Bunching: where the manipulation of input data results in the performance of properties otherwise below a rating band stagnate just above the threshold, results in misclassifications of properties energy performance.</li>
+        <li>Research suggests an EPC rating can vary by 4-11 points for similar properties, stemming from inconsistent evaluations. <span><a href="https://www.sciencedirect.com/science/article/pii/S0301421519301867">[1]</a></span><span><a href="https://www.sciencedirect.com/science/article/pii/S0360544217312823">[2]</a> </span> </li>
+        <li>Outdated EPCs: We found that, on average, approximately 30% of certificates for a local authority district have expired (10+ years old). This makes these certificates more unreliable as the likelihood of home upgrades to improve energy performance not shown on the old EPC increases.</li>
+        <li>Assumptions regarding the energy efficiency levels of certain property features. I.E.. it was found that default U-values used for solid brick walls underestimate thermal performance by ~1/3.<span><a href="https://doi.org/10.1080/09613218.2014.967977">[3]</a></span> </li>
+      </ul>
+      <p class="lead">For a more detailed report on the inconsistencies and inaccuracies of the EPC see Section 4.2 of the <a href="/static/thesis/Final_Year_Dissertation__Ben_Browne.pdf" download="heat_pump_ready_thesis.pdf">tools written thesis</a> </p>
+
     </section>
 
       <hr class="divider">
@@ -277,6 +287,9 @@
         linearly to a rating [1.2, 0.2] using numpys 'interp'function, meaning a final score of &lt;14 corresponded
         to a hpr value of ≥ 1. Ratings ≥ 1.1 were deemed 'Strong Candidates', ≥ 1 'Good Candidates', ≥ 0.7
         'Some Improvements Needed'and &lt;0.7 'Major Improvements Needed'.</p>
+
+      <h4>Uncertainties in the HPR Calculation</h4>
+      <p class="lead">As the Heat Pump Readiness Rating is derived from a properties EPC, it shares some of the issues detailed in <a href="#idocs_epcdata">EPC Data.</a> The assumption of U-values (insulation measure) for solid walls directy affects the accuracy of the 'walls-energy-efficiency' rating in the EPC, used as a doubly weighted component of the HPR calculation. Other factors that would impact a homes 'heat pump readiness' include property type, age and internal heating apparatus, which are not considered in this HPR calculation. The increased electrical demand from heat pump uptake is not factored into the rating but is considered on the <a href="#idocs_grid">Grid Page.</a> For a more detailed discussion on the limitations of the HPR rating see section 4.3 of the<a href="/static/thesis/Final_Year_Dissertation__Ben_Browne.pdf" download="heat_pump_ready_thesis.pdf">tools written thesis.</a> </p>
       
       </section>
 
@@ -291,95 +304,6 @@
     </section>
         
 
-		  
-		  <hr class="divider">
-		  
-		  <!-- Helper Classes
-		  ============================ -->
-          <section id="idocs_helper_classes">
-            <h3>Helper Classes</h3>
-            <p>We have created some really useful helper classes for you. Here are a few of them. also, You can refer other default bootstrap helper classes here: <a class="ml-1" target="_blank" href="https://getbootstrap.com/docs/4.4/utilities/"><i class="fas fa-external-link-alt"></i> Bootstrap Documentation</a> </p>
-			            
-			<h5>Text Size:</h5>
-            <ul>
-              <li><code>.text-0</code> - Changes the Font size to 11px.</li>
-              <li><code>.text-1</code> - Changes the Font size to 12px.</li>
-              <li><code>.text-2</code> - Changes the Font size to 14px.</li>
-              <li><code>.text-3</code> - Changes the Font size to 16px.</li>
-              <li><code>.text-4</code> - Changes the Font size to 18px.</li>
-              <li><code>.text-5</code> - Changes the Font size to 21px.</li>
-              <li><code>.text-6</code> - Changes the Font size to 24px.</li>
-              <li><code>.text-7</code> - Changes the Font size to 28px.</li>
-              <li><code>.text-8</code> - Changes the Font size to 32px.</li>
-              <li><code>.text-9</code> - Changes the Font size to 36px.</li>
-              <li><code>.text-10</code> - Changes the Font size to 40px.</li>
-              <li><code>.text-11</code> - Changes the Font size to 44px.</li>
-              <li><code>.text-12</code> - Changes the Font size to 48px.</li>
-              <li><code>.text-13</code> - Changes the Font size to 52px.</li>
-              <li><code>.text-14</code> - Changes the Font size to 56px.</li>
-              <li><code>.text-15</code> - Changes the Font size to 60px.</li>
-              <li><code>.text-16</code> - Changes the Font size to 64px.</li>
-              <li><code>.text-17</code> - Changes the Font size to 72px.</li>
-              <li><code>.text-18</code> - Changes the Font size to 80px.</li>
-              <li><code>.text-19</code> - Changes the Font size to 84px.</li>
-              <li><code>.text-20</code> - Changes the Font size to 92px.</li>
-            </ul>
-            <h5>Font Weight:</h5>
-            <ul>
-              <li><code>.font-weight-100</code> - For font weight of 100.</li>
-              <li><code>.font-weight-200</code> - For font weight of 200.</li>
-              <li><code>.font-weight-300</code> - For font weight of 300.</li>
-              <li><code>.font-weight-400</code> - For font weight of 400.</li>
-              <li><code>.font-weight-500</code> - For font weight of 500.</li>
-              <li><code>.font-weight-600</code> - For font weight of 600.</li>
-              <li><code>.font-weight-700</code> - For font weight of 700.</li>
-              <li><code>.font-weight-800</code> - For font weight of 800.</li>
-              <li><code>.font-weight-900</code> - For font weight of 900.</li>
-            </ul>
-            <h5>Background Color:</h5>
-            <ul>
-              <li><code>.bg-transparent</code> - For background color of transparent</li>
-              <li><code>.bg-light</code> - For background color of light gray</li>
-              <li><code>.bg-light-1</code> - For background color of more light gray</li>
-              <li><code>.bg-light-2</code> - For background color of more light gray</li>
-              <li><code>.bg-light-3</code> - For background color of more light gray</li>
-              <li><code>.bg-light-4</code> - For background color of more light gray</li>
-              <li><code>.bg-dark</code> - For background color of dark</li>
-              <li><code>.bg-dark-1</code> - For background color of dark gray</li>
-              <li><code>.bg-dark-2</code> - For background color of more dark gray</li>
-              <li><code>.bg-dark-3</code> - For background color of more dark gray</li>
-              <li><code>.bg-dark-4</code> - For background color of more dark gray</li>
-            </ul>
-            <h5>Box Shadow</h5>
-            <ul>
-              <li><code>.shadow-none</code> - For No shadow to elements with box-shadow utilities.</li>
-              <li><code>.shadow-sm</code> - For Small shadow to elements with box-shadow utilities.</li>
-              <li><code>.shadow</code> - For Regular shadow to elements with box-shadow utilities.</li>
-              <li><code>.shadow-md</code> - For medium light shadows to elements with box-shadow utilities.</li>
-              <li><code>.shadow-lg</code> - For Larger shadows to elements with box-shadow utilities.</li>
-            </ul>
-            <h5>Opacity</h5>
-            <ul>
-              <li><code>.opacity-1</code> - For 10% opacity.</li>
-              <li><code>.opacity-2</code> - For 20% opacity.</li>
-              <li><code>.opacity-3</code> - For 30% opacity.</li>
-              <li><code>.opacity-4</code> - For 40% opacity.</li>
-              <li><code>.opacity-5</code> - For 50% opacity.</li>
-              <li><code>.opacity-6</code> - For 60% opacity.</li>
-              <li><code>.opacity-7</code> - For 70% opacity.</li>
-              <li><code>.opacity-8</code> - For 80% opacity.</li>
-              <li><code>.opacity-9</code> - For 90% opacity.</li>
-            </ul>
-            <h5>Border Radius</h5>
-            <ul>
-              <li><code>.rounded-top-0</code> - No Border Radius for top.</li>
-              <li><code>.rounded-bottom-0</code> - No Border Radius for bottom.</li>
-              <li><code>.rounded-left-0</code> - No Border Radius for left.</li>
-              <li><code>.rounded-right-0</code> - No Border Radius for right.</li>
-            </ul>
-            <h5>Borders, Sizing, Spacing (margin & padding) and also much more....</h5>
-            <div class="alert alert-info">You can refer for use other default bootstrap helper classes here - <a href="https://getbootstrap.com/docs/4.4/utilities/">https://getbootstrap.com/docs/4.4/utilities/</a></div>
-          </section>
   
 </body>
 </html>

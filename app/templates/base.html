@@ -101,7 +101,6 @@ function hprmap() {
     xml.setRequestHeader("Content-type","application/x-www-form-urlencoded");
     datasend = JSON.stringify({'data1':width, 'data2':height});
     xml.send(datasend)
-
     }
 </script>
 
@@ -136,10 +135,23 @@ function hprmap() {
         new bootstrap.Tooltip(t)
     })
 </script>
+
+<script type="text/javascript">
+    function ChangeLAD(sel) {
+        if(sel=='1') var newsource = '/laddistrict';
+        if(sel=='2') var newsource = '/ladsector';
+        document.getElementById("bigmap").src=newsource;
+    }
+</script>
 {% endblock %}
 
 
 <body scroll="no" style="overflow: hidden">
+
+    {% block dimen %}
+    <script>dimen()</script>
+    {% endblock %}
+
     <header>
         {% block nav %} 
         <div class="header">
@@ -157,9 +169,7 @@ function hprmap() {
         </div>
     </header> 
 
-    {% block dimen %}
-    <script>dimen()</script>
-    {% endblock %}
+    
     
 
 

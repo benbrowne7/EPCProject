@@ -23,6 +23,8 @@ import plotly.express as px
 import plotly.graph_objects as go
 from .helper import *
 import time
+import geojson
+
 
 
 
@@ -565,9 +567,16 @@ def ladmap1(ons,w,h):
   return True
 
 
-def ladmap(ons,w,h):
+def ladmap_district(ons,w,h):
   abspath = os.path.abspath(__file__)
   sourcedir = os.path.dirname(abspath)
+
+  savepath = sourcedir + "/templates/ladmaps/"
+  clean_files(savepath)
+
+  file = ons + "_district_" + str(w) + "x" + str(h) + ".html"
+  if os.path.exists(sourcedir + "/templates/ladmaps/" + file):
+    return file
 
   filename = sourcedir + "/data/constitbounds_data/" + ons + ".geojson"
   gdf = gpd.read_file(filename)
@@ -591,8 +600,9 @@ def ladmap(ons,w,h):
     print("dir not found")
     return True
   
-  outcode_df = pd.read_csv("outcode_data.csv")
+  district_df = pd.read_csv("district_data.csv")
   sector_df = pd.read_csv("sector_data.csv")
+  outcode_df = pd.read_csv("outcode_data.csv")
   #postcode_df = pd.read_csv("postcode_data.csv")
 
   #get rid of outcodes not in area
@@ -611,32 +621,60 @@ def ladmap(ons,w,h):
     outcode_df = outcode_df.drop(inds, axis=0)
 
   w_plot = int(0.41 * w)
-  h_plot = int(0.8*h)
+  h_plot = int(0.85*h*0.86)
 
   mapbox_toke = "pk.eyJ1IjoiYmVuYnJvd25lNyIsImEiOiJjbGo1eWhsbnIwNDJsM21xcG1lcTJxY2thIn0.6alroAlfLvYEQlD8A8339g"
   
-
-  if outcode != False:
-    lats = outcode_df['lat']
-    lons = outcode_df['long']
-    
-  else:
-    lats = sector_df['lat']
-    lons = sector_df['long']
-
+ 
+  lats = outcode_df['lat']
+  lons = outcode_df['long']
   av_lat = statistics.mean(lats)
   av_lon = statistics.mean(lons)
   zoom, center = zoom_center(lons=lons, lats=lats)
-  zoom = int(zoom*0.88)
+  zoom = int(zoom*0.9)
 
-  fig = px.scatter_mapbox(outcode_df, lat="lat", lon="long", hover_name="outcode", hover_data={'epc':True, 'hpr':True, 'lat':False, 'long':False}, color='epc', height=h_plot, width=w_plot, zoom=zoom, center=center)
-  fig.update_traces(name="outcodes", marker={'size': 14})
+  #district stuff
+  districts = district_df['district'].tolist()
+  district_letters = []
+  for dist in districts:
+    if dist[0] not in district_letters:
+      district_letters.append(dist[0])
+  #print(district_letters)
+  found = False
 
-  fig1 = px.scatter_mapbox(sector_df, lat="long", lon="lat", hover_name="sector", hover_data={'epc':True, 'hpr':True, 'lat':False, 'long':False}, color='hpr', height=h_plot, width=w_plot, zoom=zoom, center=center)
-  fig1.update_traces(name="sectors", marker={'size': 14})
 
-  fig.add_trace(fig1.data[0])
+  for file in os.listdir(sourcedir + "/data/gb-postcodes-v5/districts"):
+    name = file.split(".")[0]
+    if name in districts:
+      with open(sourcedir + "/data/gb-postcodes-v5/districts/" + file) as f:
+        gdf = gpd.read_file(f)
+        if found == False:
+          gdf1 = gpd.GeoDataFrame.copy(gdf)
+          found = True
+        else:
+          gdf1 = pd.concat([gdf1,gdf])
 
+  jsonn = gdf1.to_json()
+  gdf = json.loads(jsonn)
+
+  fig = go.Figure(layout=dict(height=h_plot, width=w_plot, autosize=False, margin = {'l':0, 'r':0, 'b':0, 't':0}))
+  
+  fig.add_trace(go.Choroplethmapbox(geojson=gdf, locations=district_df['district'], z=district_df['epc'], colorscale='Reds', featureidkey='properties.mapit_code', marker=dict(opacity=0.5), colorbar=dict(bgcolor='black', bordercolor='black', borderwidth=2, outlinewidth=0, tickcolor='white',outlinecolor='white', tickfont=dict(color='aqua'))))
+  customdata=np.stack((district_df['district'], district_df['epc']), axis=-1)
+  fig.update_traces(customdata=customdata)
+  #fig.update_traces(hovertemplate="District: %{customdata[0]}" + '<br>' + "EPC:%{customdata[1]} <extra></extra>" )
+
+
+  fig.add_trace(go.Choroplethmapbox(geojson=gdf, locations=district_df['district'], z=district_df['hpr'], colorscale='Reds', featureidkey='properties.mapit_code', marker=dict(opacity=0.5), visible=False, colorbar=dict(bgcolor='black', bordercolor='black', borderwidth=2, outlinewidth=0, tickcolor='white',outlinecolor='white', tickfont=dict(color='aqua'))))
+  customdata1=np.stack((district_df['district'], district_df['hpr']), axis=-1)
+  fig.update_traces(customdata=customdata1)
+  #fig.update_traces(hovertemplate="District: %{customdata[0]}" + '<br>' + "HPR:%{customdata[1]} <extra></extra>" )
+  fig.update_traces(hoverlabel=dict(bgcolor='aqua'))
+  
+
+  fig.update_traces(marker_line_width = 2, marker_line_color = 'white')
+
+ 
   #alt style: stamen-terrain
   fig.update_layout(
     mapbox = {
@@ -645,25 +683,202 @@ def ladmap(ons,w,h):
         'zoom': zoom, 'layers': [{
             'source': {
                 'type': "FeatureCollection",
-                'features': [{
-                    'type': "Feature",
-                    'geometry': {
-                        'type': "MultiPolygon",
-                        'coordinates': [[
+              'features': [{
+                  'type': "Feature",
+                   'geometry': {
+                       'type': "MultiPolygon",
+                       'coordinates': [[
                             coords
                         ]]
                     }
                 }]
             },
-            'type': "fill", 'below': "traces", 'color': "aliceblue", "opacity":0.6}]},
+            'type': "line", 'below': "traces", 'color': "black", "opacity":1}]},
     margin = {'l':0, 'r':0, 'b':0, 't':0})
   fig.update_layout(mapbox_bounds={"west":av_lon-1, "east": av_lon+1, "south":av_lat-1, "north":av_lat+1})
   fig.update_layout(mapbox_accesstoken=mapbox_toke)
+  
+  button_layer_1_height = 1
+  fig.update_layout(
+    updatemenus=[
+        dict(
+            active=0,
+            buttons=list([
+                dict(label="District EPC Rating",
+                     method="update",
+                     args=[{"visible": [True, False]},
+                           {"title": "Average EPC",
+                            "annotations": []}]),
+                dict(label="District HPR Rating",
+                     method="update",
+                     args=[{"visible": [False, True]},
+                           {"title": "Average HPR",
+                            "annotations": []}]),
+            ]), direction="down",
+            pad={"r": 10, "t": 10},
+            showactive=True,
+            x=0.02,
+            xanchor="left",
+            y=button_layer_1_height,
+            yanchor="top"
+        ), 
+    ])
 
-  name = ons + "_" + str(w) + "x" + str(h)
+  name = ons + "_district_" + str(w) + "x" + str(h)
   fig.write_html(sourcedir + "/templates/ladmaps/" + name + ".html")
-  return True
 
+  return name + ".html"
+
+def ladmap_sector(ons,w,h):
+  abspath = os.path.abspath(__file__)
+  sourcedir = os.path.dirname(abspath)
+
+  savepath = sourcedir + "/templates/ladmaps/"
+  clean_files(savepath)
+
+  file = ons + "_sector_" + str(w) + "x" + str(h) + ".html"
+  if os.path.exists(sourcedir + "/templates/ladmaps/" + file):
+    return file
+
+  filename = sourcedir + "/data/constitbounds_data/" + ons + ".geojson"
+  gdf = gpd.read_file(filename)
+  gdf = gdf.to_crs("EPSG:4326")
+  
+  
+  try:
+    g = json.loads(gdf.to_json())
+    coords = g['features'][0]['geometry']['coordinates'][0]
+  except:
+    gdf = gpd.read_file(sourcedir + "/data/constitbounds_data/Local_Authority_Districts_December_2020_UK_BUC_2022.GEOJSON")
+    gdf = gdf.loc[gdf['LAD20CD'] == str(ons)]
+    gdf = gdf.to_crs("EPSG:4326")
+    g = json.loads(gdf.to_json())
+    coords = g['features'][0]['geometry']['coordinates'][0]
+    
+
+  try:
+    os.chdir(sourcedir + "/data/Postcode-Data/" + str(ons))
+  except:
+    print("dir not found")
+    return True
+  
+  district_df = pd.read_csv("district_data.csv")
+  sector_df = pd.read_csv("sector_data.csv")
+  outcode_df = pd.read_csv("outcode_data.csv")
+  #postcode_df = pd.read_csv("postcode_data.csv")
+  #sector stuff
+  outcodes = outcode_df['outcode'].tolist()
+  sectors = sector_df['sector'].tolist()
+
+  w_plot = int(0.41 * w)
+  h_plot = int(0.85*h*0.86)
+
+  mapbox_toke = "pk.eyJ1IjoiYmVuYnJvd25lNyIsImEiOiJjbGo1eWhsbnIwNDJsM21xcG1lcTJxY2thIn0.6alroAlfLvYEQlD8A8339g"
+  
+ 
+  lats = outcode_df['lat']
+  lons = outcode_df['long']
+  av_lat = statistics.mean(lats)
+  av_lon = statistics.mean(lons)
+  zoom, center = zoom_center(lons=lons, lats=lats)
+  zoom = int(zoom*0.9)
+
+  
+  found = False
+  sector_dir = sourcedir + "/data/gb-postcodes-v5/sectors/"
+  for outcode in outcodes:
+    try:
+      for file in os.listdir(sector_dir + outcode.upper()):
+        sec = file.split(".")[0]
+        if sec not in sectors:
+          continue
+        else:
+          with open(sector_dir + outcode.upper() + "/" + file) as f:
+            gdf = gpd.read_file(f)
+            if found == False:
+              gdf1 = gpd.GeoDataFrame.copy(gdf)
+              found = True
+            else:
+              gdf1 = pd.concat([gdf1,gdf])
+    except:
+      pass
+
+
+  print(gdf1)
+  jsonn = gdf1.to_json()
+  gdf = json.loads(jsonn)
+
+  fig = go.Figure(layout=dict(height=h_plot, width=w_plot, autosize=False, margin = {'l':0, 'r':0, 'b':0, 't':0}))
+  
+  fig.add_trace(go.Choroplethmapbox(geojson=gdf, locations=sector_df['sector'], z=sector_df['epc'], colorscale='Reds', featureidkey='properties.sector', marker=dict(opacity=0.5), colorbar=dict(bgcolor='black', bordercolor='black', borderwidth=2, outlinewidth=0, tickcolor='white',outlinecolor='white', tickfont=dict(color='aqua'))))
+  customdata=np.stack((sector_df['sector'], sector_df['epc']), axis=-1)
+  fig.update_traces(customdata=customdata)
+  fig.update_traces(hovertemplate="sector: %{customdata[0]}" + '<br>' + "EPC:%{customdata[1]} <extra></extra>" )
+
+
+  fig.add_trace(go.Choroplethmapbox(geojson=gdf, locations=sector_df['sector'], z=sector_df['hpr'], colorscale='Reds', featureidkey='properties.sector', marker=dict(opacity=0.5), visible=False, colorbar=dict(bgcolor='black', bordercolor='black', borderwidth=2, outlinewidth=0, tickcolor='white',outlinecolor='white', tickfont=dict(color='aqua'))))
+  customdata1=np.stack((sector_df['sector'], sector_df['hpr']), axis=-1)
+  fig.update_traces(customdata=customdata1)
+  fig.update_traces(hovertemplate="Sector: %{customdata[0]}" + '<br>' + "HPR:%{customdata[1]} <extra></extra>" )
+  fig.update_traces(hoverlabel=dict(bgcolor='aqua'))
+  
+
+  fig.update_traces(marker_line_width = 2, marker_line_color = 'white')
+
+ 
+  #alt style: stamen-terrain
+  fig.update_layout(
+    mapbox = {
+        'style': "dark",
+        'center': center,
+        'zoom': zoom, 'layers': [{
+            'source': {
+                'type': "FeatureCollection",
+              'features': [{
+                  'type': "Feature",
+                   'geometry': {
+                       'type': "MultiPolygon",
+                       'coordinates': [[
+                            coords
+                        ]]
+                    }
+                }]
+            },
+            'type': "line", 'below': "traces", 'color': "black", "opacity":1}]},
+    margin = {'l':0, 'r':0, 'b':0, 't':0})
+  fig.update_layout(mapbox_bounds={"west":av_lon-1, "east": av_lon+1, "south":av_lat-1, "north":av_lat+1})
+  fig.update_layout(mapbox_accesstoken=mapbox_toke)
+  
+  button_layer_1_height = 1
+  fig.update_layout(
+    updatemenus=[
+        dict(
+            active=0,
+            buttons=list([
+                dict(label="Sector EPC Rating",
+                     method="update",
+                     args=[{"visible": [True, False]},
+                           {"title": "Average EPC",
+                            "annotations": []}]),
+                dict(label="Sector HPR Rating",
+                     method="update",
+                     args=[{"visible": [False, True]},
+                           {"title": "Average HPR",
+                            "annotations": []}]),
+            ]), direction="down",
+            pad={"r": 10, "t": 10},
+            showactive=True,
+            x=0.02,
+            xanchor="left",
+            y=button_layer_1_height,
+            yanchor="top"
+        ), 
+    ])
+
+  name = ons + "_sector_" + str(w) + "x" + str(h)
+  fig.write_html(sourcedir + "/templates/ladmaps/" + name + ".html")
+
+  return name + ".html"
 
 
 

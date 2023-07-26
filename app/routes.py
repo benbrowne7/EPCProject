@@ -167,7 +167,6 @@ def gridsingle():
 @app.route('/ladsingle', methods=['GET','POST'])
 def ladsingle():
     names = getconstitnames()
-    print(names)
     url = request.referrer
     if url == None:
         return render_template('lad.html', names=names)
@@ -184,7 +183,7 @@ def ladsingle():
         name, av_yoy, exp = graph(ons,w,h)
         names.remove(constit_name)
         names.append(constit_name)
-        ladmap(ons,w,h)
+        ladmap_district(ons,w,h)
 
         exp_str = "{}% of Certificates for {} have Expired".format(exp,ons)
 
@@ -524,14 +523,14 @@ def graphdimen():
     h = out['data2']
     session['dimen'] = (w,h)
     print(session['dimen'])
-    return render_template('lad.html')
+    return "dimen grabbed"
 
 @app.route('/bigmap', methods=['GET'])
 def rendermap1():
     try:
-        w,h = session['dimen']
+        (w,h) = session['dimen']
     except:
-        return True
+        return "dimension error"
     else:
         name = "constit_map_" + str(w) + "x" + str(h) + ".html"
         bigmap(w,h)
@@ -540,9 +539,9 @@ def rendermap1():
 @app.route('/adoptionmap')
 def rendermap2():
     try:
-        w,h = session['dimen']
+        (w,h) = session['dimen']
     except:
-        return True
+        return "dimension error"
     else:
         adoptionmap(w,h)
         name = "adoption_map_" + str(w) + "x" + str(h) + ".html"
@@ -551,36 +550,60 @@ def rendermap2():
 @app.route('/graphpane')
 def rendermap5():
     ons = session['ons']
-    w,h = session['dimen']
+    try:
+        (w,h) = session['dimen']
+    except: 
+        return "dimension error"
     name = ons + "_graph_" + str(w) + "x" + str(h) + ".html"
     return render_template('graphs/' + name)
 @app.route('/graphpaneadoption')
 def rendermap6():
     ons = session['ons']
-    w,h = session['dimen']
+    try:
+        (w,h) = session['dimen']
+    except: 
+        return "dimension error"
     name = ons + "_graph_" + str(w) + "x" + str(h) + ".html"
     return render_template('graphsadoption/' + name)
 
-@app.route('/ladmapleft')
-def rendermap7():
-    ons = session['ons']
-    w, h = session['dimen']
-    name = ons + "_" + str(w) + "x" + str(h) +  ".html"
-    return render_template('ladmaps/' + name)
-
 @app.route('/biggrid')
 def rendermap8():
-    w, h = session['dimen']
+    try:
+        (w,h) = session['dimen']
+    except: 
+        return "dimension error"
     name = "biggrid_" + str(w) + "x" + str(h) + ".html"
     return render_template('biggrid/' + name)
 
 @app.route('/biggridsingle')
 def rendermap9():
     ons = session['ons']
-    w, h = session['dimen']
+    try:
+        (w,h) = session['dimen']
+    except: 
+        return "dimension error"
     name = ons + "_grid_" + str(w) + "x" + str(h) + ".html"
     return render_template('biggrid/' + name)
 
+@app.route('/laddistrict')
+def rendermap10():
+    try:
+        ons = session['ons']
+        (w,h) = session['dimen']
+    except:
+        return "dimen error"
+    name = ladmap_district(ons,w,h)
+    return render_template("ladmaps/" + name)
+
+@app.route('/ladsector')
+def rendermap11():
+    try:
+        ons = session['ons']
+        (w,h) = session['dimen']
+    except:
+        return "dimen error"
+    name = ladmap_sector(ons,w,h)
+    return render_template("ladmaps/" + name)
 
 
 

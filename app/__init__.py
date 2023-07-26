@@ -12,8 +12,7 @@ def init_app():
         from . import routes
         nav = Navigation(app)
         nav.Bar('top', [nav.Item('Grid', 'grid'), nav.Item('Individual', 'individual'), nav.Item('LAD', 'lad'), nav.Item('Reset', 'index')])
-        from .dashboard import init_dashboard
-        app = init_dashboard(app)
+        
 
         return app
 	

@@ -4,13 +4,15 @@
 {% block refresh %}
 {% endblock %}
     {{super()}}
-
-
 {% endblock %}
 
 
 
 <body>
+
+{% block dimen %} 
+{{super()}}
+{% endblock %} 
 
     {% block nav %}
     {{super()}}
@@ -19,26 +21,34 @@
 {% block basicmap %}
 {% endblock %}
 
-{% block dimen %} 
-{% endblock %} 
+
 
 
 
 {% block contentboxleft %}
 
 <div class="contentboxleft">
-    
+
     {% if epc_string1 is not defined %}
     <div class="switchmapbuttons"><button type="button" class="btn btn-dark btn-sm me-2" ta-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Maps showing average EPC (energy performance) and HPR (heat pump readiness) for Districts in England and Wales" onclick="bigmap();">UK Energy Performance</button><button type="button" class="btn btn-dark btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Maps Heat Pump Adoption Levels for Districts in England and Wales" onclick="adoptionmap();">UK Heat Pump Adoption</button></div>
      <iframe  src="/bigmap" id="bigmap" scrolling="no"></iframe>
 
+    {% else %}
+  
+    <div class="toprightbox">
+        <div class="heading" style="position:absolute; top:50%; transform: translateY(-50%); margin-left: 2%; font-size: 2vw;" >{{name}} Postcode Map</div>
+        <select class="form-select form-select-sm" style="position: absolute; top:50%; transform: translateY(-50%); right: 10%; width:20%;" name="ladmapform" id="ladmapform" onchange="ChangeLAD(this.value);">
+            <option value="1">District</option>
+            <option value="2">Sector</option>
+        </select>
+    </div>
+    
+
+    <div class="ladboxmapresponse">
+        <iframe src="/laddistrict" id="bigmap" scrolling="no"></iframe>
+    </div>
+
     {% endif %}
-
-    {% if epc_string1 is defined %}
-    <iframe  src="/ladmapleft" id="bigmap" scrolling="no" style="left:0%; top:0%; margin-left: 0%; margin-top: 0%;"></iframe>
-    {% endif %}
-
-
 </div>
 {% endblock %}
 

@@ -12,6 +12,10 @@
 
 <body>
 
+{% block dimen %} 
+{{super()}}
+{% endblock %} 
+
     {% block nav %}
     {{super()}}
     {% endblock %}
@@ -19,8 +23,7 @@
 {% block basicmap %}
 {% endblock %}
 
-{% block dimen %} 
-{% endblock %} 
+
 
 
 

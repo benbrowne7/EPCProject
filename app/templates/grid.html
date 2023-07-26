@@ -18,12 +18,15 @@
 
 <body>
 
+    {% block dimen %}
+    {{super()}} 
+    {% endblock %} 
+
     {% block nav %}
     {{super()}}
     {% endblock %}
 
-    {% block dimen %} 
-    {% endblock %} 
+    
 
     {% block contentboxleft %} 
     {% endblock %} 
