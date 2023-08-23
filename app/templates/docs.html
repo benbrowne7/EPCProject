@@ -180,6 +180,7 @@
       <p class="lead">The <a href="/lad" target="_blank">LAD Page</a> is targeted towards policy makers/officals and those interested in learning more about the UKs energy performance levels at a postcode/district level.</p>
       <img src="/static/images/lad_return.jpg" class="img-fluid" alt="LAD Return Page">
       <p class="lead">A user selects a Local Authority District from the drop down menu or inputs an ONS code. The highlighted <span style="color: red;">red box </span>contains information regarding average EPC/HPR for all LADs and compares the chosen LAD to all others in percentile terms for those 2 metrics. All averages and percentiles are precomputed using the entire <a href="#idocs_epcdata">EPC dataset</a> for each LAD. The proportion of EPCs regarded as good candidates (HPR ratings over 1) and proportion of expired certificates for the LAD is also displayed.</p>
+      <p class="lead">The highlighted <span style="color: greenyellow;">green box </span>contains various energy performance maps for the selected LAD. Users can switch between a Postcode District map and Postcode Sector map, coloured by average EPC rating or average HPR rating. See <a href="#idocs_geodata">Datasets - Geo Data</a> for more information. </p>
       <p class="lead">The graph pane is the lower half of the <span style="color: red;">red box </span>contains graphs with various insights into energy performance <a href="#idocs_epcdata">(see Datasets - EPC)</a> for the district. 
         <ul>
           <li><p class="lead">'EPC Trend' Graph shows the average EPC rating for all certificates issued in that year.</p> </li>
@@ -236,6 +237,9 @@
 
       </ul>
       <p class="lead">The boundary type chosen was 'BUC' or ultra generalised boundaries (500m), clipped to the coastline. This data is used in Shapefile (.shp) format and GEOJSON format depending on the requirements. Shapefile format for plotting all boundaries at once and GEOJSON when plotting a single LAD. (The GEOJSON was manually seperated into its constituent parts for efficiency purposes.) </p>
+
+      <h4>Postcode Boundaries Data</h4>
+      <p class="lead">Postcode Boundary data, plotted for each <a href="#idocs_lad">LAD</a>, at postcode district and sector levels was compiled using NSUL data from the <a href="https://www.ons.gov.uk/">Office for National Statistics</a> by Mark, accessed at <a href="https://longair.net/blog/2021/08/23/open-data-gb-postcode-unit-boundaries/">https://longair.net/blog/2021/08/23/open-data-gb-postcode-unit-boundaries/</a>.  </p>
     </section>
 
     <br></br>
