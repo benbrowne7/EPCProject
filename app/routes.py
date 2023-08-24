@@ -89,7 +89,10 @@ def lad():
 
 @app.route('/grid', methods=['GET','POST'])
 def grid():
-    (w,h) = session['dimen']
+    try:
+        (w,h) = session['dimen']
+    except:
+        (w,h) = (500,500)
     session.clear()
     session['dimen'] = (w,h)
     capacity, headroom, utilization = biggrid(w,h)
@@ -107,13 +110,19 @@ def gridsingle():
         return render_template('grid.html', capacity=capacity, headroom=headroom, utilization=utilization, constit22=constit22)
     
     if constit_name == "na":
-        (w,h) = session['dimen']
+        try:
+            (w,h) = session['dimen']
+        except: 
+            (w,h) = (500,500)
         capacity, headroom, utilization = biggrid(w,h)
         session['grid-stats'] = (capacity, headroom, utilization)
         return render_template('grid.html', capacity=capacity, headroom=headroom, utilization=utilization, constit22=constit22)
 
 
-    (w,h) = session['dimen']
+    try:
+        (w,h) = session['dimen']
+    except: 
+            (w,h) = (500,500)
     constit22 = getconstitnames()
     constit22.remove(constit_name)
     constit22.append(constit_name)
@@ -179,11 +188,16 @@ def ladsingle():
         print("not find ons")
         return render_template('lad.html', names=names, valid1=False)
     else:
-        (w,h) = session['dimen']
+        try:
+            (w,h) = session['dimen']
+        except: 
+            (w,h) = (500,500)
         name, av_yoy, exp = graph(ons,w,h)
         names.remove(constit_name)
         names.append(constit_name)
         ladmap_district(ons,w,h)
+        ladmap_sector(ons,w,h)
+        
 
         exp_str = "{}% of Certificates for {} have Expired".format(exp,ons)
 
@@ -211,7 +225,10 @@ def ladrequest():
         valid = False
         return render_template("lad.html", valid=valid, names=names)
     else:
-        (w,h) = session['dimen']
+        try:
+            (w,h) = session['dimen']
+        except: 
+            (w,h) = (500,500)
         name, av_yoy, exp = graph(ons,w,h)
         session['name'] = name
 
@@ -220,7 +237,8 @@ def ladrequest():
         names.remove(constit_name)
         names.append(constit_name)
         
-        ladmap(ons,w,h)
+        ladmap_district(ons,w,h)
+        ladmap_sector(ons,w,h)
         session['ons'] = ons
 
         exp_str = "{}% of Certificates for {} have Expired".format(exp,ons)
@@ -466,7 +484,11 @@ def ladadoption():
         return render_template("lad.html", valid=valid)
     
     names = getconstitnames()
-    (w,h) = session['dimen']
+    try:
+        (w,h) = session['dimen']
+    except:
+        (w,h) = (500,500)
+        
     graphadoption(ons,w,h)
 
     ons2lad = pd.read_csv(sourcedir + "/data/ONS2LAD.csv")
@@ -530,7 +552,7 @@ def rendermap1():
     try:
         (w,h) = session['dimen']
     except:
-        return "dimension error"
+        (w,h) = (500,500)
     else:
         name = "constit_map_" + str(w) + "x" + str(h) + ".html"
         bigmap(w,h)
@@ -541,7 +563,7 @@ def rendermap2():
     try:
         (w,h) = session['dimen']
     except:
-        return "dimension error"
+        (w,h) = (500,500)
     else:
         adoptionmap(w,h)
         name = "adoption_map_" + str(w) + "x" + str(h) + ".html"
@@ -553,7 +575,7 @@ def rendermap5():
     try:
         (w,h) = session['dimen']
     except: 
-        return "dimension error"
+        (w,h) = (500,500)
     name = ons + "_graph_" + str(w) + "x" + str(h) + ".html"
     return render_template('graphs/' + name)
 @app.route('/graphpaneadoption')
@@ -562,7 +584,7 @@ def rendermap6():
     try:
         (w,h) = session['dimen']
     except: 
-        return "dimension error"
+        (w,h) = (500,500)
     name = ons + "_graph_" + str(w) + "x" + str(h) + ".html"
     return render_template('graphsadoption/' + name)
 
@@ -571,7 +593,7 @@ def rendermap8():
     try:
         (w,h) = session['dimen']
     except: 
-        return "dimension error"
+        (w,h) = (500,500)
     name = "biggrid_" + str(w) + "x" + str(h) + ".html"
     return render_template('biggrid/' + name)
 
@@ -581,7 +603,7 @@ def rendermap9():
     try:
         (w,h) = session['dimen']
     except: 
-        return "dimension error"
+        (w,h) = (500,500)
     name = ons + "_grid_" + str(w) + "x" + str(h) + ".html"
     return render_template('biggrid/' + name)
 
@@ -591,7 +613,7 @@ def rendermap10():
         ons = session['ons']
         (w,h) = session['dimen']
     except:
-        return "dimen error"
+        (w,h) = (500,500)
     name = ladmap_district(ons,w,h)
     return render_template("ladmaps/" + name)
 
@@ -601,7 +623,7 @@ def rendermap11():
         ons = session['ons']
         (w,h) = session['dimen']
     except:
-        return "dimen error"
+        (w,h) = (500,500)
     name = ladmap_sector(ons,w,h)
     return render_template("ladmaps/" + name)
 

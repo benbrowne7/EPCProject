@@ -248,6 +248,7 @@ def natural_keys(text):
 
 def clean_files(path):
     critical_time = arrow.now().shift(hours=+1)
+    print(critical_time)
     try:
         for item in Path(path).glob('*'):
             if item.is_file():

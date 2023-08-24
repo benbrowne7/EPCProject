@@ -447,6 +447,8 @@ def ladmap_district(ons,w,h):
   abspath = os.path.abspath(__file__)
   sourcedir = os.path.dirname(abspath)
 
+  #ladmap setup
+
   savepath = sourcedir + "/templates/ladmaps/"
   clean_files(savepath)
 
@@ -457,7 +459,6 @@ def ladmap_district(ons,w,h):
   filename = sourcedir + "/data/constitbounds_data/" + ons + ".geojson"
   gdf = gpd.read_file(filename)
   gdf = gdf.to_crs("EPSG:4326")
-  
   
   try:
     g = json.loads(gdf.to_json())
@@ -679,7 +680,7 @@ def ladmap_sector(ons,w,h):
       pass
 
 
-  print(gdf1)
+  #print(gdf1)
   jsonn = gdf1.to_json()
   gdf = json.loads(jsonn)
 
