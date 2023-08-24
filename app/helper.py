@@ -248,12 +248,65 @@ def natural_keys(text):
 
 def clean_files(path):
     critical_time = arrow.now().shift(hours=+1)
-    print(critical_time)
     try:
         for item in Path(path).glob('*'):
             if item.is_file():
                 itemTime = arrow.get(item.stat().st_mtime)
-                if itemTime > critical_time:
+                if itemTime < critical_time:
                     os.remove(item)
     except:
         print("failed to clean path:", path)
+
+def update_fig(fig, x, coords, zoom, av_lon, av_lat, center):
+  
+  mapbox_toke = "pk.eyJ1IjoiYmVuYnJvd25lNyIsImEiOiJjbGo1eWhsbnIwNDJsM21xcG1lcTJxY2thIn0.6alroAlfLvYEQlD8A8339g"
+    #alt style: stamen-terrain
+  fig.update_layout(
+    mapbox = {
+        'style': "dark",
+        'center': center,
+        'zoom': zoom, 'layers': [{
+            'source': {
+                'type': "FeatureCollection",
+              'features': [{
+                  'type': "Feature",
+                   'geometry': {
+                       'type': "MultiPolygon",
+                       'coordinates': [[
+                            coords
+                        ]]
+                    }
+                }]
+            },
+            'type': "line", 'below': "traces", 'color': "black", "opacity":1}]},
+    margin = {'l':0, 'r':0, 'b':0, 't':0})
+  fig.update_layout(mapbox_bounds={"west":av_lon-1, "east": av_lon+1, "south":av_lat-1, "north":av_lat+1})
+  fig.update_layout(mapbox_accesstoken=mapbox_toke)
+  
+  button_layer_1_height = 1
+  fig.update_layout(
+    updatemenus=[
+        dict(
+            active=0,
+            buttons=list([
+                dict(label=x + " EPC Rating",
+                     method="update",
+                     args=[{"visible": [True, False]},
+                           {"title": "Average EPC",
+                            "annotations": []}]),
+                dict(label= x + " HPR Rating",
+                     method="update",
+                     args=[{"visible": [False, True]},
+                           {"title": "Average HPR",
+                            "annotations": []}]),
+            ]), direction="down",
+            pad={"r": 10, "t": 10},
+            showactive=True,
+            x=0.02,
+            xanchor="left",
+            y=button_layer_1_height,
+            yanchor="top"
+        ), 
+    ])
+  
+  return fig
