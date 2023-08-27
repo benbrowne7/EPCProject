@@ -30,7 +30,7 @@ endpoint = "https://epc.opendatacommunities.org/api/v1/domestic/search"
 endpointcert = "https://epc.opendatacommunities.org/api/v1/domestic/certificate/"
 endpointrec = "https://epc.opendatacommunities.org/api/v1/domestic/recommendations/"
 epc = "https://find-energy-certificate.service.gov.uk/find-a-certificate/search-by-postcode?postcode="
-auth = "Basic bm0yMDUyOUBicmlzdG9sLmFjLnVrOjY1MjE5ZjU0ODllM2E4YTU4MWYwMDA5MTAzYmVmOTMxM2U4Y2NhYzI="
+auth = "Basic YmVuYnJvd25lN0BpY2xvdWQuY29tOjg1MmE1MTBmOWExMGEwOTQwMDBlMmM5NjA5NGU2YTFkZWU4ODNlOTk="
 
 headers = {}
 headers["Accept"] = 'application/json'
