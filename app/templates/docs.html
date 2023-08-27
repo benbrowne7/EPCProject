@@ -25,7 +25,7 @@
 
 </head>
 
-<body data-spy="scroll" data-target=".idocs-navigation" data-offset="125">
+<body data-spy="scroll" data-target=".docs-navigation" data-offset="125">
 
 <!-- Preloader -->
 
@@ -72,7 +72,7 @@
     
 	<!-- Sidebar Navigation
 	============================ -->
-	<div class="idocs-navigation bg-dark docs-navigation-dark">
+	<div class="docs-navigation bg-dark docs-navigation-dark">
       <ul class="nav flex-column ">
         <li class="nav-item"><a class="nav-link active" href="#docs_start">Project Overview</a></li>
         <li class="nav-item"><a class="nav-link" href="#docs_grid">Grid</a></li>
@@ -93,12 +93,12 @@
     
     <!-- Docs Content
 	============================ -->
-    <div class="idocs-content">
+    <div class="docs-content">
       <div class="container"> 
         
         <!-- Getting Started
 		============================ -->
-        <section id="idocs_start">
+        <section id="docs_start">
         <h1>Heat Pump Ready App - Documentation</h1>
 		<hr>
 		<div class="row">
@@ -121,7 +121,7 @@
 		
         <!-- Installation
 		============================ -->
-        <section id="idocs_tool">
+        <section id="docs_tool">
           <h2>Tool Overview</h2>
           <p class="lead">The Heat Pump Ready App is a tool designed to provide users with insights into the state of heat pump adoption within the UK, a critical technology in the UK's drive to net zero across the economy, particularly in heating of buildings, where 'virtually all heat will need to be decarbonised'. <a href="https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/1044598/6.7408_BEIS_Clean_Heat_Heat___Buildings_Strategy_Stage_2_v5_WEB.pdf">[Heat and Buildings Strategy (BEIS)]</a></p>
           <p class="lead">The Tool is targeted at individual homeowners interested in upgrading to a heat pump and policy makers (local council and authority district level) wanting information regarding energy performance and heat pump suitability at various geographic levels, to support heat pump programmes and related investment.</p>
@@ -130,7 +130,7 @@
         </section>
 
     <hr class="divider">
-    <section id="idocs_grid">
+    <section id="docs_grid">
         <h2>Grid</h2>
         <p class="lead"><a href="/grid">The Grid Page</a> attempts to provide insights into the national grids infrastructure at a local authority district level, 
         specifically focusing on Primary substations which handle the distribution and voltage step down of electricity. The electricity distribution network is owned and operated by the National Grid, with 14 licensed distribution operators (DNOs) in Britain, owned by 6 different groups.  </p>
@@ -153,7 +153,7 @@
 
 
     <hr class="divider">
-    <section id="idocs_individual">
+    <section id="docs_individual">
       <h2>Individual</h2>
       <p class="lead">The <a href="/individual" target="_blank">Individual</a> page is targeted towards the individual home owner, looking to learn more about there homes energy performance and heat pump suitability. </p>
       <img src="/static/images/individual_home.jpg" class="img-fluid" alt="Individual Home Page">
@@ -175,7 +175,7 @@
 
 
     <hr class="divider">
-    <section id="idocs_lad">
+    <section id="docs_lad">
       <h2>Local Authority District (LAD)</h2>
       <p class="lead">The <a href="/lad" target="_blank">LAD Page</a> is targeted towards policy makers/officals and those interested in learning more about the UKs energy performance levels at a postcode/district level.</p>
       <img src="/static/images/lad_return.jpg" class="img-fluid" alt="LAD Return Page">
@@ -200,11 +200,11 @@
 
 
     <hr class="divider">
-    <section id="idocs_datasets">
+    <section id="docs_datasets">
       <h2>Datasets</h2>
       <p class="lead">Various datasets are used by the tool, often requiring small modifications and cleaning before being read in as a pandas dataframe. Some data is requested through APIs and is therefore the latest available, but many datasets are manual downloads and so may not always be the latest version.</p>
 
-      <section id="idocs_griddata">
+      <section id="docs_griddata">
       <h3>Grid Data</h3>
       <ul>
       <li><p class="lead"><a href="https://www.nationalgrid.co.uk/our-network/network-capacity-map-application">National Grid Substation Capacity Map Data</a> - Primary Substation Demand and Demand Headrooms </p></li>
@@ -226,7 +226,7 @@
       <br></br>
 
       <hr class="divider">
-      <section id="idocs_geodata">
+      <section id="docs_geodata">
 
       <h3>Geo Boundaries Data</h3>
       <h4>Local Authority District Boundaries</h4>
@@ -245,7 +245,7 @@
     <br></br>
 
     <hr class="divider">
-    <section id="idocs_epcdata">
+    <section id="docs_epcdata">
 
       <h3>Energy Performance Certificate (EPC) Data</h3>
       <p class="lead">The Energy Performance Certificate is required for any dwelling that is to be sold or rented. It contains information regarding the energy performance of a home: physical features (i.e.. wall insulation levels) and recommended improvements to increase the EPC rating (score 0-100).</p>
@@ -273,7 +273,7 @@
     </section>
 
       <hr class="divider">
-      <section id="idocs_hprdata">
+      <section id="docs_hprdata">
 
       <h3>Heat Pump Readiness (HPR) Rating Calculation</h3>
       <p class="lead">A properties HPR rating is calculated using information from the EPC.</p>
@@ -299,7 +299,7 @@
 
 
     <hr class="divider">
-    <section id="idocs_heatpumpadoptiondata">
+    <section id="docs_heatpumpadoptiondata">
       <h3>Heat Pump Adoption Data</h2>
         <p class="lead">Data regarding heat pump adoption was requested through <span style="font-weight: bold;">information.rights@ofgem.gov.uk</span> and was accepted under the Environmental Information Regulations 2004 (EIR). This data was 'Cumulative Number of Heat Pumps Installed by Local Authority by Year in Great Britain' and was seperated by air source or ground source installations. These heat pump installations were all under the RHI (Renewable Heat Incentive) scheme, which was recently replaced by the Boiler Upgrade Scheme (BUS), both goverment ran.</p>
 
