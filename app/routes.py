@@ -23,8 +23,6 @@ from os.path import exists
 #app.config.from_object(Config)
 
 
-
-
 abspath = os.path.abspath(__file__)
 sourcedir = os.path.dirname(abspath)
 
@@ -553,10 +551,9 @@ def rendermap1():
         (w,h) = session['dimen']
     except:
         (w,h) = (500,500)
-    else:
-        name = "constit_map_" + str(w) + "x" + str(h) + ".html"
-        bigmap(w,h)
-        return render_template('bigmap/' + name)
+    name = "constit_map_" + str(w) + "x" + str(h) + ".html"
+    bigmap(w,h)
+    return render_template('bigmap/' + name)
 
 @app.route('/adoptionmap')
 def rendermap2():
@@ -564,10 +561,9 @@ def rendermap2():
         (w,h) = session['dimen']
     except:
         (w,h) = (500,500)
-    else:
-        adoptionmap(w,h)
-        name = "adoption_map_" + str(w) + "x" + str(h) + ".html"
-        return render_template('bigmap/' + name)
+    adoptionmap(w,h)
+    name = "adoption_map_" + str(w) + "x" + str(h) + ".html"
+    return render_template('bigmap/' + name)
 
 @app.route('/graphpane')
 def rendermap5():
@@ -577,7 +573,13 @@ def rendermap5():
     except: 
         (w,h) = (500,500)
     name = ons + "_graph_" + str(w) + "x" + str(h) + ".html"
-    return render_template('graphs/' + name)
+
+    if os.path.exists(sourcedir + "/templates/graphs/" + name):
+        return render_template('graphs/' + name)
+    else:
+        x,y,z = graph(ons,w,h)
+        return render_template('graphs/' + name)
+
 @app.route('/graphpaneadoption')
 def rendermap6():
     ons = session['ons']
@@ -585,8 +587,14 @@ def rendermap6():
         (w,h) = session['dimen']
     except: 
         (w,h) = (500,500)
+
     name = ons + "_graph_" + str(w) + "x" + str(h) + ".html"
-    return render_template('graphsadoption/' + name)
+
+    if os.path.exists(sourcedir + "/templates/graphsadoption/" + name):
+        return render_template('graphsadoption/' + name)
+    else:
+        graphadoption(ons,w,h)
+        return render_template('graphsadoption/' + name)
 
 @app.route('/biggrid')
 def rendermap8():
@@ -595,7 +603,12 @@ def rendermap8():
     except: 
         (w,h) = (500,500)
     name = "biggrid_" + str(w) + "x" + str(h) + ".html"
-    return render_template('biggrid/' + name)
+
+    if os.path.exists(sourcedir + "/templates/biggrid/" + name):
+        return render_template('biggrid/' + name)
+    else:
+        x,y,z = biggrid(w,h)
+        return render_template('biggrid/' + name)
 
 @app.route('/biggridsingle')
 def rendermap9():

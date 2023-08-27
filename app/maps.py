@@ -447,14 +447,12 @@ def ladmap_district(ons,w,h):
   abspath = os.path.abspath(__file__)
   sourcedir = os.path.dirname(abspath)
 
-  #ladmap setup
-
-  savepath = sourcedir + "/templates/ladmaps/"
-  clean_files(savepath)
-
   file = ons + "_district_" + str(w) + "x" + str(h) + ".html"
   if os.path.exists(sourcedir + "/templates/ladmaps/" + file):
     return file
+
+  savepath = sourcedir + "/templates/ladmaps/"
+  clean_files(savepath)
 
   filename = sourcedir + "/data/constitbounds_data/" + ons + ".geojson"
   gdf = gpd.read_file(filename)
@@ -484,33 +482,12 @@ def ladmap_district(ons,w,h):
     return True
   
   district_df = pd.read_csv("district_data.csv")
-  sector_df = pd.read_csv("sector_data.csv")
-  outcode_df = pd.read_csv("outcode_data.csv")
-  #postcode_df = pd.read_csv("postcode_data.csv")
-
-  #get rid of outcodes not in area
-  #ons2outcodes = pd.read_csv(sourcedir + "/data/ons2outcodes.csv")
-  #inds = []
-  #try:
-    #outcodes = ons2outcodes.loc[ons2outcodes['ONS'] == str(ons)].values[0][1:]
-    #outcode = True
-  #except:
-    #outcode = False
-  #if outcode != False:
-    #for index, row in outcode_df.iterrows():
-        #postcode = row['outcode']
-        #if postcode not in outcodes:
-          #inds.append(index)
-    #outcode_df = outcode_df.drop(inds, axis=0)
 
   w_plot = int(0.41 * w)
   h_plot = int(0.85*h*0.86)
 
   mapbox_toke = "pk.eyJ1IjoiYmVuYnJvd25lNyIsImEiOiJjbGo1eWhsbnIwNDJsM21xcG1lcTJxY2thIn0.6alroAlfLvYEQlD8A8339g"
   
- 
-  #lats = outcode_df['lat']
-  #lons = outcode_df['long']
   av_lat = statistics.mean(lats)
   av_lon = statistics.mean(lons)
   zoom, center = zoom_center(lons=lons, lats=lats)
@@ -568,12 +545,12 @@ def ladmap_sector(ons,w,h):
   abspath = os.path.abspath(__file__)
   sourcedir = os.path.dirname(abspath)
 
-  savepath = sourcedir + "/templates/ladmaps/"
-  clean_files(savepath)
-
   file = ons + "_sector_" + str(w) + "x" + str(h) + ".html"
   if os.path.exists(sourcedir + "/templates/ladmaps/" + file):
     return file
+
+  savepath = sourcedir + "/templates/ladmaps/"
+  clean_files(savepath)
 
   filename = sourcedir + "/data/constitbounds_data/" + ons + ".geojson"
   gdf = gpd.read_file(filename)

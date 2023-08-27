@@ -10,6 +10,7 @@
 
 <body>
 
+
 {% block dimen %} 
 {{super()}}
 {% endblock %} 
@@ -31,7 +32,7 @@
 
     {% if epc_string1 is not defined %}
     <div class="switchmapbuttons"><button type="button" class="btn btn-dark btn-sm me-2" ta-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Maps showing average EPC (energy performance) and HPR (heat pump readiness) for Districts in England and Wales" onclick="bigmap();">UK Energy Performance</button><button type="button" class="btn btn-dark btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Maps Heat Pump Adoption Levels for Districts in England and Wales" onclick="adoptionmap();">UK Heat Pump Adoption</button></div>
-     <iframe  src="/bigmap" id="bigmap" scrolling="no"></iframe>
+     <iframe  src="/bigmap" id="bigmap" scrolling="no" ></iframe>
 
     {% else %}
   
@@ -47,6 +48,7 @@
     <div class="ladboxmapresponse">
         <iframe src="/laddistrict" id="bigmap" scrolling="no"></iframe>
     </div>
+    
 
     {% endif %}
 </div>
@@ -144,6 +146,12 @@
 
 {% block redirect %}
 {% endblock %}
+
+
+
+
+    
+  
 
 </body>
 </html>

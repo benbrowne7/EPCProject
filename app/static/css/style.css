@@ -193,7 +193,6 @@ li a:hover:not(.active) {
 	position: absolute;
 	top:32%;
 	border-bottom: 2px solid rgb(0, 0, 0);
-	
 }
 
 .bigmap {
@@ -214,6 +213,15 @@ li a:hover:not(.active) {
   border: 5px solid rgb(0, 0, 0);
   margin: 0;
 	position: absolute;
+}
+
+
+.loading {
+	display: block;
+	left: 50%;
+	top:50%;
+	position: absolute;
+	
 }
 
 
