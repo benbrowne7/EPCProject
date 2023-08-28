@@ -112,10 +112,10 @@ li a:hover:not(.active) {
 	position: fixed;
 	left:1%;
 	top: 11.5%;
-	background-color: #A8D0E6;
 	background-image:url(heat-pump.gif);
   background-repeat:no-repeat;
   background-position:center center;
+	background-color: #A8D0E6;
 	background-blend-mode: normal;
 }
 .contentboxleft iframe {
@@ -125,6 +125,17 @@ li a:hover:not(.active) {
 	display: block;
 	margin-top:1%;
 	margin-left: 1%;
+}
+.contentboxleftnoload {
+	display: flex;
+	flex-direction:column;
+	width: 42.5%;
+	height: 85%;
+  border: 5px solid rgb(0, 0, 0);
+	position: fixed;
+	left:1%;
+	top: 11.5%;
+	background-color: #A8D0E6;
 	
 }
 

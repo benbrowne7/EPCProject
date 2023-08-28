@@ -26,8 +26,15 @@
 
     {% block contentboxleft %}
     <div class="contentboxleft">
-        <div class="switchmapbuttons"><button type="button" class="btn btn-dark btn-sm me-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Maps showing average EPC (energy performance) and HPR (heat pump readiness) for Districts in England and Wales" onclick="bigmap();">UK Energy Performance</button><button type="button" class="btn btn-dark btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Maps Heat Pump Adoption Levels for Districts in England and Wales" onclick="adoptionmap();">UK Heat Pump Adoption</button></div>
-        <iframe src="/bigmap" width=100%; id="bigmap"></iframe>
+
+        <div class="toprightbox">
+        <div id="switchheading" style="position:absolute; top:50%; transform: translateY(-50%); margin-left: 2%; font-size: 1.8vw;" >UK Energy Performance</div>
+        <div class="switchmapbuttons" style="position: absolute; top:50%; transform: translateY(-50%); right:1%;"><button type="button" class="btn btn-dark btn-sm me-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Maps showing average EPC (energy performance) and HPR (heat pump readiness) for Districts in England and Wales" onclick="bigmap()">UK Energy Performance</button><button type="button" class="btn btn-dark btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Maps Heat Pump Adoption Levels for Districts in England and Wales" onclick="adoptionmap()">UK Heat Pump Adoption</button></div>
+    </div>
+
+    <div class="ladboxmapresponse">
+        <iframe src="/bigmap" scrolling="no" width=100%; id="bigmap" ALLOWTRANSPARENCY="false"></iframe>
+    </div>
        
     </div>
     {% endblock %}
