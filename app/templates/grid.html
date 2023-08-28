@@ -26,6 +26,9 @@
     {{super()}}
     {% endblock %}
 
+    {% block popupstart %} 
+    {% endblock %}
+
     
 
     {% block contentboxleft %} 
@@ -34,12 +37,12 @@
     {% block content %} 
     <div id="contentboxgrid">
         {% if valid is not defined %} 
-        <iframe id="biggrid" scrolling="no" src="/biggrid"></iframe>
+        <iframe id="biggrid" scrolling="no" src="/biggrid" ALLOWTRANSPARENCY="false"></iframe>
         {% else %} 
         {% if valid == True %} 
-        <iframe src="/biggridsingle" scrolling="no" width=100%; id="biggrid"></iframe>
+        <iframe src="/biggridsingle" scrolling="no" width=100%; id="biggrid" ALLOWTRANSPARENCY="false"></iframe>
         {% else %}
-        <iframe src="/biggrid" scrolling="no" width=100%; id="biggrid"></iframe>
+        <iframe src="/biggrid" scrolling="no" width=100%; id="biggrid" ALLOWTRANSPARENCY="false"></iframe>
         {% endif %} 
         {% endif %}
     </div>

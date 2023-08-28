@@ -81,8 +81,8 @@ def bigmap(w,h):
   merged_json = json.loads(merged.to_json())
   json_data = json.dumps(merged_json)
 
-  w_plot = int(0.412 * w)
-  h_plot = int(0.8*h)
+  w_plot = int(0.414 * w)
+  h_plot = int(0.85*h*0.84)
 
   curdoc().theme = "dark_minimal"
 
@@ -142,8 +142,8 @@ def adoptionmap(w,h):
   rate_col = []
   pop_col = []
 
-  w_plot = int(0.412 * w)
-  h_plot = int(0.8*h)
+  w_plot = int(0.414 * w)
+  h_plot = int(0.85*h*0.84)
 
   curdoc().theme = "dark_minimal"
 
@@ -193,9 +193,6 @@ def adoptionmap(w,h):
       new1.append(i)
   av_rate = statistics.mean(new)
   av_density = statistics.mean(new1)
-
-  rate_percentile = np.percentile(new, [10,20,30,40,50,60,70,80,90])
-  density_percentile = np.percentile(new1, [10,20,30,40,50,60,70,80,90])
 
 
   map['hp_density'] = hp_density
@@ -267,7 +264,7 @@ def graph(ons,w,h):
   sourcedir = os.path.dirname(abspath)
 
   savepath = sourcedir + "/templates/graphs/"
-  clean_files(savepath)
+  clean_files(savepath,30)
 
   filename = sourcedir + "/data/EPCByYear/" + ons + "-yoy.csv"
   ons_str = str(ons)
@@ -358,7 +355,7 @@ def graphadoption(ons,w,h):
   sourcedir = os.path.dirname(abspath)
 
   savepath = sourcedir + "/templates/graphsadoption/"
-  clean_files(savepath)
+  clean_files(savepath,30)
 
   ons_str = str(ons)
 

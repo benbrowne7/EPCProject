@@ -19,6 +19,31 @@
     {{super()}}
     {% endblock %}
 
+    {% block popupstart %} 
+
+    <div id="popup">
+        <div class="alert alert-dark alert-dismissible fade show" role="alert" id="alert">
+            Welcome to the Heat Pump Ready App. <br>
+            -> Chrome + Firefox for the Best Experience <br>
+            -> Hit 'Reset' if any issues encountered <br>
+            -> Link to Projects Documentation in bottom right of the page
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        
+        <script>
+            const showMsg = localStorage.getItem('hideAlert');
+            if(showMsg === 'false'){
+              $('.alert').hide();
+            }
+            $('.btn-close').on('click', function(){
+              localStorage.setItem('hideAlert', 'false');
+            });
+            
+        </script>
+    </div>
+
+    {% endblock %} 
+
 {% block basicmap %}
 {% endblock %}
 
@@ -31,14 +56,20 @@
 <div class="contentboxleft">
 
     {% if epc_string1 is not defined %}
-    <div class="switchmapbuttons"><button type="button" class="btn btn-dark btn-sm me-2" ta-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Maps showing average EPC (energy performance) and HPR (heat pump readiness) for Districts in England and Wales" onclick="bigmap();">UK Energy Performance</button><button type="button" class="btn btn-dark btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Maps Heat Pump Adoption Levels for Districts in England and Wales" onclick="adoptionmap();">UK Heat Pump Adoption</button></div>
-     <iframe  src="/bigmap" id="bigmap" scrolling="no" ></iframe>
+    <div class="toprightbox">
+        <div id="switchheading" style="position:absolute; top:50%; transform: translateY(-50%); margin-left: 2%; font-size: 1.8vw;" >UK Energy Performance</div>
+        <div class="switchmapbuttons" style="position: absolute; top:50%; transform: translateY(-50%);"><button type="button" class="btn btn-dark btn-sm me-2" ta-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Maps showing average EPC (energy performance) and HPR (heat pump readiness) for Districts in England and Wales" onclick="bigmap();">UK Energy Performance</button><button type="button" class="btn btn-dark btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Maps Heat Pump Adoption Levels for Districts in England and Wales" onclick="adoptionmap();">UK Heat Pump Adoption</button></div>
+    </div>
+    <div class="ladboxmapresponse">
+        <iframe src="/bigmap" id="bigmap" scrolling="no" ALLOWTRANSPARENCY="false"></iframe>
+    </div>
+    
 
     {% else %}
   
     <div class="toprightbox">
         <div class="heading" style="position:absolute; top:50%; transform: translateY(-50%); margin-left: 2%; font-size: 1.8vw;" >{{name}} Map</div>
-        <select class="form-select form-select-sm" style="position: absolute; top:50%; transform: translateY(-50%); right: 2%; width:25%;" name="ladmapform" id="ladmapform" onchange="ChangeLAD(this.value);">
+        <select class="form-select form-select-sm" style="position: absolute; top:50%; transform: translateY(-50%); right: 2%; width:30%;" name="ladmapform" id="ladmapform" onchange="ChangeLAD(this.value);">
             <option value="1">Postcode District Map</option>
             <option value="2">Postcode Sector Map</option>
         </select>
@@ -46,7 +77,7 @@
     
 
     <div class="ladboxmapresponse">
-        <iframe src="/laddistrict" id="bigmap" scrolling="no"></iframe>
+        <iframe src="/laddistrict" id="bigmap" scrolling="no" ALLOWTRANSPARENCY="false"></iframe>
     </div>
     
 
@@ -147,11 +178,8 @@
 {% block redirect %}
 {% endblock %}
 
-
-
-
     
-  
+ 
 
 </body>
 </html>

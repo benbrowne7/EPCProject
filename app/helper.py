@@ -246,8 +246,9 @@ def natural_keys(text):
     '''
     return [ atoi(c) for c in re.split(r'(\d+)', text) ]
 
-def clean_files(path):
-    critical_time = arrow.now().shift(hours=+1)
+def clean_files(path, d=0):
+    critical_time = arrow.now().shift(hours=+24)
+    critical_time.shift(days=+d)
     try:
         for item in Path(path).glob('*'):
             if item.is_file():

@@ -520,11 +520,11 @@ def ladadoption():
 
     av_rate_string = "Average Yearly % Increase in Heat Pumps (RHI Scheme): {}%".format(av_rate)
     av_density_string = "Average Number of Installed Heat Pumps per 1000 People (RHI Scheme): {}".format(av_density)
-    lad_rate_string = "Average Yearly % Increase in Heat Pumps (RHI Scheme) for {}: [{}%]".format(name, lad_rate)
-    lad_density_string = "Number of Installed Heat Pumps per 1000 People (RHI Scheme) for {}: [{}]".format(name, lad_density)
+    lad_rate_string = "Average Yearly % Increase in Heat Pumps (RHI Scheme) for {}: [{}%]".format(constit_name, lad_rate)
+    lad_density_string = "Number of Installed Heat Pumps per 1000 People (RHI Scheme) for {}: [{}]".format(constit_name, lad_density)
 
-    rate_percentile_string = "{} is within the {}th -> {}th percentile for Local Authority Districts (av. annual % Increase)".format(name, index0*10, (index0+1)*10)
-    density_percentile_string = "{} is within the {}th -> {}th percentile for Local Authority Districts (Heat Pumps per 1000)".format(name, index1*10, (index1+1)*10)
+    rate_percentile_string = "{} is within the {}th -> {}th percentile for Local Authority Districts (av. annual % Increase)".format(constit_name, index0*10, (index0+1)*10)
+    density_percentile_string = "{} is within the {}th -> {}th percentile for Local Authority Districts (Heat Pumps per 1000)".format(constit_name, index1*10, (index1+1)*10)
 
     return render_template("ladadoption.html", valid=valid, av_rate_string=av_rate_string, av_density_string=av_density_string, lad_rate_string=lad_rate_string, lad_density_string=lad_density_string, rate_percentile_string=rate_percentile_string, density_percentile_string=density_percentile_string, constit_name=constit_name, ons=ons, tag0=tag0, tag1=tag1, names=names)
 
@@ -552,8 +552,11 @@ def rendermap1():
     except:
         (w,h) = (500,500)
     name = "constit_map_" + str(w) + "x" + str(h) + ".html"
-    bigmap(w,h)
-    return render_template('bigmap/' + name)
+    if os.path.exists(sourcedir + "/templates/bigmap/" + name):
+      return render_template('bigmap/' + name)
+    else:
+        bigmap(w,h)
+        return render_template('bigmap/' + name)
 
 @app.route('/adoptionmap')
 def rendermap2():
@@ -561,9 +564,25 @@ def rendermap2():
         (w,h) = session['dimen']
     except:
         (w,h) = (500,500)
-    adoptionmap(w,h)
     name = "adoption_map_" + str(w) + "x" + str(h) + ".html"
-    return render_template('bigmap/' + name)
+    if os.path.exists(sourcedir + "/templates/bigmap/" + name):
+      return render_template('bigmap/' + name)
+    else:
+        adoptionmap(w,h)
+        return render_template('bigmap/' + name)
+
+@app.route('/adoptionmapsmall')
+def rendermap3():
+    try:
+        (w,h) = session['dimen']
+    except:
+        (w,h) = (500,500)
+    name = "adoption_map_small" + str(w) + "x" + str(h) + ".html"
+    if os.path.exists(sourcedir + "/templates/bigmap/" + name):
+      return render_template('bigmap/' + name)
+    else:
+        adoptionmap(w,h)
+        return render_template('bigmap/' + name)
 
 @app.route('/graphpane')
 def rendermap5():

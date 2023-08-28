@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">   
     {% block refresh %} 
-    <meta http-equiv="Refresh" content="1, url='/lad'" \>
+    <meta http-equiv="Refresh" content="1; url='/lad'" \>
     {% endblock %}
     {% endblock %}
 
@@ -66,14 +66,17 @@
     function bigmap() {
         var newsource = "/bigmap";
         document.getElementById("bigmap").src=newsource;
+        document.getElementById("switchheading").innerHTML = "UK Energy Performance"
     }
 </script>
 <script type="text/javascript">
     function adoptionmap() {
         var newsource = "/adoptionmap";
         document.getElementById("bigmap").src=newsource;
+        document.getElementById("switchheading").innerHTML = "UK Heat Pump Adoption"
     }
 </script>
+
 
 <script type="text/javascript">
 function hprmap() {
@@ -84,14 +87,11 @@ function hprmap() {
 
 <script type="text/javascript">
     function ladmapleft() {
-        var newsource = "/ladmapleft";
+        var newsource = "/laddistrict";
         document.getElementById("bigmap").src=newsource;
+        document.getElementById("switchheading").innerHTML = "District Map"
     }
 </script>
-
-
-
-
 
 
 
@@ -153,6 +153,8 @@ function hprmap() {
     }
 </script>
 
+
+
 {% endblock %}
 
 
@@ -179,7 +181,11 @@ function hprmap() {
         </div>
     </header> 
 
-    
+    {% block popupstart %}
+    <script>
+        localStorage.setItem('hideAlert', 'true');
+    </script>
+    {% endblock %}
     
 
 
